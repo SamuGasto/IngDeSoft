@@ -5,6 +5,7 @@ server = 'LAPTOP-KHL9HM6I\INGDESOFT'
 bd = 'master'
 user = 'ingDeSoft02024'
 password = 'Panconqueso'
+port = '5273'
 
 conn = 0
 cursor = 0
@@ -12,7 +13,7 @@ cursor = 0
 def ConectarBaseDeDatos():
     try:
         global conn, cursor
-        connectionString = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={bd};UID={user};PWD={password}'
+        connectionString = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server},{port};DATABASE={bd};UID={user};PWD={password}'
         conn = pyodbc.connect(connectionString) 
         cursor = conn.cursor()
         print('Conexión exitosa')
