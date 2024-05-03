@@ -11,14 +11,16 @@ conn = 0
 cursor = 0
 
 def ConectarBaseDeDatos():
-    try:
-        global conn, cursor
-        connectionString = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server},{port};DATABASE={bd};UID={user};PWD={password}'
-        conn = pyodbc.connect(connectionString) 
-        cursor = conn.cursor()
-        print('Conexión exitosa')
-    except:
-        print('Error al conectar')
+    global conn, cursor
+    #try:
+    #    connectionString = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server},{port};DATABASE={bd};UID={user};PWD={password}'
+    #    conn = pyodbc.connect(connectionString) 
+    #    print(f'{conn.getinfo()}')
+    #except:
+    #    print('Error al conectar')
+    connectionString = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server},{port};DATABASE={bd};UID={user};PWD={password}'
+    conn = pyodbc.connect(connectionString) 
+    cursor = conn.cursor()
 
 def CerrarCursor():
     global cursor
