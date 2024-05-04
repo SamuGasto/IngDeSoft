@@ -1,5 +1,5 @@
 import customtkinter
-import BaseDeDatos.UsersMongoDB as db
+import App.BaseDeDatos.UsersQuery as db
 import Vistas.VentanaEjemplo2 as vis2
 
 class V1(customtkinter.CTk):

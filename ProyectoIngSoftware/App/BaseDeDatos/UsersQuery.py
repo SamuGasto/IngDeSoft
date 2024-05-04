@@ -24,6 +24,16 @@ def ActualizarContrasena(email: str,newPassword: str)->None:
     else:
         print(f'El usuario no existe')
 
+def ValidarUsuario(email: str, password: str)->bool:
+    '''Verifica si el usuario existe en la base de datos y que la contraseña ingresada sea correcta.'''
+    if (BuscarUsuario(email)):
+        if (db['Users'].find_one(email)['password'] == password):
+            return True
+        else:
+            return False
+    else:
+        return False
+
 def EliminarUsuario(email: str)->None:
     '''Elimina a un usuario de la base de datos'''
     if (BuscarUsuario(email)):
