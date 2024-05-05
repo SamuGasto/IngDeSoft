@@ -1,4 +1,5 @@
 import BaseDeDatos.MainMongoDB as mDB
+import bcrypt
 
 db = mDB.client['Application']
 
@@ -14,12 +15,23 @@ def AnadirUsuario(email: str,password: str)->None:
     if (BuscarUsuario(email)):
         print(f'El usuario {email} ya existe')
         return
-    db['Users'].insert_one({'email':email, 'password': password})
+    
+    pwd = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    pwdEncrypt = bcrypt.hashpw(pwd,salt)
+    
+
+    db['Users'].insert_one({'email':email, 'password': pwdEncrypt.decode('utf-8')})
 
 def ActualizarContrasena(email: str,newPassword: str)->None:
     '''Actualiza la contraseña de un usuario ya registrado.'''
     if (BuscarUsuario(email)):
-        db['Users'].update_one({'email': email},{'password': newPassword})
+        
+        pwd = newPassword.encode('utf-8')
+        salt = bcrypt.gensalt()
+        pwdEncrypt = bcrypt.hashpw(pwd,salt)
+
+        db['Users'].update_one({'email': email},{'password': pwdEncrypt.decode('utf-8')})
         print(f'Se ha actualizado la contraseña de {email}')
     else:
         print(f'El usuario no existe')
@@ -27,7 +39,7 @@ def ActualizarContrasena(email: str,newPassword: str)->None:
 def ValidarUsuario(email: str, password: str)->bool:
     '''Verifica si el usuario existe en la base de datos y que la contraseña ingresada sea correcta.'''
     if (BuscarUsuario(email)):
-        if (db['Users'].find_one(email)['password'] == password):
+        if (bcrypt.checkpw(password.encode('utf-8'), db['Users'].find_one({'email' : email})['password'].encode('utf-8'))):
             return True
         else:
             return False
