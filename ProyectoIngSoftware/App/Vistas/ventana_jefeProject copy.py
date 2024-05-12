@@ -16,11 +16,11 @@ class JP(ctk.CTk):
         self.Paneles()
         self.controles_sidebar()
         self.contenido_body()
-        self.contenido_top_panel()
+        #self.contenido_top_panel()
         self.contenido_subpanel()
         self.contenido_image()
 
-        self.toplevel_window = None
+        
 
         #self.mainloop() !! BORRAR EL COMENTARIO PARA USO FINAL
     
@@ -31,12 +31,9 @@ class JP(ctk.CTk):
         #cuerpo principal
         self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
         self.body.pack(side="right", fill="both", expand=True)
-        #cuadro panel de navegacion
-        self.top_panel = ctk.CTkFrame(self.body, fg_color="transparent", corner_radius=0)
-        self.top_panel.pack(side=ctk.TOP, fill="x", expand=False)
-        #frame que contiene ID del proyecto actual y logo nuestro
-        self.top_subpanel = ctk.CTkFrame(self.body, fg_color="transparent", height=80, corner_radius=0)
-        self.top_subpanel.pack(before=self.top_panel, side=ctk.TOP, fill="x", expand=False)
+        #frame que contiene ID del proyecto actual
+        self.top_subpanel = ctk.CTkFrame(self.body, fg_color="transparent", height=120, corner_radius=0)
+        self.top_subpanel.pack(side=ctk.TOP, fill="x", expand=False)
         #frame para la imágen
         self.topimage = ctk.CTkFrame(self.top_subpanel, fg_color="transparent", corner_radius=0)
         self.topimage.pack(side=ctk.RIGHT, expand=False)
@@ -54,22 +51,35 @@ class JP(ctk.CTk):
         self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10)
 
     def contenido_body(self):
+        #Creamos TabView
+        tabview = ctk.CTkTabview(master=self.body, height=400)
+        tabview.pack(padx=5, pady=5, fill="x")
+        #Agregamos Tabs
+        tab1 = tabview.add("Integrantes")  
+        tab2 = tabview.add("Requerimientos")  
+        tab3 = tabview.add("Métricas")  
+        
+        ##Objetos de tab1
+        button = ctk.CTkButton(master=tab1)#Para colocar elementos, solo se especifica el tab
+        button.pack(side=ctk.BOTTOM, padx=20, pady=20)
+
+        ##Objetos de tab2
+        scroll = ctk.CTkScrollableFrame(master=tab2)
+        scroll.pack(fill="both",expand=True)
+        texto = ctk.CTkLabel(master=scroll, font=("Calibri", -15, "italic"), text="· REQ-111: ")
+        texto.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
+        
+        
+        ##Objetos de tab3
+
+        ##objetos del body
         self.eliminar_proyecto = ctk.CTkButton(self.body, text="Eliminar Proyecto", fg_color="Red", font=("Comic Sans", -15),
                                         width=150, height=35, corner_radius=25)
-        self.eliminar_proyecto.pack(side=ctk.RIGHT, anchor=ctk.SW)
-        
-    def contenido_top_panel(self):#Cambiar a TabView, más fácil
-        self.integrantes= ctk.CTkButton(self.top_panel, text="Integrantes", font=("Comic Sans", -15), height=45)
-        self.integrantes.pack(side=ctk.LEFT, padx=6, pady=5)
+        self.eliminar_proyecto.pack(side=ctk.RIGHT, anchor=ctk.SW, pady=5, padx=5)
 
-        self.requerimientos= ctk.CTkButton(self.top_panel, text="Requerimientos", font=("Comic Sans", -15), height=45)
-        self.requerimientos.pack(side=ctk.LEFT, padx=6, pady=5)
-
-        self.metricas= ctk.CTkButton(self.top_panel, text="Métricas", font=("Comic Sans", -15), height=45)
-        self.metricas.pack(side=ctk.LEFT, padx=6, pady=5)
-
-        self.administrar= ctk.CTkButton(self.top_panel, text="Administración\n Completa", font=("Comic Sans", -15), height=45)
-        self.administrar.pack(side=ctk.LEFT, padx=6, pady=5)
+        self.administrar  = ctk.CTkButton(self.body, text="Administración\nCompleta", text_color="black",fg_color="white", font=("Comic Sans", -15, "bold"),
+                                        width=150, height=35, corner_radius=25)
+        self.administrar.pack(side=ctk.LEFT, anchor=ctk.SE, pady=5, padx=5)
 
     def contenido_subpanel(self):
         texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
@@ -77,7 +87,7 @@ class JP(ctk.CTk):
         self.proyecto_actual.place(relx=0.4, rely=0.3)
 
     def contenido_image(self):
-        self.logo = ctk.CTkImage(light_image=Image.open("C:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Vistas\LOGO.png"),
+        self.logo = ctk.CTkImage(light_image=Image.open("E:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Vistas\LOGO.png"),
                     size=(60, 60))
         self.logo_label = ctk.CTkLabel(self.topimage, image=self.logo, text="")
         self.logo_label.pack(padx=5, pady=5)
@@ -104,7 +114,9 @@ class JP(ctk.CTk):
 
     def mostrar_ventana_emergente(self):
         ventana_emergente = ctk.CTkToplevel(app)
-        etiqueta = ctk.CTkLabel(ventana_emergente, text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+        ventana_emergente.configure(fg_color="white")
+        etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
+                                text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
         etiqueta.pack(padx=20, pady=20)
         # Centra la ventana emergente con respecto a la ventana principal
         ancho_ventana_principal = app.winfo_width()

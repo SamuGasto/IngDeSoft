@@ -7,9 +7,11 @@ from PIL import Image
 class JP(ctk.CTk):
     def __init__(self):
         super().__init__()
-        #self.n_proyectos = 1 NO RECUERDO PORQUÉ LA CREE XD
+        
+        self.n_proyectos = 1 
         self.proyecto_id = 111
         self.geometry("800x540")
+        self.title("PaltaEstimateApp")
         #self.resizable(False, False)
         self.Paneles()
         self.controles_sidebar()
@@ -17,6 +19,9 @@ class JP(ctk.CTk):
         self.contenido_top_panel()
         self.contenido_subpanel()
         self.contenido_image()
+
+        self.toplevel_window = None
+
         #self.mainloop() !! BORRAR EL COMENTARIO PARA USO FINAL
     
     def Paneles(self):#FRAMES
@@ -37,10 +42,11 @@ class JP(ctk.CTk):
         self.topimage.pack(side=ctk.RIGHT, expand=False)
 
     def controles_sidebar(self):
+        texto= "PRO-"+str(self.proyecto_id)
         self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20), fg_color="black")
         self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
-        self.boton_proyecto = ctk.CTkButton(self.side_bar, text="PRO-111", fg_color="orange",font=("Arial", -20),
-                                            width=200, height=65, corner_radius=0, command=self.boton_clickeado)
+        self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+                                            width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
         self.boton_proyecto.pack(side=ctk.TOP, pady=10)
 
         self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
@@ -52,8 +58,7 @@ class JP(ctk.CTk):
                                         width=150, height=35, corner_radius=25)
         self.eliminar_proyecto.pack(side=ctk.RIGHT, anchor=ctk.SW)
         
-    def contenido_top_panel(self):
-        #Cambiar a Botones
+    def contenido_top_panel(self):#Cambiar a TabView, más fácil
         self.integrantes= ctk.CTkButton(self.top_panel, text="Integrantes", font=("Comic Sans", -15), height=45)
         self.integrantes.pack(side=ctk.LEFT, padx=6, pady=5)
 
@@ -78,18 +83,40 @@ class JP(ctk.CTk):
         self.logo_label.pack(padx=5, pady=5)
 
     def crear_proyecto(self):
-        #self.n_proyectos += 1 XD
-        self.proyecto_id += 1
-        texto = "PRO-" + str(self.proyecto_id)
-        self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                            width=200, height=65, corner_radius=0, command=self.boton_clickeado)
-        self.new_proyect.pack(side=ctk.TOP, pady=10)
-    def cambiar_proyecto(self):
-        switch_project = self.proyecto_actual.configure(text="hola")
+        self.n_proyectos += 1
+        if self.n_proyectos > 3:
+            self.mostrar_ventana_emergente()
+        else:
+            self.proyecto_id += 1
+            texto = "PRO-" + str(self.proyecto_id)
+            self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+                                                width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
+            self.new_proyect.pack(side=ctk.TOP, pady=10)
 
-    def boton_clickeado(self):
-        self.click = self.new_proyect.cget("text")
-        print("Botón clickeado:", self.click)
+    def cambiar_proyecto(self, texto):
+        switch_project = self.proyecto_actual.configure(text=texto)
+
+    def boton_clickeado(self, texto):
+        self.cambiar_proyecto(texto)
+
+    def boton_clickeado_global(self, texto):
+        self.boton_clickeado(texto)
+
+    def mostrar_ventana_emergente(self):
+        ventana_emergente = ctk.CTkToplevel(app)
+        ventana_emergente.configure(fg_color="white")
+        etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15), text_color="black",
+                                text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+        etiqueta.pack(padx=20, pady=20)
+        # Centra la ventana emergente con respecto a la ventana principal
+        ancho_ventana_principal = app.winfo_width()
+        alto_ventana_principal = app.winfo_height()
+        x_ventana_emergente = app.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
+        y_ventana_emergente = app.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
+        ventana_emergente.geometry("+{}+{}".format(x_ventana_emergente, y_ventana_emergente))
+        ventana_emergente.title("Error")
+        ventana_emergente.attributes('-topmost' , 1)
+        ventana_emergente.focus()
 #Borrar para uso final
 app = JP()
 app.mainloop()
