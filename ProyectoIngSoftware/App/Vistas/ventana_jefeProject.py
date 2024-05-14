@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
-#import BaseDeDatos.UsersMongoDB as db
-#import Vistas.VentanaEjemplo2 as vis2
+import BaseDeDatos.UsersMongoDB as db
+
 
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
@@ -22,7 +22,7 @@ class JP(ctk.CTk):
 
         
 
-        #self.mainloop() !! BORRAR EL COMENTARIO PARA USO FINAL
+        self.mainloop() 
     
     def Paneles(self):#FRAMES
         #sección izquierda
@@ -113,26 +113,18 @@ class JP(ctk.CTk):
         self.boton_clickeado(texto)
 
     def mostrar_ventana_emergente(self):
-        ventana_emergente = ctk.CTkToplevel(app)
+        ventana_emergente = ctk.CTkToplevel(JP)
         ventana_emergente.configure(fg_color="white")
         etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
                                 text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
         etiqueta.pack(padx=20, pady=20)
         # Centra la ventana emergente con respecto a la ventana principal
-        ancho_ventana_principal = app.winfo_width()
-        alto_ventana_principal = app.winfo_height()
-        x_ventana_emergente = app.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
-        y_ventana_emergente = app.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
+        ancho_ventana_principal = JP.winfo_width()
+        alto_ventana_principal = JP.winfo_height()
+        x_ventana_emergente = JP.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
+        y_ventana_emergente = JP.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
         ventana_emergente.geometry("+{}+{}".format(x_ventana_emergente, y_ventana_emergente))
         ventana_emergente.title("Error")
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
-
-
-
-
-
-#Borrar para uso final
-app = JP()
-app.mainloop()

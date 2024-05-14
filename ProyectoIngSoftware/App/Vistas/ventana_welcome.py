@@ -1,7 +1,6 @@
 import customtkinter as ctk
 from PIL import Image
 #import BaseDeDatos.UsersMongoDB as db
-#import Vistas.VentanaEjemplo2 as vis2
 
 #creamos la clase ventana para la bienvenida
 class Welcome(ctk.CTk):
@@ -11,6 +10,10 @@ class Welcome(ctk.CTk):
         self.title("PaltaEstimateApp")
         #self.resizable(False, False)
         self.Contenido()
+
+
+
+        self.mainloop()
 
     def Contenido(self):#Frames
         nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans", -25, "italic"))
@@ -22,15 +25,16 @@ class Welcome(ctk.CTk):
 
         email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans", -25, "bold"))
         email.place(relx=0.15, rely=0.43)
-        email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
-        email_entry.place(relx=0.15, rely=0.5)
+        self.email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
+        self.email_entry.place(relx=0.15, rely=0.5)
 
         passw = ctk.CTkLabel(self, text="Contraseña", font=("Comic Sans", -25, "bold"))
         passw.place(relx=0.15, rely=0.58)
-        passw_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
-        passw_entry.place(relx=0.15, rely=0.65)
+        self.passw_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
+        self.passw_entry.place(relx=0.15, rely=0.65)
 
-        iniciar_btn = ctk.CTkButton(self, width=100, height=45, corner_radius=25, text="Iniciar sesión", font=("Comic Sans", -20))
+        iniciar_btn = ctk.CTkButton(self, width=100, height=45, corner_radius=25, text="Iniciar sesión",
+                                    font=("Comic Sans", -20), command=self.getUserInfo)
         iniciar_btn.place(relx=0.15, rely=0.8)
 
         logo = ctk.CTkImage(light_image=Image.open("E:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Vistas\LOGO.png"),
@@ -43,13 +47,11 @@ class Welcome(ctk.CTk):
         no_email_btn = ctk.CTkButton(self, width=85, height=25, corner_radius=25, text="Crear cuenta", font=("Comic Sans", -15))
         no_email_btn.place(relx=0.815, rely=0.815)
 
-
-    def get_email(self):
-        ...
-    
-    def get_passw(self):
-        ...
-
+    def getUserInfo(self):
+        self.user_email = self.email_entry.get()
+        self.user_passsw = self.passw_entry.get()
+        print(self.user_email)
+        print(self.user_passsw)
 
 
 
@@ -57,8 +59,6 @@ class Welcome(ctk.CTk):
 
 
 
-
-    #self.mainloop() !! BORRAR EL COMENTARIO PARA USO FINAL
 
 
 

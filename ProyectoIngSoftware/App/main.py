@@ -1,5 +1,6 @@
 import Vistas.VentanaEjemplo as vis1
+import Vistas.ventana_welcome as inicio
         
 if __name__ == "__main__":
-    vis1.V1()
+    inicio.Welcome()
 
