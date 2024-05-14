@@ -84,7 +84,7 @@ class JP(ctk.CTk):
     def contenido_subpanel(self):
         texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
         self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text=texto_boton, font=("Comic Sans", -25))
-        self.proyecto_actual.place(relx=0.4, rely=0.3)
+        self.proyecto_actual.pack(side=ctk.TOP)
 
     def contenido_image(self):
         self.logo = ctk.CTkImage(light_image=Image.open("E:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Vistas\LOGO.png"),
