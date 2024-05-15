@@ -8,3 +8,5 @@ try:
     print("Se ha conectado a MongoDB")
 except Exception as e:
     print(e)
+
+db = client['Application']

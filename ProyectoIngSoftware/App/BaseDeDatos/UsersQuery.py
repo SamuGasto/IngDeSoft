@@ -1,7 +1,5 @@
-import BaseDeDatos.MainMongoDB as mDB
+from BaseDeDatos.MainMongoDB import db
 import bcrypt
-
-db = mDB.client['Application']
 
 
 def BuscarUsuario(email: str)->bool:

@@ -1,4 +1,1 @@
-import BaseDeDatos.MainMongoDB as mDB
-
-db = mDB.client['Application']
-
+from BaseDeDatos.MainMongoDB import db
