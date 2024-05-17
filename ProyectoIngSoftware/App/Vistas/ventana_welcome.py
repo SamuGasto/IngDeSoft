@@ -1,6 +1,8 @@
 import customtkinter as ctk
 from PIL import Image
-#import BaseDeDatos.UsersMongoDB as db
+import Vistas.ventana_crearCuenta as crearC
+import os
+import BaseDeDatos.UsersMongoDB as db
 
 #creamos la clase ventana para la bienvenida
 class Welcome(ctk.CTk):
@@ -37,14 +39,18 @@ class Welcome(ctk.CTk):
                                     font=("Comic Sans", -20), command=self.getUserInfo)
         iniciar_btn.place(relx=0.15, rely=0.8)
 
-        logo = ctk.CTkImage(light_image=Image.open("E:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Vistas\LOGO.png"),
+        # Obtener la ruta absoluta del directorio actual del script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
+        logo = ctk.CTkImage(light_image=Image.open(logo_path),
             size=(250, 250))
         logo_label = ctk.CTkLabel(self, image=logo, text="")
         logo_label.place(relx=0.6, rely=0.25)
 
         no_email = ctk.CTkLabel(self, text="¿No tienes cuenta?", font=("Comic Sans", -15, "italic", "underline"))
         no_email.place(relx=0.65, rely=0.81)
-        no_email_btn = ctk.CTkButton(self, width=85, height=25, corner_radius=25, text="Crear cuenta", font=("Comic Sans", -15))
+        no_email_btn = ctk.CTkButton(self, width=85, height=25, corner_radius=25, command=self.cambiar_ventana,
+                                    text="Crear cuenta", font=("Comic Sans", -15))
         no_email_btn.place(relx=0.815, rely=0.815)
 
     def getUserInfo(self):
@@ -52,27 +58,11 @@ class Welcome(ctk.CTk):
         self.user_passsw = self.passw_entry.get()
         print(self.user_email)
         print(self.user_passsw)
+    def cambiar_ventana(self) -> None:
+        self.destroy()
+        crearC.Crear_cuenta()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#Borrar para uso final
-app = Welcome()
-app.mainloop()
+#borrar para uso final
+#app = Welcome()
+#app.mainloop()

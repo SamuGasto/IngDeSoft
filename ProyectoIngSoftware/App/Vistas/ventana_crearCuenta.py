@@ -1,5 +1,8 @@
 import customtkinter as ctk
 from PIL import Image
+import os
+import BaseDeDatos.UsersMongoDB as db
+
 
 #creamos la clase ventana para crear la cuenta
 class Crear_cuenta(ctk.CTk):
@@ -11,7 +14,7 @@ class Crear_cuenta(ctk.CTk):
         self.Contenido()
 
         
-        #self.mainloop() !! BORRAR EL COMENTARIO PARA USO FINAL
+        self.mainloop() #!! BORRAR EL COMENTARIO PARA USO FINAL
 
     def Contenido(self):#Frames
         nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans", -25, "italic"))
@@ -19,19 +22,22 @@ class Crear_cuenta(ctk.CTk):
         bienvenido = ctk.CTkLabel(self, text="¡Crea tu cuenta!", font=("Comic Sans", -50, "bold"))
         bienvenido.place(relx=0.135, rely=0.15)
 
+        # Obtener la ruta absoluta del directorio actual del script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
 
-        logo = ctk.CTkImage(light_image=Image.open("E:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Vistas\LOGO.png"),
+        logo = ctk.CTkImage(light_image=Image.open(logo_path),
             size=(125, 125))
         logo_label = ctk.CTkLabel(self, image=logo, text="")
         logo_label.place(relx=0.75, rely=0.1)
 
         email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans", -25, "bold"))
-        email.place(relx=0.15, rely=0.43)
+        email.place(relx=0.55, rely=0.43)
         self.email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
         self.email_entry.place(relx=0.15, rely=0.5)
 
         user_name = ctk.CTkLabel(self, text="Nombre de usuario", font=("Comic Sans", -25, "bold"))
-        user_name.place(relx=0.55, rely=0.43)
+        user_name.place(relx=0.15, rely=0.43)
         self.user_name_entry = ctk.CTkEntry(self, placeholder_text="Ingresa un nombre de usuario...", width=250)
         self.user_name_entry.place(relx=0.55, rely=0.5)
 
@@ -71,5 +77,5 @@ class Crear_cuenta(ctk.CTk):
     def radiobutton_event(self):
         print("radiobutton toggled, current value:", self.radio_var.get())
 #borrar para uso final
-app = Crear_cuenta()
-app.mainloop()
+#app = Crear_cuenta()
+#app.mainloop()
