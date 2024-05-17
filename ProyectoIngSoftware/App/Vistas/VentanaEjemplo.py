@@ -56,10 +56,11 @@ class V1(customtkinter.CTk):
     def DelUser(self)->None:
         if (db.ValidarUsuario(self.entryUser.get(),self.entryPws.get())):
             val = customtkinter.CTkInputDialog(text="Ingresa la contraseña nuevamente:", title="¿Estás seguro?")
-            if (val.get_input() == None):
+            value = val.get_input()
+            if (value == None):
                 self.CrearMensajeEmergente('No se eliminó al usuario.')
             else:
-                if (val.get_input() != None and db.ValidarUsuario(self.entryUser.get(),val.get_input())):
+                if (value and db.ValidarUsuario(self.entryUser.get(),value)):
                     db.EliminarUsuario(self.entryUser.get())
                 else:
                     self.CrearMensajeEmergente('Contraseña incorrecta.')
@@ -83,4 +84,9 @@ class VentanaConMensaje(customtkinter.CTkToplevel):
         self.label = customtkinter.CTkLabel(self,text=mensaje)
         self.label.pack(padx=20, pady=20)
 
+        self.exitButton = customtkinter.CTkButton(self,text='Cerrar', command=self.Cerrar)
+        self.exitButton.pack()
+        
         self.attributes("-topmost",True)
+    def Cerrar(self):
+        self.destroy()
