@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 import os
-#import BaseDeDatos.UsersMongoDB as db
+import BaseDeDatos.UsersQuery as db
 
 
 #creamos la clase ventana para el jefe de proyecto

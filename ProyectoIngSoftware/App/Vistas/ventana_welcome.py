@@ -2,7 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 import Vistas.ventana_crearCuenta as crearC
 import os
-import BaseDeDatos.UsersMongoDB as db
+import BaseDeDatos.UsersQuery as db
 
 #creamos la clase ventana para la bienvenida
 class Welcome(ctk.CTk):
@@ -35,10 +35,6 @@ class Welcome(ctk.CTk):
         self.passw_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
         self.passw_entry.place(relx=0.15, rely=0.65)
 
-        iniciar_btn = ctk.CTkButton(self, width=100, height=45, corner_radius=25, text="Iniciar sesión",
-                                    font=("Comic Sans", -20), command=self.getUserInfo)
-        iniciar_btn.place(relx=0.15, rely=0.8)
-
         # Obtener la ruta absoluta del directorio actual del script
         current_dir = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
@@ -53,11 +49,19 @@ class Welcome(ctk.CTk):
                                     text="Crear cuenta", font=("Comic Sans", -15))
         no_email_btn.place(relx=0.815, rely=0.815)
 
-    def getUserInfo(self):
+        iniciar_btn = ctk.CTkButton(self, width=100, height=45, corner_radius=25, text="Iniciar sesión",
+                                    font=("Comic Sans", -20), command=self.getUserInfo)
+        iniciar_btn.place(relx=0.15, rely=0.8)
+        #Implementar lógica para iniciar la sesión, mandando la query a la BD.
+
+
+
+
+    def IniciarSesion(self):
+        #obtenemos los datos del usuario
         self.user_email = self.email_entry.get()
         self.user_passsw = self.passw_entry.get()
-        print(self.user_email)
-        print(self.user_passsw)
+        #Mandamos la query para comprobar que el usuario existe,
     def cambiar_ventana(self) -> None:
         self.destroy()
         crearC.Crear_cuenta()
