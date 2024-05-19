@@ -55,27 +55,23 @@ class Crear_cuenta(ctk.CTk):
         role_picker.place(relx=0.55, rely=0.58)
 
         self.radio_var = ctk.StringVar(value="")
-        radiobutton_1 = ctk.CTkRadioButton(self, text="Jefe de proyecto", font=("Comic Sans", -18),
-                                            command=self.radiobutton_event, variable= self.radio_var, value="Jefe de proyecto")
+        radiobutton_1 = ctk.CTkRadioButton(self, text="Jefe de proyecto", font=("Comic Sans", -18), variable= self.radio_var, value="Jefe de proyecto")
         radiobutton_1.place(relx=0.55, rely=0.65)
-        radiobutton_2 = ctk.CTkRadioButton(self, text="Administrador", font=("Comic Sans", -18),
-                                            command=self.radiobutton_event, variable= self.radio_var, value="Administrador")
+        radiobutton_2 = ctk.CTkRadioButton(self, text="Administrador", font=("Comic Sans", -18), variable= self.radio_var, value="Administrador")
         radiobutton_2.place(relx=0.55, rely=0.7)
-        radiobutton_3 = ctk.CTkRadioButton(self, text="Desarrollador", font=("Comic Sans", -18),
-                                            command=self.radiobutton_event, variable= self.radio_var, value="Desarrollador")
+        radiobutton_3 = ctk.CTkRadioButton(self, text="Desarrollador", font=("Comic Sans", -18), variable= self.radio_var, value="Desarrollador")
         radiobutton_3.place(relx=0.55, rely=0.75)
 
         Crear_btn = ctk.CTkButton(self, width=100, height=40, corner_radius=25, text="Crear cuenta",
-                                    font=("Comic Sans", -20))
+                                    font=("Comic Sans", -20), command=self.getAccountInfo)
         Crear_btn.place(relx=0.6, rely=0.87)
 
-
-
-
-
-
-    def radiobutton_event(self):
-        print("radiobutton toggled, current value:", self.radio_var.get())
-#borrar para uso final
-#app = Crear_cuenta()
-#app.mainloop()
+    def getAccountInfo(self):
+        self.user_email = self.email_entry.get()
+        self.user_passsw = self.passw_entry.get()
+        self.user_username = self.user_name_entry.get()
+        self.RoleSelected = self.radio_var.get()
+        print(self.user_email)
+        print(self.user_passsw)
+        print(self.user_username)
+        print(self.RoleSelected)

@@ -87,7 +87,7 @@ class JP(ctk.CTk):
         self.proyecto_actual.pack(side=ctk.TOP)
 
     def contenido_image(self):
-        self.logo = ctk.CTkImage(light_image=Image.open("E:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Vistas\LOGO.png"),
+        self.logo = ctk.CTkImage(light_image=Image.open("C:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Imagenes\LOGO.png"),
                     size=(60, 60))
         self.logo_label = ctk.CTkLabel(self.topimage, image=self.logo, text="")
         self.logo_label.pack(padx=5, pady=5)

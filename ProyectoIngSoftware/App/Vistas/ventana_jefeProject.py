@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
-import BaseDeDatos.UsersMongoDB as db
+import os
+#import BaseDeDatos.UsersMongoDB as db
 
 
 #creamos la clase ventana para el jefe de proyecto
@@ -22,7 +23,7 @@ class JP(ctk.CTk):
 
         
 
-        self.mainloop() 
+        #self.mainloop() 
     
     def Paneles(self):#FRAMES
         #sección izquierda
@@ -87,10 +88,13 @@ class JP(ctk.CTk):
         self.proyecto_actual.pack(side=ctk.TOP)
 
     def contenido_image(self):
-        self.logo = ctk.CTkImage(light_image=Image.open("E:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Vistas\LOGO.png"),
-                    size=(60, 60))
-        self.logo_label = ctk.CTkLabel(self.topimage, image=self.logo, text="")
-        self.logo_label.pack(padx=5, pady=5)
+        # Obtener la ruta absoluta del directorio actual del script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
+        logo = ctk.CTkImage(light_image=Image.open(logo_path),
+            size=(60, 60))
+        logo_label = ctk.CTkLabel(self.topimage, image=logo, text="")
+        logo_label.pack(padx=5, pady=5)
 
     def crear_proyecto(self):
         self.n_proyectos += 1
@@ -113,18 +117,20 @@ class JP(ctk.CTk):
         self.boton_clickeado(texto)
 
     def mostrar_ventana_emergente(self):
-        ventana_emergente = ctk.CTkToplevel(JP)
+        ventana_emergente = ctk.CTkToplevel(self)
         ventana_emergente.configure(fg_color="white")
         etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
                                 text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
         etiqueta.pack(padx=20, pady=20)
         # Centra la ventana emergente con respecto a la ventana principal
-        ancho_ventana_principal = JP.winfo_width()
-        alto_ventana_principal = JP.winfo_height()
-        x_ventana_emergente = JP.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
-        y_ventana_emergente = JP.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
+        ancho_ventana_principal = self.winfo_width()
+        alto_ventana_principal = self.winfo_height()
+        x_ventana_emergente = self.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
+        y_ventana_emergente = self.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
         ventana_emergente.geometry("+{}+{}".format(x_ventana_emergente, y_ventana_emergente))
         ventana_emergente.title("Error")
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
+appi = JP()
+appi.mainloop()
