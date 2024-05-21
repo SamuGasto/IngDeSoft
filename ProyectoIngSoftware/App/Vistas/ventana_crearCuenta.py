@@ -74,5 +74,8 @@ class Crear_cuenta(ctk.CTk):
         self.RoleSelected = self.radio_var.get()
         print("email: " + self.user_email)
         print("pass: " + self.user_passsw)
-        db.AnadirUsuario(self.user_email, self.user_passsw)
+        db.AnadirUsuario(self.user_email, 
+                         self.user_username, 
+                         self.user_passsw, 
+                         self.RoleSelected)
 

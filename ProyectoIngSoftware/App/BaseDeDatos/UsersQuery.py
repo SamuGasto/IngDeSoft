@@ -8,7 +8,7 @@ def BuscarUsuario(email: str)->bool:
         return True
     return False
 
-def AnadirUsuario(email: str,password: str)->None:
+def AnadirUsuario(email: str, username: str, password: str, rol: str)->None:
     '''Añade a un usuario a la base de datos, si ya existe, entonces no hace nada.'''
     if (BuscarUsuario(email)):
         print(f'El usuario {email} ya existe')
@@ -19,7 +19,7 @@ def AnadirUsuario(email: str,password: str)->None:
     pwdEncrypt = bcrypt.hashpw(pwd,salt)
     
 
-    db['Users'].insert_one({'email':email, 'password': pwdEncrypt.decode('utf-8')})
+    db['Users'].insert_one({'email':email, 'username': username, 'password': pwdEncrypt.decode('utf-8'), 'rol': rol})
 
 def ActualizarContrasena(email: str,newPassword: str)->None:
     '''Actualiza la contraseña de un usuario ya registrado.'''
