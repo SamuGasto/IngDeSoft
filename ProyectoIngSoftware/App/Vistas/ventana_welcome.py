@@ -50,7 +50,7 @@ class Welcome(ctk.CTk):
         no_email_btn.place(relx=0.815, rely=0.815)
 
         iniciar_btn = ctk.CTkButton(self, width=100, height=45, corner_radius=25, text="Iniciar sesión",
-                                    font=("Comic Sans", -20), command=self.getUserInfo)
+                                    font=("Comic Sans", -20), command=self.IniciarSesion)
         iniciar_btn.place(relx=0.15, rely=0.8)
         #Implementar lógica para iniciar la sesión, mandando la query a la BD.
 
@@ -62,10 +62,30 @@ class Welcome(ctk.CTk):
         self.user_email = self.email_entry.get()
         self.user_passsw = self.passw_entry.get()
         #Mandamos la query para comprobar que el usuario existe,
+        if db.ValidarUsuario(self.user_email, self.user_passsw) == True:
+            self.cambiar_ventana()
+        else:
+            self.mostrar_ventana_emergente()
+    
+    def mostrar_ventana_emergente(self):
+        ventana_emergente = ctk.CTkToplevel(self)
+        ventana_emergente.configure(fg_color="white")
+        etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
+                                text="Error: Correo o contraseña incorrectos.")
+        etiqueta.pack(padx=20, pady=20)
+        # Centra la ventana emergente con respecto a la ventana principal
+        ancho_ventana_principal = self.winfo_width()
+        alto_ventana_principal = self.winfo_height()
+        x_ventana_emergente = self.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
+        y_ventana_emergente = self.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
+        ventana_emergente.geometry("+{}+{}".format(x_ventana_emergente, y_ventana_emergente))
+        ventana_emergente.title("Error")
+        ventana_emergente.attributes('-topmost' , 1)
+        ventana_emergente.focus()
+            
     def cambiar_ventana(self) -> None:
         self.destroy()
         crearC.Crear_cuenta()
-
 
 #borrar para uso final
 #app = Welcome()

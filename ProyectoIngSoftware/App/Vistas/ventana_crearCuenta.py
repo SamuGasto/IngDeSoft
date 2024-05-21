@@ -34,12 +34,12 @@ class Crear_cuenta(ctk.CTk):
         email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans", -25, "bold"))
         email.place(relx=0.55, rely=0.43)
         self.email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
-        self.email_entry.place(relx=0.15, rely=0.5)
+        self.email_entry.place(relx=0.55, rely=0.5)
 
         user_name = ctk.CTkLabel(self, text="Nombre de usuario", font=("Comic Sans", -25, "bold"))
         user_name.place(relx=0.15, rely=0.43)
         self.user_name_entry = ctk.CTkEntry(self, placeholder_text="Ingresa un nombre de usuario...", width=250)
-        self.user_name_entry.place(relx=0.55, rely=0.5)
+        self.user_name_entry.place(relx=0.15, rely=0.5)
 
         passw = ctk.CTkLabel(self, text="Contraseña", font=("Comic Sans", -25, "bold"))
         passw.place(relx=0.15, rely=0.58)
@@ -67,11 +67,12 @@ class Crear_cuenta(ctk.CTk):
         Crear_btn.place(relx=0.6, rely=0.87)
 
     def getAccountInfo(self):
+
         self.user_email = self.email_entry.get()
         self.user_passsw = self.passw_entry.get()
         self.user_username = self.user_name_entry.get()
         self.RoleSelected = self.radio_var.get()
-        print(self.user_email)
-        print(self.user_passsw)
-        print(self.user_username)
-        print(self.RoleSelected)
+        print("email: " + self.user_email)
+        print("pass: " + self.user_passsw)
+        db.AnadirUsuario(self.user_email, self.user_passsw)
+
