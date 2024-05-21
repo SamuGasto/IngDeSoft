@@ -23,11 +23,11 @@ class JP(ctk.CTk):
 
         
 
-        #self.mainloop() 
+        self.mainloop() 
     
     def Paneles(self):#FRAMES
         #sección izquierda
-        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=0)
+        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=25)
         self.side_bar.pack(side="left", fill="y", expand=False)
         #cuerpo principal
         self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
@@ -41,7 +41,7 @@ class JP(ctk.CTk):
 
     def controles_sidebar(self):
         texto= "PRO-"+str(self.proyecto_id)
-        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20), fg_color="black")
+        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20))
         self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
         self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
                                             width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
@@ -132,5 +132,5 @@ class JP(ctk.CTk):
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
-appi = JP()
-appi.mainloop()
+#appi = JP()
+#appi.mainloop()

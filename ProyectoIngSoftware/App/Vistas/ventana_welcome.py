@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
-import Vistas.ventana_crearCuenta as crearC
+import Vistas.ventana_jefeProject as JEFE
+import Vistas.ventana_crearCuenta as Crearc
 import os
 import BaseDeDatos.UsersQuery as db
 
@@ -35,6 +36,10 @@ class Welcome(ctk.CTk):
         self.passw_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
         self.passw_entry.place(relx=0.15, rely=0.65)
 
+        passw_peak = ctk.CTkButton(self, text="O", width=20, height=20, corner_radius=100, command=self.peak)
+        passw_peak.place(relx=0.47, rely=0.66)
+
+        # Imágen del logo
         # Obtener la ruta absoluta del directorio actual del script
         current_dir = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
@@ -55,7 +60,11 @@ class Welcome(ctk.CTk):
         #Implementar lógica para iniciar la sesión, mandando la query a la BD.
 
 
-
+    def peak(self):
+        if self.passw_entry.cget("show") == "*":
+            self.passw_entry.configure(show="")
+        else:
+            self.passw_entry.configure(show="*")
 
     def IniciarSesion(self):
         #obtenemos los datos del usuario
@@ -63,10 +72,17 @@ class Welcome(ctk.CTk):
         self.user_passsw = self.passw_entry.get()
         #Mandamos la query para comprobar que el usuario existe,
         if db.ValidarUsuario(self.user_email, self.user_passsw) == True:
-            self.cambiar_ventana()
+            self.destroy()
+            JEFE.JP()
         else:
             self.mostrar_ventana_emergente()
     
+    
+            
+    def cambiar_ventana(self) -> None:
+        self.destroy()
+        Crearc.Crear_cuenta()
+
     def mostrar_ventana_emergente(self):
         ventana_emergente = ctk.CTkToplevel(self)
         ventana_emergente.configure(fg_color="white")
@@ -82,11 +98,7 @@ class Welcome(ctk.CTk):
         ventana_emergente.title("Error")
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
-            
-    def cambiar_ventana(self) -> None:
-        self.destroy()
-        crearC.Crear_cuenta()
-
+        
 #borrar para uso final
 #app = Welcome()
 #app.mainloop()
