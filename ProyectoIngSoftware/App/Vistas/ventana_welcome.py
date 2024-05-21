@@ -5,6 +5,7 @@ import Vistas.ventana_crearCuenta as Crearc
 import os
 import BaseDeDatos.UsersQuery as db
 
+
 #creamos la clase ventana para la bienvenida
 class Welcome(ctk.CTk):
     def __init__(self):
