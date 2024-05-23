@@ -2,7 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 import os
 import Vistas.ventana_welcome as inicio
-import BaseDeDatos.UsersQuery as db
+import BaseDeDatos.UsersQuery_new as db
 
 
 #creamos la clase ventana para crear la cuenta

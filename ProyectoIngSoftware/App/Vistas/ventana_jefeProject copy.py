@@ -1,7 +1,8 @@
 import customtkinter as ctk
 from PIL import Image
-#import BaseDeDatos.UsersMongoDB as db
-#import Vistas.VentanaEjemplo2 as vis2
+import os
+#import BaseDeDatos.UsersQuery as db
+
 
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
@@ -10,23 +11,22 @@ class JP(ctk.CTk):
         
         self.n_proyectos = 1 
         self.proyecto_id = 111
-        self.geometry("800x540")
+        self.geometry("960x600")
         self.title("PaltaEstimateApp")
         #self.resizable(False, False)
         self.Paneles()
         self.controles_sidebar()
         self.contenido_body()
-        #self.contenido_top_panel()
         self.contenido_subpanel()
         self.contenido_image()
 
         
 
-        #self.mainloop() !! BORRAR EL COMENTARIO PARA USO FINAL
+        #self.mainloop() 
     
     def Paneles(self):#FRAMES
         #sección izquierda
-        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=0)
+        self.side_bar = ctk.CTkFrame(self, fg_color="gray", width=200, corner_radius=0)
         self.side_bar.pack(side="left", fill="y", expand=False)
         #cuerpo principal
         self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
@@ -40,7 +40,7 @@ class JP(ctk.CTk):
 
     def controles_sidebar(self):
         texto= "PRO-"+str(self.proyecto_id)
-        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20), fg_color="black")
+        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20, "bold"))
         self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
         self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
                                             width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
@@ -87,15 +87,18 @@ class JP(ctk.CTk):
         self.proyecto_actual.pack(side=ctk.TOP)
 
     def contenido_image(self):
-        self.logo = ctk.CTkImage(light_image=Image.open("C:\Repositorios GitHub\IngDeSoft\ProyectoIngSoftware\App\Imagenes\LOGO.png"),
-                    size=(60, 60))
-        self.logo_label = ctk.CTkLabel(self.topimage, image=self.logo, text="")
-        self.logo_label.pack(padx=5, pady=5)
+        # Obtener la ruta absoluta del directorio actual del script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
+        logo = ctk.CTkImage(light_image=Image.open(logo_path),
+            size=(60, 60))
+        logo_label = ctk.CTkLabel(self.topimage, image=logo, text="")
+        logo_label.pack(padx=5, pady=5)
 
     def crear_proyecto(self):
         self.n_proyectos += 1
         if self.n_proyectos > 3:
-            self.mostrar_ventana_emergente()
+            self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
         else:
             self.proyecto_id += 1
             texto = "PRO-" + str(self.proyecto_id)
@@ -112,27 +115,21 @@ class JP(ctk.CTk):
     def boton_clickeado_global(self, texto):
         self.boton_clickeado(texto)
 
-    def mostrar_ventana_emergente(self):
-        ventana_emergente = ctk.CTkToplevel(app)
+    def mostrar_ventana_emergente(self, texto):
+        ventana_emergente = ctk.CTkToplevel(self)
         ventana_emergente.configure(fg_color="white")
         etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
-                                text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+                                text=texto)
         etiqueta.pack(padx=20, pady=20)
         # Centra la ventana emergente con respecto a la ventana principal
-        ancho_ventana_principal = app.winfo_width()
-        alto_ventana_principal = app.winfo_height()
-        x_ventana_emergente = app.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
-        y_ventana_emergente = app.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
+        ancho_ventana_principal = self.winfo_width()
+        alto_ventana_principal = self.winfo_height()
+        x_ventana_emergente = self.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
+        y_ventana_emergente = self.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
         ventana_emergente.geometry("+{}+{}".format(x_ventana_emergente, y_ventana_emergente))
         ventana_emergente.title("Error")
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
-
-
-
-
-
-#Borrar para uso final
-app = JP()
-app.mainloop()
+appi = JP()
+appi.mainloop()

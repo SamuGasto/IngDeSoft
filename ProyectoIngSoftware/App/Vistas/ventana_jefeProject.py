@@ -1,9 +1,10 @@
 import customtkinter as ctk
 from PIL import Image
 import os
-import BaseDeDatos.UsersQuery as db
+import BaseDeDatos.UsersQuery_new as db
+import Vistas.config as config
 
-
+user_email = config.user_email
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
     def __init__(self):
@@ -11,13 +12,12 @@ class JP(ctk.CTk):
         
         self.n_proyectos = 1 
         self.proyecto_id = 111
-        self.geometry("800x540")
+        self.geometry("1280x720")
         self.title("PaltaEstimateApp")
         #self.resizable(False, False)
         self.Paneles()
         self.controles_sidebar()
         self.contenido_body()
-        #self.contenido_top_panel()
         self.contenido_subpanel()
         self.contenido_image()
 
@@ -97,9 +97,9 @@ class JP(ctk.CTk):
         logo_label.pack(padx=5, pady=5)
 
     def crear_proyecto(self):
-        self.n_proyectos += 1
-        if self.n_proyectos > 3:
-            self.mostrar_ventana_emergente()
+        db.AumentarProyectos(user_email)
+        if db.BuscarProyectos(user_email) > 3:
+            self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
         else:
             self.proyecto_id += 1
             texto = "PRO-" + str(self.proyecto_id)
@@ -116,11 +116,11 @@ class JP(ctk.CTk):
     def boton_clickeado_global(self, texto):
         self.boton_clickeado(texto)
 
-    def mostrar_ventana_emergente(self):
+    def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)
         ventana_emergente.configure(fg_color="white")
         etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
-                                text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+                                text=texto)
         etiqueta.pack(padx=20, pady=20)
         # Centra la ventana emergente con respecto a la ventana principal
         ancho_ventana_principal = self.winfo_width()
@@ -132,5 +132,3 @@ class JP(ctk.CTk):
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
-#appi = JP()
-#appi.mainloop()

@@ -3,7 +3,8 @@ from PIL import Image
 import Vistas.ventana_jefeProject as JEFE
 import Vistas.ventana_crearCuenta as Crearc
 import os
-import BaseDeDatos.UsersQuery as db
+import BaseDeDatos.UsersQuery_new as db
+import Vistas.config as config
 
 
 #creamos la clase ventana para la bienvenida
@@ -71,6 +72,8 @@ class Welcome(ctk.CTk):
         #obtenemos los datos del usuario
         self.user_email = self.email_entry.get()
         self.user_passsw = self.passw_entry.get()
+        config.user_email = self.user_email
+        db.SetearProyectos(self.user_email)
         #Mandamos la query para comprobar que el usuario existe,
         if db.ValidarUsuario(self.user_email, self.user_passsw) == True:
             self.destroy()
