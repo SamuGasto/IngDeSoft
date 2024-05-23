@@ -10,7 +10,7 @@ import BaseDeDatos.UsersQuery as db
 class Welcome(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry("800x540")
+        self.geometry("1280x720")
         self.title("PaltaEstimateApp")
         #self.resizable(False, False)
         self.Contenido()
