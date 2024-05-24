@@ -2,6 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 import os
 #import BaseDeDatos.UsersQuery_new as db
+from Vistas.util import centrarVentana
 
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
@@ -9,18 +10,8 @@ class JP(ctk.CTk):
         super().__init__()
         self.proyecto_id = 110
         self.title("PaltaEstimateApp")
-        #ACÁ CENTRAMOS LA VENTANA MAIN
-        #  Obtenemos el largo y  ancho de la pantalla
-        wtotal = self.winfo_screenwidth()
-        htotal = self.winfo_screenheight()
-        #  Guardamos el largo y alto de la ventana
-        wventana = 1280
-        hventana = 720
-        #  Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal/2-wventana/2)
-        pheight = round(htotal/2-hventana/2)
-        #  Se lo aplicamos a la geometría de la ventana
-        self.geometry(str(wventana)+"x"+str(hventana)+"+"+str(pwidth)+"+"+str(pheight))
+        #ACÁ CENTRAMOS LA VENTANA 
+        centrarVentana(self, 1200, 600)
 
         self.Paneles()
         self.controles_sidebar()
@@ -117,18 +108,7 @@ class JP(ctk.CTk):
     def crear_proyecto(self):
         self.window = ctk.CTkToplevel(self)
         self.window.configure(fg_color="white")
-        self.window.geometry("800x600")
-        #  Obtenemos el largo y  ancho de la pantalla
-        wtotal = self.winfo_screenwidth()
-        htotal = self.winfo_screenheight()
-        #  Guardamos el largo y alto de la ventana
-        wventana = 1280
-        hventana = 720
-        #  Aplicamos la siguiente formula para calcular donde debería posicionarse
-        pwidth = round(wtotal/2-wventana/2)
-        pheight = round(htotal/2-hventana/2)
-        #  Se lo aplicamos a la geometría de la ventana
-        self.geometry(str(wventana)+"x"+str(hventana)+"+"+str(pwidth)+"+"+str(pheight))
+        centrarVentana(self.window, 800, 500)
         self.window.title("Error")
         self.window.attributes('-topmost' , 1)
         self.window.focus()
@@ -213,5 +193,3 @@ class JP(ctk.CTk):
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
-app = JP("main")
-app.mainloop()

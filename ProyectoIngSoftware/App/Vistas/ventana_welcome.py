@@ -50,7 +50,7 @@ class Welcome(ctk.CTk):
         self.passw_entry.place(relx=0.15, rely=0.65)
 
         passw_peak = ctk.CTkButton(self, text="O", width=20, height=20, corner_radius=100, command=self.peak)
-        passw_peak.place(relx=0.47, rely=0.66)
+        passw_peak.place(relx=0.415, rely=0.66)
 
         # Imágen del logo
         # Obtener la ruta absoluta del directorio actual del script
