@@ -1,29 +1,39 @@
 import customtkinter as ctk
 from PIL import Image
 import os
-#import BaseDeDatos.UsersQuery as db
-
+#import BaseDeDatos.UsersQuery_new as db
 
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
-    def __init__(self):
+    def __init__(self, email:str):
         super().__init__()
-        
-        self.n_proyectos = 1 
-        self.proyecto_id = 111
-        self.geometry("960x600")
+        self.proyecto_id = 110
         self.title("PaltaEstimateApp")
-        #self.resizable(False, False)
+        #ACÁ CENTRAMOS LA VENTANA MAIN
+        #  Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.winfo_screenwidth()
+        htotal = self.winfo_screenheight()
+        #  Guardamos el largo y alto de la ventana
+        wventana = 1280
+        hventana = 720
+        #  Aplicamos la siguiente formula para calcular donde debería posicionarse
+        pwidth = round(wtotal/2-wventana/2)
+        pheight = round(htotal/2-hventana/2)
+        #  Se lo aplicamos a la geometría de la ventana
+        self.geometry(str(wventana)+"x"+str(hventana)+"+"+str(pwidth)+"+"+str(pheight))
+
         self.Paneles()
         self.controles_sidebar()
         self.contenido_body()
         self.contenido_subpanel()
         self.contenido_image()
-
         
 
+        self.user_email = email
         #self.mainloop() 
-    
+
+
+
     def Paneles(self):#FRAMES
         #sección izquierda
         self.side_bar = ctk.CTkFrame(self, fg_color="gray", width=200, corner_radius=0)
@@ -39,12 +49,9 @@ class JP(ctk.CTk):
         self.topimage.pack(side=ctk.RIGHT, expand=False)
 
     def controles_sidebar(self):
-        texto= "PRO-"+str(self.proyecto_id)
-        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20, "bold"))
+
+        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20))
         self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
-        self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                            width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
-        self.boton_proyecto.pack(side=ctk.TOP, pady=10)
 
         self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
                                                 fg_color="red", width=200, height=65, corner_radius=0, command= self.crear_proyecto)
@@ -82,8 +89,8 @@ class JP(ctk.CTk):
         self.administrar.pack(side=ctk.LEFT, anchor=ctk.SE, pady=5, padx=5)
 
     def contenido_subpanel(self):
-        texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
-        self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text=texto_boton, font=("Comic Sans", -25))
+        #texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
+        self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text="proyecto actual", font=("Comic Sans", -25))
         self.proyecto_actual.pack(side=ctk.TOP)
 
     def contenido_image(self):
@@ -95,16 +102,92 @@ class JP(ctk.CTk):
         logo_label = ctk.CTkLabel(self.topimage, image=logo, text="")
         logo_label.pack(padx=5, pady=5)
 
+    #def crear_proyecto2(self):
+        # db.AumentarProyectos(self.user_email)
+        # print("Numero de proyectos actuvos: " + str(db.BuscarProyectos(self.user_email)))
+        # if db.BuscarProyectos(self.user_email) > 3:
+        #     self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+        # else:
+        #     self.proyecto_id += 1
+        #     texto = "PRO-" + str(self.proyecto_id)
+        #     self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+        #                                         width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
+        #     self.new_proyect.pack(side=ctk.TOP, pady=10)
+
     def crear_proyecto(self):
-        self.n_proyectos += 1
-        if self.n_proyectos > 3:
-            self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
-        else:
-            self.proyecto_id += 1
-            texto = "PRO-" + str(self.proyecto_id)
-            self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                                width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
-            self.new_proyect.pack(side=ctk.TOP, pady=10)
+        self.window = ctk.CTkToplevel(self)
+        self.window.configure(fg_color="white")
+        self.window.geometry("800x600")
+        #  Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.winfo_screenwidth()
+        htotal = self.winfo_screenheight()
+        #  Guardamos el largo y alto de la ventana
+        wventana = 1280
+        hventana = 720
+        #  Aplicamos la siguiente formula para calcular donde debería posicionarse
+        pwidth = round(wtotal/2-wventana/2)
+        pheight = round(htotal/2-hventana/2)
+        #  Se lo aplicamos a la geometría de la ventana
+        self.geometry(str(wventana)+"x"+str(hventana)+"+"+str(pwidth)+"+"+str(pheight))
+        self.window.title("Error")
+        self.window.attributes('-topmost' , 1)
+        self.window.focus()
+
+        titulo = ctk.CTkLabel(self.window, text_color="black", text="Crear un proyecto nuevo", font=("Verdana", -25, "bold"))
+        titulo.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
+
+        subtitulo = ctk.CTkLabel(self.window, text_color="black", text="Llena los campos con la información de tu proyecto", font=("Verdana", -15))
+        subtitulo.pack(side=ctk.TOP, pady=3, anchor=ctk.NW)
+
+        # Crear un frame para contener nombre y nombre_entry
+        NOMBRE = ctk.CTkFrame(self.window, fg_color="white")
+        NOMBRE.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
+        
+        nombre = ctk.CTkLabel(NOMBRE, text="Nombre del proyecto (opcional):", text_color="black", font=("Verdana", -18))
+        nombre.pack(side=ctk.LEFT, padx=2)
+        
+        nombre_entry = ctk.CTkEntry(NOMBRE, placeholder_text="Nombre del proyecto...", width=200)
+        nombre_entry.pack(side=ctk.LEFT, padx=2)
+
+        self.ID_proyecto = None
+
+        # Crear un frame para participantes
+        self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color="white")
+        self.PARTICIPANTES.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
+        
+        participantes_label = ctk.CTkLabel(self.PARTICIPANTES, text="Introduce el correo de los miembros de tu proyecto para invitarlos:", font=("Verdana", -18), text_color="black")
+        participantes_label.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
+
+        # Crear subframes dentro de PARTICIPANTES
+        self.participantes_entries_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="white")
+        self.participantes_entries_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
+
+        self.add_participante_entry()
+        
+        # Botón para agregar más participantes
+        more_button_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="transparent")
+        more_button_frame.pack(side=ctk.LEFT, padx=5, pady=2,anchor=ctk.NW)
+        
+        more_button = ctk.CTkButton(more_button_frame, width=25, height=25, text="+", text_color="black", font=("Helvetica", -15), command=self.add_participante_entry)
+        more_button.pack(anchor=ctk.CENTER)
+
+        # Botón para crear proyecto
+        crear_proyecto_button = ctk.CTkButton(self.window, text="Crear Proyecto", command=self.create_proyecto)
+        crear_proyecto_button.pack(side=ctk.BOTTOM, pady=10)
+
+        #métricas vacías
+
+
+    def add_participante_entry(self):
+        entry = ctk.CTkEntry(self.PARTICIPANTES, placeholder_text="Correo...", width=200)
+        entry.pack(side=ctk.TOP, padx=2, pady=2, anchor=ctk.NW)
+        self.participantes_entries.append(entry)
+
+    def create_proyecto(self):
+        participantes_emails = [entry.get() for entry in self.participantes_entries]
+        print("Correos de los participantes:", participantes_emails)
+        # Aquí puedes agregar la lógica para guardar estos correos en la base de datos o en donde lo necesites.
+
 
     def cambiar_proyecto(self, texto):
         switch_project = self.proyecto_actual.configure(text=texto)
@@ -131,5 +214,5 @@ class JP(ctk.CTk):
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
-appi = JP()
-appi.mainloop()
+app = JP("main")
+app.mainloop()

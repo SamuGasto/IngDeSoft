@@ -12,6 +12,18 @@ class Welcome(ctk.CTk):
         super().__init__()
         self.geometry("1280x720")
         self.title("PaltaEstimateApp")
+        #ACÁ CENTRAMOS LA VENTANA MAIN
+        #  Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.winfo_screenwidth()
+        htotal = self.winfo_screenheight()
+        #  Guardamos el largo y alto de la ventana
+        wventana = 960
+        hventana = 640
+        #  Aplicamos la siguiente formula para calcular donde debería posicionarse
+        pwidth = round(wtotal/2-wventana/2)
+        pheight = round(htotal/2-hventana/2)
+        #  Se lo aplicamos a la geometría de la ventana
+        self.geometry(str(wventana)+"x"+str(hventana)+"+"+str(pwidth)+"+"+str(pheight))
         #self.resizable(False, False)
         self.Contenido()
 
