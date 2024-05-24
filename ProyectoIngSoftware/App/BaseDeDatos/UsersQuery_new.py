@@ -34,7 +34,7 @@ def AumentarProyectos(email: str)->None:
     if (BuscarUsuario(email)):
         usuario = db['Users'].find_one({'email': email}, {'proyectos': 1})
         n_proyectos = usuario['proyectos']
-        if  n_proyectos < 3:
+        if  n_proyectos <= 3:
             # Incrementa el valor de "proyectos"
             db['Users'].update_one(
                 {'email': email},
@@ -42,24 +42,24 @@ def AumentarProyectos(email: str)->None:
             )
             print(f"Proyectos incrementados a: {n_proyectos + 1}")
             n_proyectos = usuario['proyectos']
-            return n_proyectos
         else:
-            print("El usuario ya tiene 3 o más proyectos.")
+            print("El usuario ya tiene 3 proyectos.")
     else:
-        print("El usuario no existe")
+        print("El usuario no existe (Aumentarproyectos)")
+
 def BuscarProyectos(email: str)-> None:
     if (BuscarUsuario(email)):
         usuario = db['Users'].find_one({'email': email}, {'proyectos': 1})
         n_proyectos = usuario['proyectos']
         return n_proyectos
     else:
-        print("Error")
+        print("Error: No se encontró el usuario (Buscarproyectos)")
 
 def SetearProyectos(email:str)->None:
     if (BuscarUsuario(email)):
         db['Users'].update_one({'email': email},{'$set': {'proyectos': 0}})
     else:
-        print("Error")
+        print("Error: No se encontró el usuario (Setearproyectos)")
 
 def ActualizarContrasena(email: str,newPassword: str)->None:
     '''Actualiza la contraseña de un usuario ya registrado.'''

@@ -2,32 +2,30 @@ import customtkinter as ctk
 from PIL import Image
 import os
 import BaseDeDatos.UsersQuery_new as db
-import Vistas.config as config
 
-user_email = config.user_email
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
-    def __init__(self):
+    def __init__(self, email:str):
         super().__init__()
-        
-        self.n_proyectos = 1 
-        self.proyecto_id = 111
+        self.proyecto_id = 110
+
         self.geometry("1280x720")
         self.title("PaltaEstimateApp")
         #self.resizable(False, False)
+
         self.Paneles()
         self.controles_sidebar()
         self.contenido_body()
         self.contenido_subpanel()
         self.contenido_image()
 
-        
+        self.user_email = email
 
         self.mainloop() 
     
     def Paneles(self):#FRAMES
         #sección izquierda
-        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=25)
+        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=0)
         self.side_bar.pack(side="left", fill="y", expand=False)
         #cuerpo principal
         self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
@@ -40,12 +38,9 @@ class JP(ctk.CTk):
         self.topimage.pack(side=ctk.RIGHT, expand=False)
 
     def controles_sidebar(self):
-        texto= "PRO-"+str(self.proyecto_id)
+
         self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20))
         self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
-        self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                            width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
-        self.boton_proyecto.pack(side=ctk.TOP, pady=10)
 
         self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
                                                 fg_color="red", width=200, height=65, corner_radius=0, command= self.crear_proyecto)
@@ -83,8 +78,8 @@ class JP(ctk.CTk):
         self.administrar.pack(side=ctk.LEFT, anchor=ctk.SE, pady=5, padx=5)
 
     def contenido_subpanel(self):
-        texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
-        self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text=texto_boton, font=("Comic Sans", -25))
+        #texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
+        self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text="proyecto actual", font=("Comic Sans", -25))
         self.proyecto_actual.pack(side=ctk.TOP)
 
     def contenido_image(self):
@@ -97,8 +92,9 @@ class JP(ctk.CTk):
         logo_label.pack(padx=5, pady=5)
 
     def crear_proyecto(self):
-        db.AumentarProyectos(user_email)
-        if db.BuscarProyectos(user_email) > 3:
+        db.AumentarProyectos(self.user_email)
+        print("Numero de proyectos actuvos: " + str(db.BuscarProyectos(self.user_email)))
+        if db.BuscarProyectos(self.user_email) > 3:
             self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
         else:
             self.proyecto_id += 1
