@@ -10,3 +10,10 @@ except Exception as e:
     print(e)
 
 db = client['Application']
+"""
+projects_collection = db['Users']
+projects = projects_collection.find()
+print("Datos en la colección 'Projects':")
+for project in projects:
+    print(project)
+"""

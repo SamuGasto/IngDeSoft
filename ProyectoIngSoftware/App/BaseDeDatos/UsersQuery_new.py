@@ -48,6 +48,9 @@ def AumentarProyectos(email: str)->None:
         print("El usuario no existe (Aumentarproyectos)")
 
 def BuscarProyectos(email: str)-> None:
+    """
+    Función que busca y retorna la cantidad de proyectos del usuario
+    """
     if (BuscarUsuario(email)):
         usuario = db['Users'].find_one({'email': email}, {'proyectos': 1})
         n_proyectos = usuario['proyectos']
@@ -56,6 +59,7 @@ def BuscarProyectos(email: str)-> None:
         print("Error: No se encontró el usuario (Buscarproyectos)")
 
 def SetearProyectos(email:str)->None:
+    """Función que setea los proyectos del usuario en 0"""
     if (BuscarUsuario(email)):
         db['Users'].update_one({'email': email},{'$set': {'proyectos': 0}})
     else:

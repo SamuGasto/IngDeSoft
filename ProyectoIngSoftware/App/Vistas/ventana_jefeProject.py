@@ -21,7 +21,7 @@ class JP(ctk.CTk):
         
 
         self.user_email = email
-        #self.mainloop() 
+        self.mainloop() 
 
 
 
@@ -128,8 +128,6 @@ class JP(ctk.CTk):
         
         nombre_entry = ctk.CTkEntry(NOMBRE, placeholder_text="Nombre del proyecto...", width=200)
         nombre_entry.pack(side=ctk.LEFT, padx=2)
-
-        self.ID_proyecto = None
 
         # Crear un frame para participantes
         self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color="white")

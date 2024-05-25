@@ -83,7 +83,6 @@ class Welcome(ctk.CTk):
         #obtenemos los datos del usuario
         self.user_email = self.email_entry.get()
         self.user_passsw = self.passw_entry.get()
-        db.SetearProyectos(self.user_email)
         #Mandamos la query para comprobar que el usuario existe,
         if db.ValidarUsuario(self.user_email, self.user_passsw) == True:
             self.destroy()
