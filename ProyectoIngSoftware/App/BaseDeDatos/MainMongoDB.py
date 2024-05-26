@@ -17,3 +17,4 @@ print("Datos en la colección 'Projects':")
 for project in projects:
     print(project)
 """
+#print(db['Users'].find_one({'email' : "prueba@gmail.com"})['rol'])

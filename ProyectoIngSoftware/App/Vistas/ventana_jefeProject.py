@@ -1,7 +1,8 @@
 import customtkinter as ctk
 from PIL import Image
 import os
-#import BaseDeDatos.UsersQuery_new as db
+import BaseDeDatos.UsersQuery_new as db
+import BaseDeDatos.ProjectsQuery as Proj
 from Vistas.util import centrarVentana
 
 #creamos la clase ventana para el jefe de proyecto
@@ -126,8 +127,8 @@ class JP(ctk.CTk):
         nombre = ctk.CTkLabel(NOMBRE, text="Nombre del proyecto (opcional):", text_color="black", font=("Verdana", -18))
         nombre.pack(side=ctk.LEFT, padx=2)
         
-        nombre_entry = ctk.CTkEntry(NOMBRE, placeholder_text="Nombre del proyecto...", width=200)
-        nombre_entry.pack(side=ctk.LEFT, padx=2)
+        self.nombre_entry = ctk.CTkEntry(NOMBRE, placeholder_text="Nombre del proyecto...", width=200)
+        self.nombre_entry.pack(side=ctk.LEFT, padx=2)
 
         # Crear un frame para participantes
         self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color="white")
@@ -150,7 +151,7 @@ class JP(ctk.CTk):
         more_button.pack(anchor=ctk.CENTER)
 
         # Botón para crear proyecto
-        crear_proyecto_button = ctk.CTkButton(self.window, text="Crear Proyecto", command=self.create_proyecto)
+        crear_proyecto_button = ctk.CTkButton(self.window, text="Crear Proyecto", command=self.crear_proyecto_query)
         crear_proyecto_button.pack(side=ctk.BOTTOM, pady=10)
 
     def add_participante_entry(self):
@@ -160,8 +161,10 @@ class JP(ctk.CTk):
             self.participantes_entries = []
         self.participantes_entries.append(entry)
 
-    def create_proyecto(self):
+    def crear_proyecto_query(self):
         participantes_emails = [entry.get() for entry in self.participantes_entries]
+        Proj.CrearNuevoProyecto(self.nombre_entry, participantes_emails, self.user_email)
+
         print("Correos de los participantes:", participantes_emails)
         # Aquí puedes agregar la lógica para guardar estos correos en la base de datos o en donde lo necesites.
 
