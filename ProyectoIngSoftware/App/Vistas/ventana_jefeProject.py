@@ -58,18 +58,20 @@ class JP(ctk.CTk):
         tab2 = tabview.add("Requerimientos")  
         tab3 = tabview.add("Métricas")  
         
-        ##Objetos de tab1
+        ##Objetos de tab1 (INTEGRANTES)
         button = ctk.CTkButton(master=tab1)#Para colocar elementos, solo se especifica el tab
         button.pack(side=ctk.BOTTOM, padx=20, pady=20)
 
-        ##Objetos de tab2
+        ##Objetos de tab2(REQUERIMIENTOS)
         scroll = ctk.CTkScrollableFrame(master=tab2)
         scroll.pack(fill="both",expand=True)
+
+
         texto = ctk.CTkLabel(master=scroll, font=("Calibri", -15, "italic"), text="· REQ-111: ")
         texto.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
         
         
-        ##Objetos de tab3
+        ##Objetos de tab3(MÉTRICAS)
 
         ##objetos del body
         self.buscarProyecto = ctk.CTkButton(self.body, text="Buscar Proyecto", fg_color="Red", font=("Comic Sans", -15),
@@ -86,7 +88,7 @@ class JP(ctk.CTk):
         self.proyecto_actual.pack(side=ctk.TOP)
 
     def searchForProject(self):
-        Datos = Proj.ObtenerDatosProyecto(self.user_email, 111)
+        Datos = Proj.ObtenerDatosProyecto(self.user_email, self.proyecto_id)
         # nombre = Datos[0]
         # integrantes= Datos[1]
         # id= Datos[2]
@@ -102,77 +104,82 @@ class JP(ctk.CTk):
         logo_label.pack(padx=5, pady=5)
 
     def crear_proyecto2(self):#Crea el botón en el lateral
-            self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)
-            texto = "PRO-" + str(self.proyecto_id)
-            nombre_proyecto = Proj.ObtenerDatosProyecto(self.user_email, self.proyecto_id)
-            nombre_proyecto = nombre_proyecto[0]
-            self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                                 width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(nombre_proyecto))
-            self.new_proyect.pack(side=ctk.TOP, pady=10)
+        self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)
+        texto = "PRO-" + str(self.proyecto_id)
+        nombre_proyecto = Proj.ObtenerDatosProyecto(self.user_email, self.proyecto_id)
+        nombre_proyecto = nombre_proyecto[0]
+        self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+                                                width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(nombre_proyecto))
+        self.new_proyect.pack(side=ctk.TOP, pady=10)
 
     def crear_proyecto(self):
-        self.window = ctk.CTkToplevel(self)
-        self.window.configure(fg_color="white")
-        centrarVentana(self.window, 800, 500)
-        self.window.title("Error")
-        self.window.attributes('-topmost' , 1)
-        self.window.focus()
-
-        titulo = ctk.CTkLabel(self.window, text_color="black", text="Crear un proyecto nuevo", font=("Verdana", -25, "bold"))
-        titulo.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
-
-        subtitulo = ctk.CTkLabel(self.window, text_color="black", text="Llena los campos con la información de tu proyecto", font=("Verdana", -15))
-        subtitulo.pack(side=ctk.TOP, pady=3, anchor=ctk.NW)
-
-        # Crear un frame para contener nombre y nombre_entry
-        NOMBRE = ctk.CTkFrame(self.window, fg_color="white")
-        NOMBRE.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
-        
-        nombre = ctk.CTkLabel(NOMBRE, text="Nombre del proyecto (obligatorio):", text_color="black", font=("Verdana", -18))
-        nombre.pack(side=ctk.LEFT, padx=2)
-        
-        self.nombre_entry = ctk.CTkEntry(NOMBRE, placeholder_text="Nombre del proyecto...", width=200)
-        self.nombre_entry.pack(side=ctk.LEFT, padx=2)
-
-        # Crear un frame para participantes
-        self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color="white")
-        self.PARTICIPANTES.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
-        
-        participantes_label = ctk.CTkLabel(self.PARTICIPANTES, text="Introduce el correo de los miembros de tu proyecto para invitarlos:", font=("Verdana", -18), text_color="black")
-        participantes_label.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
-
-        # Crear subframes dentro de PARTICIPANTES
-        self.participantes_entries_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="white")
-        self.participantes_entries_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
-
-        self.add_participante_entry()
-        
-        # Botón para agregar más participantes
-        more_button_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="transparent")
-        more_button_frame.pack(side=ctk.LEFT, padx=5, pady=2,anchor=ctk.NW)
-        
-        more_button = ctk.CTkButton(more_button_frame, width=25, height=25, text="+", text_color="black", font=("Helvetica", -15), command=self.add_participante_entry)
-        more_button.pack(anchor=ctk.CENTER)
-
-        # Botón para crear proyecto
-        crear_proyecto_button = ctk.CTkButton(self.window, text="Crear Proyecto", command=self.crear_proyecto_query)
-        crear_proyecto_button.pack(side=ctk.BOTTOM, pady=10)
-
-    def add_participante_entry(self):
-        entry = ctk.CTkEntry(self.participantes_entries_frame, placeholder_text="Correo...", width=200)
-        entry.pack(side=ctk.TOP, padx=2, pady=2, anchor=ctk.NW)
-        if not hasattr(self, 'participantes_entries'):
-            self.participantes_entries = []
-        self.participantes_entries.append(entry)
-
-    def crear_proyecto_query(self):
-        Proj.AumentarProyectos(self.user_email)
-        print("Numero de proyectos activos: " + str(Proj.BuscarProyectos(self.user_email)))
-        if Proj.BuscarProyectos(self.user_email) > 3:
+        if Proj.BuscarProyectos(self.user_email) >= 3:
             self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
             return
         else:
-            participantes_emails = [entry.get() for entry in self.participantes_entries]
+            self.window = ctk.CTkToplevel(self)
+            self.window.configure(fg_color="white")
+            centrarVentana(self.window, 800, 500)
+            self.window.title("Error")
+            self.window.attributes('-topmost' , 1)
+            self.window.focus()
+
+            titulo = ctk.CTkLabel(self.window, text_color="black", text="Crear un proyecto nuevo", font=("Verdana", -25, "bold"))
+            titulo.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
+
+            subtitulo = ctk.CTkLabel(self.window, text_color="black", text="Llena los campos con la información de tu proyecto", font=("Verdana", -15))
+            subtitulo.pack(side=ctk.TOP, pady=3, anchor=ctk.NW)
+
+            # Crear un frame para contener nombre y nombre_entry
+            NOMBRE = ctk.CTkFrame(self.window, fg_color="white")
+            NOMBRE.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
+            
+            nombre = ctk.CTkLabel(NOMBRE, text="Nombre del proyecto (obligatorio):", text_color="black", font=("Verdana", -18))
+            nombre.pack(side=ctk.LEFT, padx=2)
+            
+            self.nombre_entry = ctk.CTkEntry(NOMBRE, placeholder_text="Nombre del proyecto...", width=200)
+            self.nombre_entry.pack(side=ctk.LEFT, padx=2)
+
+            # Crear un frame para participantes
+            self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color="white")
+            self.PARTICIPANTES.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
+            
+            participantes_label = ctk.CTkLabel(self.PARTICIPANTES, text="Introduce el correo de los miembros de tu proyecto para invitarlos:", font=("Verdana", -18), text_color="black")
+            participantes_label.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
+
+            # Crear subframes dentro de PARTICIPANTES
+            self.participantes_entries_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="white")
+            self.participantes_entries_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
+
+            self.add_participante_entry()
+            
+            # Botón para agregar más participantes
+            more_button_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="transparent")
+            more_button_frame.pack(side=ctk.LEFT, padx=5, pady=2,anchor=ctk.NW)
+            
+            more_button = ctk.CTkButton(more_button_frame, width=25, height=25, text="+", text_color="black", font=("Helvetica", -15), command=self.add_participante_entry)
+            more_button.pack(anchor=ctk.CENTER)
+
+            # Botón para crear proyecto
+            crear_proyecto_button = ctk.CTkButton(self.window, text="Crear Proyecto", command=self.crear_proyecto_query)
+            crear_proyecto_button.pack(side=ctk.BOTTOM, pady=10)
+
+    def add_participante_entry(self):
+        self.entry_participante = ctk.CTkEntry(self.participantes_entries_frame, placeholder_text="Correo...", width=200)
+        self.entry_participante.pack(side=ctk.TOP, padx=2, pady=2, anchor=ctk.NW)
+        if not hasattr(self, 'participantes_entries'):
+            self.participantes_entries = []
+        self.participantes_entries.append(self.entry_participante)
+
+    def crear_proyecto_query(self):
+        
+        if Proj.BuscarProyectos(self.user_email) >= 3:
+            self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+            return
+        else:
+            Proj.AumentarProyectos(self.user_email)
+            print("Numero de proyectos activos: " + str(Proj.BuscarProyectos(self.user_email)))
+            participantes_emails = [self.entry_participante.get() for entry in self.participantes_entries]
             self.Nombre_Proyecto = self.nombre_entry.get()
             Proj.CrearNuevoProyecto(self.Nombre_Proyecto, participantes_emails, self.user_email)
             
@@ -181,13 +188,10 @@ class JP(ctk.CTk):
             self.crear_proyecto2()
 
     def cambiar_proyecto(self, texto):
-        switch_project = self.proyecto_actual.configure(text=texto)
-
-    def boton_clickeado(self, texto):
-        self.cambiar_proyecto(texto)
+        self.proyecto_actual.configure(text=texto)
 
     def boton_clickeado_global(self, texto):
-        self.boton_clickeado(texto)
+        self.cambiar_proyecto(texto)
 
     def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)

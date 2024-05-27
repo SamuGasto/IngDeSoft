@@ -25,6 +25,11 @@ def BuscarProyecto(email_user, id_proyecto):
     return False
 
 def ObtenerDatosProyecto(email_user, id_proyecto):
+    """
+    Función que retorna los datos de un proyecto.
+
+    Retorna [nombre_proyecto, lista_integrantes, id_proyecto]
+    """
     proyecto = db['Projects'].find_one({'owner': email_user, 'id': id_proyecto})
     if proyecto:
         nombre_proyecto = proyecto.get('nombre')
