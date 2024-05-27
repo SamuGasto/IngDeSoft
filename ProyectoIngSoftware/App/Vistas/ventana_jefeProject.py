@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 import os
-import BaseDeDatos.UsersQuery_new as db
+import BaseDeDatos.UsersQuery as User
 import BaseDeDatos.ProjectsQuery as Proj
 from Vistas.util import centrarVentana
 
@@ -9,7 +9,7 @@ from Vistas.util import centrarVentana
 class JP(ctk.CTk):
     def __init__(self, email:str):
         super().__init__()
-        self.proyecto_id = 110
+        #self.proyecto_id = 110
         self.title("PaltaEstimateApp")
         #ACÁ CENTRAMOS LA VENTANA 
         centrarVentana(self, 1200, 600)
@@ -72,9 +72,9 @@ class JP(ctk.CTk):
         ##Objetos de tab3
 
         ##objetos del body
-        self.eliminar_proyecto = ctk.CTkButton(self.body, text="Eliminar Proyecto", fg_color="Red", font=("Comic Sans", -15),
-                                        width=150, height=35, corner_radius=25)
-        self.eliminar_proyecto.pack(side=ctk.RIGHT, anchor=ctk.SW, pady=5, padx=5)
+        self.buscarProyecto = ctk.CTkButton(self.body, text="Buscar Proyecto", fg_color="Red", font=("Comic Sans", -15),
+                                        width=150, height=35, corner_radius=25, command=self.searchForProject)
+        self.buscarProyecto.pack(side=ctk.RIGHT, anchor=ctk.SW, pady=5, padx=5)
 
         self.administrar  = ctk.CTkButton(self.body, text="Administración\nCompleta", text_color="black",fg_color="white", font=("Comic Sans", -15, "bold"),
                                         width=150, height=35, corner_radius=25)
@@ -85,6 +85,13 @@ class JP(ctk.CTk):
         self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text="proyecto actual", font=("Comic Sans", -25))
         self.proyecto_actual.pack(side=ctk.TOP)
 
+    def searchForProject(self):
+        Datos = Proj.ObtenerDatosProyecto(self.user_email, 111)
+        # nombre = Datos[0]
+        # integrantes= Datos[1]
+        # id= Datos[2]
+        self.mostrar_ventana_emergente(Datos)
+
     def contenido_image(self):
         # Obtener la ruta absoluta del directorio actual del script
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -94,17 +101,14 @@ class JP(ctk.CTk):
         logo_label = ctk.CTkLabel(self.topimage, image=logo, text="")
         logo_label.pack(padx=5, pady=5)
 
-    #def crear_proyecto2(self):
-        # db.AumentarProyectos(self.user_email)
-        # print("Numero de proyectos actuvos: " + str(db.BuscarProyectos(self.user_email)))
-        # if db.BuscarProyectos(self.user_email) > 3:
-        #     self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
-        # else:
-        #     self.proyecto_id += 1
-        #     texto = "PRO-" + str(self.proyecto_id)
-        #     self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-        #                                         width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
-        #     self.new_proyect.pack(side=ctk.TOP, pady=10)
+    def crear_proyecto2(self):#Crea el botón en el lateral
+            self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)
+            texto = "PRO-" + str(self.proyecto_id)
+            nombre_proyecto = Proj.ObtenerDatosProyecto(self.user_email, self.proyecto_id)
+            nombre_proyecto = nombre_proyecto[0]
+            self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+                                                 width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(nombre_proyecto))
+            self.new_proyect.pack(side=ctk.TOP, pady=10)
 
     def crear_proyecto(self):
         self.window = ctk.CTkToplevel(self)
@@ -124,7 +128,7 @@ class JP(ctk.CTk):
         NOMBRE = ctk.CTkFrame(self.window, fg_color="white")
         NOMBRE.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
         
-        nombre = ctk.CTkLabel(NOMBRE, text="Nombre del proyecto (opcional):", text_color="black", font=("Verdana", -18))
+        nombre = ctk.CTkLabel(NOMBRE, text="Nombre del proyecto (obligatorio):", text_color="black", font=("Verdana", -18))
         nombre.pack(side=ctk.LEFT, padx=2)
         
         self.nombre_entry = ctk.CTkEntry(NOMBRE, placeholder_text="Nombre del proyecto...", width=200)
@@ -162,12 +166,19 @@ class JP(ctk.CTk):
         self.participantes_entries.append(entry)
 
     def crear_proyecto_query(self):
-        participantes_emails = [entry.get() for entry in self.participantes_entries]
-        Proj.CrearNuevoProyecto(self.nombre_entry, participantes_emails, self.user_email)
-
-        print("Correos de los participantes:", participantes_emails)
-        # Aquí puedes agregar la lógica para guardar estos correos en la base de datos o en donde lo necesites.
-
+        Proj.AumentarProyectos(self.user_email)
+        print("Numero de proyectos activos: " + str(Proj.BuscarProyectos(self.user_email)))
+        if Proj.BuscarProyectos(self.user_email) > 3:
+            self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+            return
+        else:
+            participantes_emails = [entry.get() for entry in self.participantes_entries]
+            self.Nombre_Proyecto = self.nombre_entry.get()
+            Proj.CrearNuevoProyecto(self.Nombre_Proyecto, participantes_emails, self.user_email)
+            
+            self.mostrar_ventana_emergente("Proyecto creado exitosamente")
+            
+            self.crear_proyecto2()
 
     def cambiar_proyecto(self, texto):
         switch_project = self.proyecto_actual.configure(text=texto)

@@ -23,9 +23,12 @@ def AnadirUsuario(email: str, username: str, password: str, rol: str)->None:
     pwd = password.encode('utf-8')
     salt = bcrypt.gensalt()
     pwdEncrypt = bcrypt.hashpw(pwd,salt)
-    
+    second_rol = ""#variable para manejar los roles de cada proyecto
+    proyectos = 0
 
-    db['Users'].insert_one({'email':email, 'username': username, 'password': pwdEncrypt.decode('utf-8'), 'rol': rol})
+    db['Users'].insert_one({'email':email, 'username': username, 'password': pwdEncrypt.decode('utf-8'),
+                            'rol': rol, "second_rol": second_rol, "proyectos": proyectos})
+    
 
 def ActualizarContrasena(email: str,newPassword: str)->None:
     '''Actualiza la contraseña de un usuario ya registrado.'''
@@ -57,4 +60,3 @@ def EliminarUsuario(email: str)->None:
         print(f'Usuario {email} eliminado.')
     else:
         print(f'El usuario que intentas eliminar no existe')
-

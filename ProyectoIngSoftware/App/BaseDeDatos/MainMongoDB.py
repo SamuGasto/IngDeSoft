@@ -11,10 +11,15 @@ except Exception as e:
 
 db = client['Application']
 """
-projects_collection = db['Users']
+projects_collection = db['Projects']
 projects = projects_collection.find()
 print("Datos en la colección 'Projects':")
 for project in projects:
     print(project)
 """
-#print(db['Users'].find_one({'email' : "prueba@gmail.com"})['rol'])
+
+#print(db['Projects'].find_one({'owner' : "prueba@gmail.com", 'id' : 111})['nombre'])
+
+# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':111})
+# db['Users'].update_one({'email': "prueba@gmail.com"},{'$set': {'proyectos': 0}})
+# print(db['Users'].find_one({'email' : "prueba@gmail.com"}))
