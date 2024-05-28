@@ -4,6 +4,7 @@ import os
 import BaseDeDatos.UsersQuery as User
 import BaseDeDatos.ProjectsQuery as Proj
 from Vistas.util import centrarVentana
+from functools import partial
 
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
@@ -20,8 +21,12 @@ class JP(ctk.CTk):
         self.contenido_subpanel()
         self.contenido_image()
         
-
+        self.participantes_entries = []
         self.user_email = email
+        if Proj.BuscarProyectos(self.user_email) == 0:
+            pass
+        else:
+            self.ListarProyectoExistente()
         self.mainloop() 
 
 
@@ -104,8 +109,18 @@ class JP(ctk.CTk):
         logo_label.pack(padx=5, pady=5)
     
     def ListarProyectoExistente(self):
+        nombres = Proj.ObtenerNombresProyecto(self.user_email)
         proj_activos = Proj.BuscarProyectos(self.user_email)
         i=0
+        while i < proj_activos:
+            nombre_proyecto = nombres[i]
+            self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, nombre_proyecto)
+            texto = "PRO-" + str(self.proyecto_id)
+            
+            self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+                                                    width=200, height=65, corner_radius=0,command=partial(self.cambiar_proyecto, nombre_proyecto))
+            self.new_proyect.pack(side=ctk.TOP, pady=10)
+            i+=1
 
 
     def crear_proyecto2(self):#Crea el botón en el lateral
@@ -170,32 +185,35 @@ class JP(ctk.CTk):
             crear_proyecto_button.pack(side=ctk.BOTTOM, pady=10)
 
     def add_participante_entry(self):
+        # self.entry_participante = ctk.CTkEntry(self.participantes_entries_frame, placeholder_text="Correo...", width=200)
+        # self.entry_participante.pack(side=ctk.TOP, padx=2, pady=2, anchor=ctk.NW)
+        # if not hasattr(self, 'self.participantes_entries'):
+        #     self.participantes_entries = []
+        # self.participantes_entries.append(self.entry_participante)
         self.entry_participante = ctk.CTkEntry(self.participantes_entries_frame, placeholder_text="Correo...", width=200)
         self.entry_participante.pack(side=ctk.TOP, padx=2, pady=2, anchor=ctk.NW)
-        if not hasattr(self, 'self.participantes_entries'):
-            self.participantes_entries = []
         self.participantes_entries.append(self.entry_participante)
 
     def crear_proyecto_query(self):
+        Proj.AumentarProyectos(self.user_email)
+        print("Numero de proyectos activos: " + str(Proj.BuscarProyectos(self.user_email)))
         
-        if Proj.BuscarProyectos(self.user_email) >= 3:
-            self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
-            return
-        else:
-            Proj.AumentarProyectos(self.user_email)
-            print("Numero de proyectos activos: " + str(Proj.BuscarProyectos(self.user_email)))
-            participantes_emails = [self.entry_participante.get() for entry in self.participantes_entries]
-            self.Nombre_Proyecto = self.nombre_entry.get()
-            Proj.CrearNuevoProyecto(self.Nombre_Proyecto, participantes_emails, self.user_email)
-            
-            self.window.withdraw()
-            self.mostrar_ventana_emergente("Proyecto creado exitosamente")
-            
-            self.crear_proyecto2()
+        participantes_emails = [entry.get() for entry in self.participantes_entries]
+        self.Nombre_Proyecto = self.nombre_entry.get()
+        Proj.CrearNuevoProyecto(self.Nombre_Proyecto, participantes_emails, self.user_email)
+        
+        self.window.withdraw()
+        self.mostrar_ventana_emergente("Proyecto creado exitosamente")
+        self.participantes_entries = []
+        participantes_emails = []
+        self.crear_proyecto2()
 
     def cambiar_proyecto(self, texto):
+        for widget in self.tab1.winfo_children():
+            widget.destroy()
         #cambiamos el texto del titulo en pantalla
         self.proyecto_actual.configure(text=texto)
+        print(texto)
         #Paso 1: Listar los integrantes del proyecto en pantalla, junto a su rol,
         #el cuál debe ser definido.
         data = Proj.ObtenerDatosProyecto(self.user_email, Proj.ObtenerIdProyecto(self.user_email, texto))
@@ -209,9 +227,6 @@ class JP(ctk.CTk):
                     #Se debe crear un botón para agregar requerimientos.
         
         #Paso 3: Visualizar las métricas del proyecto.
-
-    def boton_clickeado_global(self, texto):
-        self.cambiar_proyecto(texto)
 
     def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)

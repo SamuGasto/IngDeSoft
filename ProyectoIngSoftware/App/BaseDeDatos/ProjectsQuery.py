@@ -1,7 +1,7 @@
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.UsersQuery_new as user
 
-def CrearNuevoProyecto(Nombre, participantes, email_user):
+def CrearNuevoProyecto(Nombre, participantes: list, email_user):
     owner = email_user
     if Nombre == "":
         nombre_proyecto = "Proyecto sin nombre"
@@ -32,14 +32,25 @@ def ObtenerDatosProyecto(email_user, id_proyecto):
     """
     proyecto = db['Projects'].find_one({'owner': email_user, 'id': id_proyecto})
     if proyecto:
-        nombre_proyecto = proyecto.get('nombre')
-        integrantes = proyecto.get('integrantes')
-        id_proyecto = proyecto.get('id')
+        nombre_proyecto = proyecto['nombre']
+        integrantes = proyecto['integrantes']
+        id_proyecto = proyecto['id']
 
         return [nombre_proyecto, integrantes, id_proyecto]
     else:
         print("No se encontró el proyecto")
         return None
+
+def ObtenerNombresProyecto(email_user):
+    """
+    Funcion que retorna una lista con los nombres de los proyectos del usuario
+    """
+
+    proyectos = db['Projects'].find({'owner': email_user})
+
+    # Extraer y devolver los nombres de los proyectos
+    nombres_proyectos = [proyecto['nombre'] for proyecto in proyectos]
+    return nombres_proyectos
     
 def ObtenerIdProyecto(email_user:str, nombre:str):
     proyecto = db['Projects'].find_one({'owner': email_user, 'nombre': nombre})
@@ -66,7 +77,7 @@ def AumentarProyectos(email: str)->None:
     else:
         print("El usuario no existe (Aumentarproyectos)")
 
-def BuscarProyectos(email: str)-> None:
+def BuscarProyectos(email: str)-> int:
     """
     Función que busca y retorna la cantidad de proyectos del usuario
     """
