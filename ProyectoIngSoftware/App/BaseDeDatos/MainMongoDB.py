@@ -20,8 +20,7 @@ for project in projects:
 
 #print(db['Projects'].find_one({'owner' : "prueba@gmail.com", 'id' : 111})['nombre'])
 
-# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':111})
-# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':112})
-# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':113})
-# db['Users'].update_one({'email': "prueba@gmail.com"},{'$set': {'proyectos': 0}})
-# print(db['Users'].find_one({'email' : "prueba@gmail.com"}))
+db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':111})
+db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':112})
+db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':113})
+db['Users'].update_one({'email': "prueba@gmail.com"},{'$set': {'proyectos': 0}})

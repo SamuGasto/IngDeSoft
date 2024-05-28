@@ -54,20 +54,20 @@ class JP(ctk.CTk):
         tabview = ctk.CTkTabview(master=self.body, height=400)
         tabview.pack(padx=5, pady=5, fill="x")
         #Agregamos Tabs
-        tab1 = tabview.add("Integrantes")  
-        tab2 = tabview.add("Requerimientos")  
-        tab3 = tabview.add("Métricas")  
+        self.tab1 = tabview.add("Integrantes")  
+        self.tab2 = tabview.add("Requerimientos")  
+        self.tab3 = tabview.add("Métricas")  
         
         ##Objetos de tab1 (INTEGRANTES)
-        button = ctk.CTkButton(master=tab1)#Para colocar elementos, solo se especifica el tab
+        button = ctk.CTkButton(master=self.tab1)#Para colocar elementos, solo se especifica el tab
         button.pack(side=ctk.BOTTOM, padx=20, pady=20)
 
         ##Objetos de tab2(REQUERIMIENTOS)
-        scroll = ctk.CTkScrollableFrame(master=tab2)
-        scroll.pack(fill="both",expand=True)
+        self.scroll = ctk.CTkScrollableFrame(master=self.tab2)
+        self.scroll.pack(fill="both",expand=True)
 
 
-        texto = ctk.CTkLabel(master=scroll, font=("Calibri", -15, "italic"), text="· REQ-111: ")
+        texto = ctk.CTkLabel(master=self.scroll, font=("Calibri", -15, "italic"), text="· REQ-111: ")
         texto.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
         
         
@@ -102,6 +102,11 @@ class JP(ctk.CTk):
             size=(60, 60))
         logo_label = ctk.CTkLabel(self.topimage, image=logo, text="")
         logo_label.pack(padx=5, pady=5)
+    
+    def ListarProyectoExistente(self):
+        proj_activos = Proj.BuscarProyectos(self.user_email)
+        i=0
+
 
     def crear_proyecto2(self):#Crea el botón en el lateral
         self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)
@@ -109,7 +114,7 @@ class JP(ctk.CTk):
         nombre_proyecto = Proj.ObtenerDatosProyecto(self.user_email, self.proyecto_id)
         nombre_proyecto = nombre_proyecto[0]
         self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                                width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(nombre_proyecto))
+                                                width=200, height=65, corner_radius=0, command=lambda: self.cambiar_proyecto(nombre_proyecto))
         self.new_proyect.pack(side=ctk.TOP, pady=10)
 
     def crear_proyecto(self):
@@ -167,7 +172,7 @@ class JP(ctk.CTk):
     def add_participante_entry(self):
         self.entry_participante = ctk.CTkEntry(self.participantes_entries_frame, placeholder_text="Correo...", width=200)
         self.entry_participante.pack(side=ctk.TOP, padx=2, pady=2, anchor=ctk.NW)
-        if not hasattr(self, 'participantes_entries'):
+        if not hasattr(self, 'self.participantes_entries'):
             self.participantes_entries = []
         self.participantes_entries.append(self.entry_participante)
 
@@ -183,12 +188,27 @@ class JP(ctk.CTk):
             self.Nombre_Proyecto = self.nombre_entry.get()
             Proj.CrearNuevoProyecto(self.Nombre_Proyecto, participantes_emails, self.user_email)
             
+            self.window.withdraw()
             self.mostrar_ventana_emergente("Proyecto creado exitosamente")
             
             self.crear_proyecto2()
 
     def cambiar_proyecto(self, texto):
+        #cambiamos el texto del titulo en pantalla
         self.proyecto_actual.configure(text=texto)
+        #Paso 1: Listar los integrantes del proyecto en pantalla, junto a su rol,
+        #el cuál debe ser definido.
+        data = Proj.ObtenerDatosProyecto(self.user_email, Proj.ObtenerIdProyecto(self.user_email, texto))
+        self.miembros = data[1]
+        for miembro in self.miembros:
+            self.miembro_label = ctk.CTkLabel(self.tab1, text=miembro, text_color="white",
+                                            font=("Comic Sans", -18, "bold"))
+            self.miembro_label.pack(side=ctk.TOP, anchor=ctk.NW)
+
+        #Paso 2: Listar los requerimientos del proyecto.
+                    #Se debe crear un botón para agregar requerimientos.
+        
+        #Paso 3: Visualizar las métricas del proyecto.
 
     def boton_clickeado_global(self, texto):
         self.cambiar_proyecto(texto)
