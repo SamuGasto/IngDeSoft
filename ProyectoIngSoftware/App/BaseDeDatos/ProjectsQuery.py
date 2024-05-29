@@ -12,10 +12,27 @@ def CrearNuevoProyecto(Nombre, participantes: list, email_user):
         integrantes.append(persona)
     id_proyecto = 110 + user.BuscarProyectos(owner)
 
+    tablaVAC = {"ComunicacionDeDatos" : 0,
+        "ProcesamientoDistribuido" : 0,
+        "ObjetivosDeRendimiento": 0,
+        "ConfiguracionDelEquipamiento" : 0,
+        "TasaDeTransacciones" : 0,
+        "EntradaDeDatosEnLinea" : 0,
+        "InterfaseConElUsuario" : 0,
+        "ActualizacionEnLinea" : 0,
+        "ProcesamientoComplejo" : 0,
+        "ReusabilidadDelCodigo" : 0,
+        "FacilidadDeImplementacion" : 0,
+        "FacilidadDeOperacion" : 0,
+        "InstalacionesMultiples" : 0,
+        "FacilidadDeCambios" : 0,
+        "TotalFactorAjuste" : 0}
+
     db['Projects'].insert_one({'owner':owner,
                                 'id':id_proyecto, 
                                 'nombre':nombre_proyecto, 
-                                "integrantes": integrantes, 
+                                "integrantes": integrantes,
+                                "TablaVAC": tablaVAC,
                                 })
 
 def BuscarProyecto(email_user, id_proyecto):
@@ -35,8 +52,9 @@ def ObtenerDatosProyecto(email_user, id_proyecto):
         nombre_proyecto = proyecto['nombre']
         integrantes = proyecto['integrantes']
         id_proyecto = proyecto['id']
+        tablaVAC = proyecto['TablaVAC']
 
-        return [nombre_proyecto, integrantes, id_proyecto]
+        return [nombre_proyecto, integrantes, id_proyecto, tablaVAC]
     else:
         print("No se encontró el proyecto")
         return None

@@ -26,8 +26,7 @@ def AnadirUsuario(email: str, username: str, password: str, rol: str)->None:
     second_rol = ""#variable para manejar los roles de cada proyecto
     proyectos = 0
 
-    db['Users'].insert_one({'email':email, 'username': username, 'password': pwdEncrypt.decode('utf-8'),
-                            'rol': rol, "second_rol": second_rol, "proyectos": proyectos})
+    db['Users'].insert_one({'email':email, 'username': username, 'password': pwdEncrypt.decode('utf-8'), "proyectos": proyectos})
     
 
 def ActualizarContrasena(email: str,newPassword: str)->None:

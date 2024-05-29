@@ -22,6 +22,8 @@ class JP(ctk.CTk):
         self.contenido_image()
         
         self.participantes_entries = []
+        self.participantes_rol = []
+        self.indice_participante = -1
         self.user_email = email
         if Proj.BuscarProyectos(self.user_email) == 0:
             pass
@@ -162,22 +164,33 @@ class JP(ctk.CTk):
 
             # Crear un frame para participantes
             self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color="white")
-            self.PARTICIPANTES.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
+            self.PARTICIPANTES.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X, expand=True)
             
             participantes_label = ctk.CTkLabel(self.PARTICIPANTES, text="Introduce el correo de los miembros de tu proyecto para invitarlos:", font=("Verdana", -18), text_color="black")
             participantes_label.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
 
             # Crear subframes dentro de PARTICIPANTES
+            
+            self.indice_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="white")
+            self.indice_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
+
             self.participantes_entries_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="white")
             self.participantes_entries_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
+
+            self.Combobox_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="white")
+            self.Combobox_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
+
+            
+            
+            
 
             self.add_participante_entry()
             
             # Botón para agregar más participantes
-            more_button_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="transparent")
-            more_button_frame.pack(side=ctk.LEFT, padx=5, pady=2,anchor=ctk.NW)
+            self.more_button_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="transparent")
+            self.more_button_frame.pack(side=ctk.LEFT, padx=5, pady=2,anchor=ctk.NW)
             
-            more_button = ctk.CTkButton(more_button_frame, width=25, height=25, text="+", text_color="black", font=("Helvetica", -15), command=self.add_participante_entry)
+            more_button = ctk.CTkButton(self.more_button_frame, width=25, height=25, text="+", text_color="black", font=("Helvetica", -15), command=self.add_participante_entry)
             more_button.pack(anchor=ctk.CENTER)
 
             # Botón para crear proyecto
@@ -185,21 +198,37 @@ class JP(ctk.CTk):
             crear_proyecto_button.pack(side=ctk.BOTTOM, pady=10)
 
     def add_participante_entry(self):
-        # self.entry_participante = ctk.CTkEntry(self.participantes_entries_frame, placeholder_text="Correo...", width=200)
-        # self.entry_participante.pack(side=ctk.TOP, padx=2, pady=2, anchor=ctk.NW)
-        # if not hasattr(self, 'self.participantes_entries'):
-        #     self.participantes_entries = []
-        # self.participantes_entries.append(self.entry_participante)
+        self.indice_participante += 1
+        self.indice = ctk.CTkLabel(self.indice_frame,text=self.indice_participante, text_color="black")
+        self.indice.pack(side=ctk.TOP, padx=2, pady=2)
+
         self.entry_participante = ctk.CTkEntry(self.participantes_entries_frame, placeholder_text="Correo...", width=200)
         self.entry_participante.pack(side=ctk.TOP, padx=2, pady=2, anchor=ctk.NW)
         self.participantes_entries.append(self.entry_participante)
+
+        #command=partial(self.actualizar_rol_participante,int(self.indice.cget("text")))
+        self.combobox_rol = ctk.CTkComboBox(self.Combobox_frame, values=["Administrador", "Desarrollador"]
+                                            )
+        self.combobox_rol.pack(side=ctk.TOP, padx=2, pady=2)
+        self.combobox_rol.set("Seleccionar rol...")
+        self.participantes_rol.append(self.combobox_rol)  
+
+        def actualizar_rol_participante(self,i):
+            self.participantes_rol[i] = self.combobox_rol
+            print(f'Usuario {i} tiene valor {self.combobox_rol}')
+    
+    
 
     def crear_proyecto_query(self):
         Proj.AumentarProyectos(self.user_email)
         print("Numero de proyectos activos: " + str(Proj.BuscarProyectos(self.user_email)))
         
         participantes_emails = [entry.get() for entry in self.participantes_entries]
+        participantes_roles = [rol.get() for rol in self.participantes_rol]
         self.Nombre_Proyecto = self.nombre_entry.get()
+        for miembro, rol in zip(participantes_emails, participantes_roles):
+            print(miembro, rol, end=' ')
+
         Proj.CrearNuevoProyecto(self.Nombre_Proyecto, participantes_emails, self.user_email)
         
         self.window.withdraw()
