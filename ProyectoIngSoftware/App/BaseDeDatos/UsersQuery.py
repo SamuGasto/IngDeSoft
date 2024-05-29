@@ -52,3 +52,6 @@ def EliminarUsuario(email: str)->None:
     else:
         print(f'El usuario que intentas eliminar no existe')
 
+def actualizarTablaPF(e:list)->None:
+    pass
+
