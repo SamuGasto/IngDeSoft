@@ -26,8 +26,44 @@ def AnadirUsuario(email: str, username: str, password: str, rol: str)->None:
     second_rol = ""#variable para manejar los roles de cada proyecto
     proyectos = 0
 
-    db['Users'].insert_one({'email':email, 'username': username, 'password': pwdEncrypt.decode('utf-8'), "proyectos": proyectos})
+    db['Users'].insert_one({'email':email, 'username': username, 'password': pwdEncrypt.decode('utf-8'),
+                            'rol': rol, "second_rol": second_rol, "proyectos": proyectos})
     
+def AumentarProyectos(email: str)->None:
+    '''Aumenta el numero de proyectos del usuario'''
+    if (BuscarUsuario(email)):
+        usuario = db['Users'].find_one({'email': email}, {'proyectos': 1})
+        n_proyectos = usuario['proyectos']
+        if  n_proyectos <= 3:
+            # Incrementa el valor de "proyectos"
+            db['Users'].update_one(
+                {'email': email},
+                {'$set': {'proyectos': n_proyectos + 1}}
+            )
+            print(f"Proyectos incrementados a: {n_proyectos + 1}")
+            n_proyectos = usuario['proyectos']
+        else:
+            print("El usuario ya tiene 3 proyectos.")
+    else:
+        print("El usuario no existe (Aumentarproyectos)")
+
+def BuscarProyectos(email: str)-> None:
+    """
+    Función que busca y retorna la cantidad de proyectos del usuario
+    """
+    if (BuscarUsuario(email)):
+        usuario = db['Users'].find_one({'email': email}, {'proyectos': 1})
+        n_proyectos = usuario['proyectos']
+        return n_proyectos
+    else:
+        print("Error: No se encontró el usuario (Buscarproyectos)")
+
+def SetearProyectos(email:str)->None:
+    """Función que setea los proyectos del usuario en 0"""
+    if (BuscarUsuario(email)):
+        db['Users'].update_one({'email': email},{'$set': {'proyectos': 0}})
+    else:
+        print("Error: No se encontró el usuario (Setearproyectos)")
 
 def ActualizarContrasena(email: str,newPassword: str)->None:
     '''Actualiza la contraseña de un usuario ya registrado.'''
@@ -59,3 +95,4 @@ def EliminarUsuario(email: str)->None:
         print(f'Usuario {email} eliminado.')
     else:
         print(f'El usuario que intentas eliminar no existe')
+

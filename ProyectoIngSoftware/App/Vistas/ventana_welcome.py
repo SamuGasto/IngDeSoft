@@ -3,15 +3,27 @@ from PIL import Image
 import Vistas.ventana_jefeProject as JEFE
 import Vistas.ventana_crearCuenta as Crearc
 import os
-import BaseDeDatos.UsersQuery as db
+import BaseDeDatos.UsersQuery_new as db
 
 
 #creamos la clase ventana para la bienvenida
 class Welcome(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry("800x540")
+        self.geometry("1280x720")
         self.title("PaltaEstimateApp")
+        #ACÁ CENTRAMOS LA VENTANA MAIN
+        #  Obtenemos el largo y  ancho de la pantalla
+        wtotal = self.winfo_screenwidth()
+        htotal = self.winfo_screenheight()
+        #  Guardamos el largo y alto de la ventana
+        wventana = 960
+        hventana = 640
+        #  Aplicamos la siguiente formula para calcular donde debería posicionarse
+        pwidth = round(wtotal/2-wventana/2)
+        pheight = round(htotal/2-hventana/2)
+        #  Se lo aplicamos a la geometría de la ventana
+        self.geometry(str(wventana)+"x"+str(hventana)+"+"+str(pwidth)+"+"+str(pheight))
         #self.resizable(False, False)
         self.Contenido()
 
@@ -38,7 +50,7 @@ class Welcome(ctk.CTk):
         self.passw_entry.place(relx=0.15, rely=0.65)
 
         passw_peak = ctk.CTkButton(self, text="O", width=20, height=20, corner_radius=100, command=self.peak)
-        passw_peak.place(relx=0.47, rely=0.66)
+        passw_peak.place(relx=0.415, rely=0.66)
 
         # Imágen del logo
         # Obtener la ruta absoluta del directorio actual del script
@@ -74,7 +86,7 @@ class Welcome(ctk.CTk):
         #Mandamos la query para comprobar que el usuario existe,
         if db.ValidarUsuario(self.user_email, self.user_passsw) == True:
             self.destroy()
-            JEFE.JP()
+            JEFE.JP(self.user_email)
         else:
             self.mostrar_ventana_emergente()
     
