@@ -8,12 +8,6 @@ def BuscarUsuario(email: str)->bool:
         return True
     return False
 
-def BuscarUsername(username: str)->bool:
-    """Busca el nombre de usuario en la base de datos"""
-    if (db['Users'].find_one({'username':username}) != None):
-        return True
-    return False
-
 def AnadirUsuario(email: str, username: str, password: str, rol: str)->None:
     '''Añade a un usuario a la base de datos, si ya existe, entonces no hace nada.'''
     if (BuscarUsuario(email)):
@@ -23,11 +17,9 @@ def AnadirUsuario(email: str, username: str, password: str, rol: str)->None:
     pwd = password.encode('utf-8')
     salt = bcrypt.gensalt()
     pwdEncrypt = bcrypt.hashpw(pwd,salt)
-    second_rol = ""#variable para manejar los roles de cada proyecto
-    proyectos = 0
-
-    db['Users'].insert_one({'email':email, 'username': username, 'password': pwdEncrypt.decode('utf-8'), "proyectos": proyectos})
     
+
+    db['Users'].insert_one({'email':email, 'username': username, 'password': pwdEncrypt.decode('utf-8'), 'rol': rol})
 
 def ActualizarContrasena(email: str,newPassword: str)->None:
     '''Actualiza la contraseña de un usuario ya registrado.'''
@@ -59,3 +51,7 @@ def EliminarUsuario(email: str)->None:
         print(f'Usuario {email} eliminado.')
     else:
         print(f'El usuario que intentas eliminar no existe')
+
+def actualizarTablaPF(e:list)->None:
+    pass
+
