@@ -17,7 +17,7 @@ print("Datos en la colección 'Projects':")
 for project in projects:
     print(project)
 """
-
+print(db['Projects'].find_one({'owner' : 'prueba@gmail.com'}))
 # db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':111})
 # db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':112})
 # db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':113})

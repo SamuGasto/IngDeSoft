@@ -180,10 +180,6 @@ class JP(ctk.CTk):
             self.Combobox_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color="white")
             self.Combobox_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
 
-            
-            
-            
-
             self.add_participante_entry()
             
             # Botón para agregar más participantes
@@ -193,7 +189,7 @@ class JP(ctk.CTk):
             more_button = ctk.CTkButton(self.more_button_frame, width=25, height=25, text="+", text_color="black", font=("Helvetica", -15), command=self.add_participante_entry)
             more_button.pack(anchor=ctk.CENTER)
 
-            # Botón para crear proyecto
+            # Botón para mandar la query y crear proyecto
             crear_proyecto_button = ctk.CTkButton(self.window, text="Crear Proyecto", command=self.crear_proyecto_query)
             crear_proyecto_button.pack(side=ctk.BOTTOM, pady=10)
 
@@ -212,11 +208,6 @@ class JP(ctk.CTk):
         self.combobox_rol.pack(side=ctk.TOP, padx=2, pady=2)
         self.combobox_rol.set("Seleccionar rol...")
         self.participantes_rol.append(self.combobox_rol)  
-
-        def actualizar_rol_participante(self,i):
-            self.participantes_rol[i] = self.combobox_rol
-            print(f'Usuario {i} tiene valor {self.combobox_rol}')
-    
     
 
     def crear_proyecto_query(self):
@@ -226,10 +217,9 @@ class JP(ctk.CTk):
         participantes_emails = [entry.get() for entry in self.participantes_entries]
         participantes_roles = [rol.get() for rol in self.participantes_rol]
         self.Nombre_Proyecto = self.nombre_entry.get()
-        for miembro, rol in zip(participantes_emails, participantes_roles):
-            print(miembro, rol, end=' ')
+        miembros = [(miembro, rol) for miembro, rol in zip(participantes_emails, participantes_roles)]
 
-        Proj.CrearNuevoProyecto(self.Nombre_Proyecto, participantes_emails, self.user_email)
+        Proj.CrearNuevoProyecto(self.Nombre_Proyecto, miembros, self.user_email)
         
         self.window.withdraw()
         self.mostrar_ventana_emergente("Proyecto creado exitosamente")
@@ -237,19 +227,18 @@ class JP(ctk.CTk):
         participantes_emails = []
         self.crear_proyecto2()
 
-    def cambiar_proyecto(self, texto):
+    def cambiar_proyecto(self, texto): #Botón para mostrar el contenido de un proyecto (Botón lateral)
         for widget in self.tab1.winfo_children():
             widget.destroy()
         #cambiamos el texto del titulo en pantalla
         self.proyecto_actual.configure(text=texto)
-        print(texto)
         #Paso 1: Listar los integrantes del proyecto en pantalla, junto a su rol,
         #el cuál debe ser definido.
         data = Proj.ObtenerDatosProyecto(self.user_email, Proj.ObtenerIdProyecto(self.user_email, texto))
         self.miembros = data[1]
         for miembro in self.miembros:
-            self.miembro_label = ctk.CTkLabel(self.tab1, text=miembro, text_color="white",
-                                            font=("Comic Sans", -18, "bold"))
+            self.miembro_label = ctk.CTkLabel(self.tab1, text="- Correo: " + miembro[0] + ". Rol: " + miembro[1], text_color="white",
+                                            font=("Poppins", -18, "bold"))
             self.miembro_label.pack(side=ctk.TOP, anchor=ctk.NW)
 
         #Paso 2: Listar los requerimientos del proyecto.
