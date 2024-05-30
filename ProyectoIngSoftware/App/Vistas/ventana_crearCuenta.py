@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 import os
-import BaseDeDatos.UsersQuery as db
+#import BaseDeDatos.UsersQuery as db
 
 
 #creamos la clase ventana para crear la cuenta
@@ -14,7 +14,7 @@ class Crear_cuenta(ctk.CTk):
         self.Contenido()
 
         
-        self.mainloop() #!! BORRAR EL COMENTARIO PARA USO FINAL
+        #self.mainloop() #!! BORRAR EL COMENTARIO PARA USO FINAL
 
     def Contenido(self):#Frames
         nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans", -25, "italic"))
@@ -76,3 +76,5 @@ class Crear_cuenta(ctk.CTk):
         print("pass: " + self.user_passsw)
         db.AnadirUsuario(self.user_email, self.user_passsw)
 
+app = Crear_cuenta()
+app.mainloop()
