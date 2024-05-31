@@ -23,6 +23,7 @@ class JP(ctk.CTk):
         
         self.participantes_entries = []
         self.participantes_rol = []
+        self.requerimientos = []
         self.indice_participante = -1
         self.user_email = email
         if Proj.BuscarProyectos(self.user_email) == 0:
@@ -50,11 +51,11 @@ class JP(ctk.CTk):
     def controles_sidebar(self):
 
         self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20))
-        self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
+        self.mis_proyectos.pack(side=ctk.TOP, pady=5, padx=5)
 
         self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
-                                                fg_color="red", width=200, height=65, corner_radius=0, command= self.crear_proyecto)
-        self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10)
+                                                fg_color="red", width=200, height=65, corner_radius=15, command= self.crear_proyecto)
+        self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10, padx=5)
 
     def contenido_body(self):
         #Creamos TabView
@@ -73,9 +74,11 @@ class JP(ctk.CTk):
         self.scroll = ctk.CTkScrollableFrame(master=self.tab2)
         self.scroll.pack(fill="both",expand=True)
 
+        self.agregarReq = ctk.CTkButton(self.scroll, text="Agregar Requerimientos",
+                                        text_color="black",fg_color="white", font=("Comic Sans", -15),
+                                        width=150, height=35, corner_radius=10, command=self.AnadirRequerimiento)
+        self.agregarReq.pack(side=ctk.TOP, anchor= ctk.N, pady=5)
 
-        texto = ctk.CTkLabel(master=self.scroll, font=("Calibri", -15, "italic"), text="· REQ-111: ")
-        texto.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
         
         
         ##Objetos de tab3(MÉTRICAS)
@@ -96,9 +99,6 @@ class JP(ctk.CTk):
 
     def searchForProject(self):
         Datos = Proj.ObtenerDatosProyecto(self.user_email, self.proyecto_id)
-        # nombre = Datos[0]
-        # integrantes= Datos[1]
-        # id= Datos[2]
         self.mostrar_ventana_emergente(Datos)
 
     def contenido_image(self):
@@ -120,8 +120,8 @@ class JP(ctk.CTk):
             texto = "PRO-" + str(self.proyecto_id)
             
             self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                                    width=200, height=65, corner_radius=0,command=partial(self.cambiar_proyecto, nombre_proyecto))
-            self.new_proyect.pack(side=ctk.TOP, pady=10)
+                                                    width=200, height=65, corner_radius=15,command=partial(self.cambiar_proyecto, nombre_proyecto))
+            self.new_proyect.pack(side=ctk.TOP, pady=10, padx=5)
             i+=1
 
 
@@ -163,7 +163,7 @@ class JP(ctk.CTk):
             self.nombre_entry.pack(side=ctk.LEFT, padx=2)
 
             # Crear un frame para participantes
-            self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color="white")
+            self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color="blue")
             self.PARTICIPANTES.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X, expand=True)
             
             participantes_label = ctk.CTkLabel(self.PARTICIPANTES, text="Introduce el correo de los miembros de tu proyecto para invitarlos:", font=("Verdana", -18), text_color="black")
@@ -262,3 +262,40 @@ class JP(ctk.CTk):
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
+    def AnadirRequerimiento(self):
+        ventana_emergente = ctk.CTkToplevel(self)
+        ventana_emergente.configure(fg_color="white")
+        centrarVentana(ventana_emergente, 700, 450)
+        ventana_emergente.title("Añadir Requerimientos")
+        ventana_emergente.attributes('-topmost' , 1)
+        ventana_emergente.focus()
+        
+        titulo = ctk.CTkLabel(ventana_emergente, text="Ingresa requerimientos al proyecto", text_color="black",
+                            font=("Poppins", -15))
+        titulo.pack(side=ctk.TOP, anchor=ctk.N)
+
+        # Crear un frame para contener nombre y nombre_entry
+        self.REQ = ctk.CTkFrame(ventana_emergente, fg_color="white")
+        self.REQ.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
+
+        #Crear subframes dentro de self.REQ
+
+        self.reques = ctk.CTkFrame(self.REQ, fg_color="white")
+        self.reques.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
+
+
+        self.add_requerimiento_entry()
+
+        # Botón para agregar más requerimientos
+        self.more_button_frame2 = ctk.CTkFrame(self.REQ, fg_color="transparent")
+        self.more_button_frame2.pack(side=ctk.LEFT, padx=5, pady=3, anchor=ctk.N)
+        
+        more_button = ctk.CTkButton(self.more_button_frame2, width=25, height=25, text="+", text_color="black", font=("Helvetica", -15), command=self.add_requerimiento_entry)
+        more_button.pack(pady=3, anchor=ctk.CENTER)
+        
+        
+
+    def add_requerimiento_entry(self):
+        self.req = ctk.CTkEntry(self.reques, placeholder_text="Requerimiento...", width=200)
+        self.req.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
+        self.requerimientos.append(self.req)

@@ -27,7 +27,8 @@ class Welcome(ctk.CTk):
         #self.resizable(False, False)
         self.Contenido()
 
-
+        # Vincular la tecla 'Enter' a la función IniciarSesion para la ventana principal
+        self.bind('<Return>', self.IniciarSesion)
 
         self.mainloop()
 
@@ -42,12 +43,16 @@ class Welcome(ctk.CTk):
         email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans", -25, "bold"))
         email.place(relx=0.15, rely=0.43)
         self.email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
+        self.email_entry.insert(0, "prueba@gmail.com")
         self.email_entry.place(relx=0.15, rely=0.5)
 
         passw = ctk.CTkLabel(self, text="Contraseña", font=("Comic Sans", -25, "bold"))
         passw.place(relx=0.15, rely=0.58)
         self.passw_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
         self.passw_entry.place(relx=0.15, rely=0.65)
+        self.passw_entry.insert(0, "123456")
+        # Vincular la tecla 'Enter' al CTkEntry de contraseña
+        self.passw_entry.bind('<Return>', self.IniciarSesion)
 
         passw_peak = ctk.CTkButton(self, text="O", width=20, height=20, corner_radius=100, command=self.peak)
         passw_peak.place(relx=0.415, rely=0.66)
@@ -79,7 +84,7 @@ class Welcome(ctk.CTk):
         else:
             self.passw_entry.configure(show="*")
 
-    def IniciarSesion(self):
+    def IniciarSesion(self, event=None):
         #obtenemos los datos del usuario
         self.user_email = self.email_entry.get()
         self.user_passsw = self.passw_entry.get()
