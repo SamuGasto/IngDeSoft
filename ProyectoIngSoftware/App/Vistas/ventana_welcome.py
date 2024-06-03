@@ -33,20 +33,20 @@ class Welcome(ctk.CTk):
         self.mainloop()
 
     def Contenido(self):#Frames
-        nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans", -25, "italic"))
+        nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans MS", -25, "italic"))
         nombre_company.place(relx=0.05, rely=0.025)
-        bienvenido = ctk.CTkLabel(self, text="¡Bienvenido!", font=("Comic Sans", -60, "bold"))
+        bienvenido = ctk.CTkLabel(self, text="¡Bienvenido!", font=("Comic Sans MS", -60, "bold"))
         bienvenido.place(relx=0.15, rely=0.15)
-        subtext = ctk.CTkLabel(self, text="Inicia sesión para continuar...", font=("Comic Sans", -20))
+        subtext = ctk.CTkLabel(self, text="Inicia sesión para continuar...", font=("Comic Sans MS", -20))
         subtext.place(relx=0.15, rely=0.3)
 
-        email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans", -25, "bold"))
+        email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans MS", -25, "bold"))
         email.place(relx=0.15, rely=0.43)
         self.email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
         self.email_entry.insert(0, "prueba@gmail.com")
         self.email_entry.place(relx=0.15, rely=0.5)
 
-        passw = ctk.CTkLabel(self, text="Contraseña", font=("Comic Sans", -25, "bold"))
+        passw = ctk.CTkLabel(self, text="Contraseña", font=("Comic Sans MS", -25, "bold"))
         passw.place(relx=0.15, rely=0.58)
         self.passw_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
         self.passw_entry.place(relx=0.15, rely=0.65)
@@ -66,14 +66,14 @@ class Welcome(ctk.CTk):
         logo_label = ctk.CTkLabel(self, image=logo, text="")
         logo_label.place(relx=0.6, rely=0.25)
 
-        no_email = ctk.CTkLabel(self, text="¿No tienes cuenta?", font=("Comic Sans", -15, "italic", "underline"))
+        no_email = ctk.CTkLabel(self, text="¿No tienes cuenta?", font=("Comic Sans MS", -15, "italic", "underline"))
         no_email.place(relx=0.65, rely=0.81)
         no_email_btn = ctk.CTkButton(self, width=85, height=25, corner_radius=25, command=self.cambiar_ventana,
-                                    text="Crear cuenta", font=("Comic Sans", -15))
+                                    text="Crear cuenta", font=("Comic Sans MS", -15))
         no_email_btn.place(relx=0.815, rely=0.815)
 
         iniciar_btn = ctk.CTkButton(self, width=100, height=45, corner_radius=25, text="Iniciar sesión",
-                                    font=("Comic Sans", -20), command=self.IniciarSesion)
+                                    font=("Comic Sans MS", -20), command=self.IniciarSesion)
         iniciar_btn.place(relx=0.15, rely=0.8)
         #Implementar lógica para iniciar la sesión, mandando la query a la BD.
 

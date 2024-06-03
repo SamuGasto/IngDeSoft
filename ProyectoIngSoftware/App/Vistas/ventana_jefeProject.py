@@ -41,7 +41,7 @@ class JP(ctk.CTk):
         #cuerpo principal
         self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
         self.body.pack(side="right", fill="both", expand=True)
-        #frame que contiene ID del proyecto actual
+        #frame que contiene Nombre del proyecto actual
         self.top_subpanel = ctk.CTkFrame(self.body, fg_color="transparent", height=120, corner_radius=0)
         self.top_subpanel.pack(side=ctk.TOP, fill="x", expand=False)
         #frame para la imágen
@@ -94,7 +94,7 @@ class JP(ctk.CTk):
 
     def contenido_subpanel(self):
         #texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
-        self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text="proyecto actual", font=("Comic Sans", -25))
+        self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text="Selecciona o crea un proyecto", font=("Comic Sans", -25))
         self.proyecto_actual.pack(side=ctk.TOP)
 
     def searchForProject(self):
@@ -264,38 +264,49 @@ class JP(ctk.CTk):
 
     def AnadirRequerimiento(self):
         ventana_emergente = ctk.CTkToplevel(self)
-        ventana_emergente.configure(fg_color="white")
+        ventana_emergente.configure(fg_color="#061d2c")
         centrarVentana(ventana_emergente, 700, 450)
         ventana_emergente.title("Añadir Requerimientos")
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
-        
-        titulo = ctk.CTkLabel(ventana_emergente, text="Ingresa requerimientos al proyecto", text_color="black",
-                            font=("Poppins", -15))
-        titulo.pack(side=ctk.TOP, anchor=ctk.N)
 
-        # Crear un frame para contener nombre y nombre_entry
-        self.REQ = ctk.CTkFrame(ventana_emergente, fg_color="white")
-        self.REQ.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
+
+        
+        titulo = ctk.CTkLabel(ventana_emergente, text="Ingresa requerimientos al proyecto", text_color="#ffffff",
+                            font=("Poppins", -25, "bold"))
+        titulo.pack(side=ctk.TOP, anchor=ctk.NW, padx=15, pady=3)
+        subtitulo = ctk.CTkLabel(ventana_emergente, text="A cada requerimiento se le asignará un ID automáticamente.", text_color="#ffffff",
+                            font=("Poppins", -17, "italic"))
+        subtitulo.pack(side=ctk.TOP, anchor=ctk.NW, padx=15, pady=3)
+
+        enviar = ctk.CTkButton(ventana_emergente, height=35, width=45, corner_radius=50, border_width=1.5, border_color="white",
+                                    text="Agregar al proyecto", text_color="white", font=("Helvetica", -15, "bold"))
+        enviar.pack(side=ctk.BOTTOM, anchor=ctk.S, pady=10)
+
+        # Crear un frame para contener reques y el botón
+        self.REQ = ctk.CTkScrollableFrame(ventana_emergente, fg_color="transparent")
+        self.REQ.pack(side=ctk.TOP, pady=5, fill="both", expand=True)
 
         #Crear subframes dentro de self.REQ
 
-        self.reques = ctk.CTkFrame(self.REQ, fg_color="white")
-        self.reques.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
+        self.reques = ctk.CTkFrame(self.REQ, fg_color="transparent")
+        self.reques.pack(side=ctk.LEFT, padx=5, pady=5, anchor=ctk.NW)
 
 
         self.add_requerimiento_entry()
 
         # Botón para agregar más requerimientos
         self.more_button_frame2 = ctk.CTkFrame(self.REQ, fg_color="transparent")
-        self.more_button_frame2.pack(side=ctk.LEFT, padx=5, pady=3, anchor=ctk.N)
+        self.more_button_frame2.pack(side=ctk.LEFT, padx=5, pady=5, anchor=ctk.N)
         
-        more_button = ctk.CTkButton(self.more_button_frame2, width=25, height=25, text="+", text_color="black", font=("Helvetica", -15), command=self.add_requerimiento_entry)
-        more_button.pack(pady=3, anchor=ctk.CENTER)
+        more_button = ctk.CTkButton(self.more_button_frame2, height=35, width=45, corner_radius=50, border_width=1.5, border_color="white",
+                                    text="+", text_color="black", font=("Helvetica", -20, "bold"), command=self.add_requerimiento_entry)
+        more_button.pack(pady=5, anchor=ctk.CENTER)
         
         
 
     def add_requerimiento_entry(self):
-        self.req = ctk.CTkEntry(self.reques, placeholder_text="Requerimiento...", width=200)
+        self.req = ctk.CTkEntry(self.reques, placeholder_text="Ingresar requerimiento...", width=350, height=35, border_color="white",
+                                text_color="white")
         self.req.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
         self.requerimientos.append(self.req)
