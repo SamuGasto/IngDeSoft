@@ -43,7 +43,7 @@ class Welcome(ctk.CTk):
         email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans MS", -25, "bold"))
         email.place(relx=0.15, rely=0.43)
         self.email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
-        self.email_entry.insert(0, "prueba@gmail.com")
+        self.email_entry.insert(0, "prueba2@gmail.com")
         self.email_entry.place(relx=0.15, rely=0.5)
 
         passw = ctk.CTkLabel(self, text="Contraseña", font=("Comic Sans MS", -25, "bold"))

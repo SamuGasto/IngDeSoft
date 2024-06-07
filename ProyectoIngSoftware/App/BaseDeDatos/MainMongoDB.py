@@ -22,8 +22,9 @@ print("Datos en la colección 'Projects':")
 for project in projects:
     print(project)
 """
-# print(db['Projects'].find_one({'owner' : 'prueba@gmail.com'}))
-# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':111})
-# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':112})
-# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':113})
-# db['Users'].update_one({'email': "prueba@gmail.com"},{'$set': {'proyectos': 0}})
+
+# print(db['Projects'].find_one({'owner' : 'prueba2@gmail.com'}))
+# db['Projects'].delete_one({'owner':"prueba2@gmail.com", 'id':111})
+# db['Projects'].delete_one({'owner':"prueba2@gmail.com", 'id':112})
+# db['Projects'].delete_one({'owner':"prueba2@gmail.com", 'id':113})
+# db['Users'].update_one({'email': "prueba@2gmail.com"},{'$set': {'proyectos': 0}})
