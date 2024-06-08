@@ -33,6 +33,25 @@ class Welcome(ctk.CTk):
         self.mainloop()
 
     def Contenido(self):#Frames
+        # Imágen del logo
+        # Obtener la ruta absoluta del directorio actual del script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
+        logo = ctk.CTkImage(light_image=Image.open(logo_path),
+            size=(250, 250))
+        logo_label = ctk.CTkLabel(self, image=logo, text="")
+        logo_label.place(relx=0.6, rely=0.25)
+
+        # Imagen ojo abierto
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        ojo_abierto_path = os.path.join(current_dir, "../Imagenes/ojo_abierto.png")
+        self.ojo_abierto = ctk.CTkImage(light_image=Image.open(ojo_abierto_path),size=(25,25))
+
+        # Imagen ojo cerrado
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        ojo_cerrado_path = os.path.join(current_dir, "../Imagenes/ojo_cerrado.png")
+        self.ojo_cerrado = ctk.CTkImage(light_image=Image.open(ojo_cerrado_path),size=(25,25))
+        
         nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans MS", -25, "italic"))
         nombre_company.place(relx=0.05, rely=0.025)
         bienvenido = ctk.CTkLabel(self, text="¡Bienvenido!", font=("Comic Sans MS", -60, "bold"))
@@ -54,17 +73,12 @@ class Welcome(ctk.CTk):
         # Vincular la tecla 'Enter' al CTkEntry de contraseña
         self.passw_entry.bind('<Return>', self.IniciarSesion)
 
-        passw_peak = ctk.CTkButton(self, text="O", width=20, height=20, corner_radius=100, command=self.peak)
-        passw_peak.place(relx=0.415, rely=0.66)
+        self.passw_peak = ctk.CTkButton(self, image=self.ojo_cerrado,fg_color="transparent",hover_color="#4E4E4E",
+                                        text="", height=10, width=10, corner_radius=100,
+                                        command=self.peak)
+        self.passw_peak.place(relx=0.415, rely=0.645)
 
-        # Imágen del logo
-        # Obtener la ruta absoluta del directorio actual del script
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
-        logo = ctk.CTkImage(light_image=Image.open(logo_path),
-            size=(250, 250))
-        logo_label = ctk.CTkLabel(self, image=logo, text="")
-        logo_label.place(relx=0.6, rely=0.25)
+        
 
         no_email = ctk.CTkLabel(self, text="¿No tienes cuenta?", font=("Comic Sans MS", -15, "italic", "underline"))
         no_email.place(relx=0.65, rely=0.81)
@@ -75,14 +89,17 @@ class Welcome(ctk.CTk):
         iniciar_btn = ctk.CTkButton(self, width=100, height=45, corner_radius=25, text="Iniciar sesión",
                                     font=("Comic Sans MS", -20), command=self.IniciarSesion)
         iniciar_btn.place(relx=0.15, rely=0.8)
-        #Implementar lógica para iniciar la sesión, mandando la query a la BD.
 
+        
+        
 
     def peak(self):
         if self.passw_entry.cget("show") == "*":
             self.passw_entry.configure(show="")
+            self.passw_peak.configure(image=self.ojo_abierto)
         else:
             self.passw_entry.configure(show="*")
+            self.passw_peak.configure(image=self.ojo_cerrado)
 
     def IniciarSesion(self, event=None):
         #obtenemos los datos del usuario
@@ -118,5 +135,5 @@ class Welcome(ctk.CTk):
         ventana_emergente.focus()
         
 #borrar para uso final
-#app = Welcome()
-#app.mainloop()
+# app = Welcome()
+# app.mainloop()

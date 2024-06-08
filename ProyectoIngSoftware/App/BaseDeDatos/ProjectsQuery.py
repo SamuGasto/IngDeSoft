@@ -130,7 +130,7 @@ def Ingresar_requerimientos(email_user:str, id_proyecto:int, reques:list)-> None
     """Función para ingresar requerimientos al proyecto actual"""
     if (BuscarProyecto(email_user, id_proyecto)):
         db['Projects'].update_one({'owner': email_user, 'id': id_proyecto},
-                                  {'$push': {'Requerimientos': {'$each': reques}}})
+                                {'$push': {'Requerimientos': {'$each': reques}}})
     else:
         print("No se pudo actualizar la lista de requerimientos")
 

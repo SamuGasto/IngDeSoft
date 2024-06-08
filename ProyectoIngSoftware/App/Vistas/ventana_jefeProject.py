@@ -3,6 +3,8 @@ from PIL import Image
 import os
 import BaseDeDatos.UsersQuery as User
 import BaseDeDatos.ProjectsQuery as Proj
+from BaseDeDatos.MainMongoDB import db
+import BaseDeDatos.Invitations as INV
 from Vistas.util import centrarVentana
 from functools import partial
 
@@ -36,9 +38,17 @@ class JP(ctk.CTk):
         if Proj.BuscarProyectos(self.user_email) == 0:
             pass
         else:
-            self.ListarProyectoExistente()
+            self.ListarProyectosExistentes()
         
-        self.mainloop() 
+        if db['Invitaciones'].count_documents({"correo_invitado": self.user_email, "estado": "aceptada"}) == 0:
+            pass
+        else:
+            self.ListarProyectosInvitados()
+            
+        self.after(100, self.verificar_invitaciones)
+        
+        self.mainloop()
+
 
 
 
@@ -58,12 +68,20 @@ class JP(ctk.CTk):
 
     def controles_sidebar(self):
 
-        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20))
+        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Proyectos", font=("Comic Sans", -20))
         self.mis_proyectos.pack(side=ctk.TOP, pady=5, padx=5)
 
         self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
                                                 fg_color="red", width=200, height=65, corner_radius=15, command= self.crear_proyecto)
         self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10, padx=5)
+
+        #Creamos TabView
+        tabview = ctk.CTkTabview(master=self.side_bar, height=400)
+        tabview.pack(pady=(5,0), fill="both")
+        #Agregamos Tabs
+        self.tabBar1 = tabview.add("Mis proyectos")
+        self.tabBar2 = tabview.add("Otros Proyectos")
+        
 
     def contenido_body(self):
         #Creamos TabView
@@ -89,15 +107,12 @@ class JP(ctk.CTk):
 
         self.reques_texto = ctk.CTkScrollableFrame(self.principal)
         self.reques_texto.pack(side=ctk.TOP, fill="both", expand=True, anchor = ctk.N, pady=(5,0))
-
-
-        
         
         ##Objetos de tab3(MÉTRICAS)
 
         ##objetos del body
         self.update_rq = ctk.CTkButton(self.body, text="Actualizar requerimientos", fg_color="light blue", text_color="black",
-                                        font=("Comic Sans", -15), border_width=1.5, border_color="white",
+                                        font=("Comic Sans MS", -15, "bold"), border_width=1.5, border_color="white",
                                         width=150, height=35, corner_radius=25, command=self.Update_reqs)
         self.update_rq.pack(side=ctk.RIGHT, anchor=ctk.SW, pady=5, padx=5)
 
@@ -110,7 +125,7 @@ class JP(ctk.CTk):
         self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text="Selecciona o crea un proyecto", font=("Comic Sans", -25))
         self.proyecto_actual.pack(side=ctk.TOP)
 
-    def Update_reqs(self):
+    def Update_reqs(self): #Función para actualizar en pantalla los requerimientos de la base de datos
         self.reques_proyecto_actual = Proj.ObtenerRequerimientos(self.user_email, self.ID_activo)
         for widget in self.reques_texto.winfo_children():
             widget.destroy()
@@ -119,7 +134,7 @@ class JP(ctk.CTk):
                             font=("Comic Sans MS", -15, "bold"))
             self.reque_label.pack(side=ctk.TOP, anchor=ctk.NW)
 
-    def contenido_image(self):
+    def contenido_image(self): #Imagen compañía
         # Obtener la ruta absoluta del directorio actual del script
         current_dir = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
@@ -128,33 +143,47 @@ class JP(ctk.CTk):
         logo_label = ctk.CTkLabel(self.topimage, image=logo, text="")
         logo_label.pack(padx=5, pady=5)
     
-    def ListarProyectoExistente(self):
+    def ListarProyectosExistentes(self): #Funcion que busca y lista los proyectos del usuario
         nombres = Proj.ObtenerNombresProyecto(self.user_email)
-        proj_activos = Proj.BuscarProyectos(self.user_email)
-        i=0
-        while i < proj_activos:
-            nombre_proyecto = nombres[i]
+        #proj_activos = Proj.BuscarProyectos(self.user_email)
+
+        for nombre in nombres:
+            nombre_proyecto = nombre
             self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, nombre_proyecto)
             texto = "PRO-" + str(self.proyecto_id)
             
-            self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+            self.new_proyect = ctk.CTkButton(self.tabBar1, text=texto, fg_color="orange",font=("Arial", -20),
                                                     width=200, height=65, corner_radius=15,command=partial(self.cambiar_proyecto, nombre_proyecto))
             self.new_proyect.pack(side=ctk.TOP, pady=10, padx=5)
-            i+=1
 
+    def ListarProyectosInvitados(self):
+        proyectos_aceptados = INV.ObtenerProyectosAceptados(self.user_email)
+        for proyecto in proyectos_aceptados:
+            self.agregar_boton_proyecto(proyecto["proyecto_id"])
+        
 
-    def crear_proyecto2(self):#Crea el botón en el lateral
+    def agregar_boton_proyecto(self, proyecto_id):
+        texto = f"PRO-{proyecto_id}"
+        self.proyecto_inv = ctk.CTkButton(self.tabBar2, text=texto, fg_color="orange", font=("Arial", -20),
+                                        width=200, height=65, corner_radius=15)
+        self.proyecto_inv.pack(side=ctk.TOP, pady=10, padx=5)
+
+    def crear_proyecto2(self): #Crea el botón de proyecto activo en el lateral
         self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)
         texto = "PRO-" + str(self.proyecto_id)
         nombre_proyecto = Proj.ObtenerDatosProyecto(self.user_email, self.proyecto_id)
         nombre_proyecto = nombre_proyecto[0]
-        self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+        self.new_proyect = ctk.CTkButton(self.tabBar1, text=texto, fg_color="orange",font=("Arial", -20),
                                                 width=200, height=65, corner_radius=15, command=lambda: self.cambiar_proyecto(nombre_proyecto))
         self.new_proyect.pack(side=ctk.TOP, pady=10)
 
-    def crear_proyecto(self):
+    def crear_proyecto(self): #Ventana para crear un proyecto
         if Proj.BuscarProyectos(self.user_email) >= 3:
-            self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+            ventana_aviso = self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+
+            cerrar = ctk.CTkButton(ventana_aviso, text="Aceptar", command=ventana_aviso.withdraw)
+            cerrar.pack(pady=(0,5))
+
             return
         else:
             self.window = ctk.CTkToplevel(self)
@@ -228,7 +257,7 @@ class JP(ctk.CTk):
         self.participantes_rol.append(self.combobox_rol)  
     
 
-    def crear_proyecto_query(self):
+    def crear_proyecto_query(self): #Query para añadir el proyecto la base de datos
         Proj.AumentarProyectos(self.user_email)
         print("Numero de proyectos activos: " + str(Proj.BuscarProyectos(self.user_email)))
         
@@ -239,6 +268,11 @@ class JP(ctk.CTk):
 
         Proj.CrearNuevoProyecto(self.Nombre_Proyecto, miembros, self.user_email)
         
+        # Enviar invitaciones
+        proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)
+        for correo, rol in zip(participantes_emails, participantes_roles):
+            INV.IngresarInvitacion(self.user_email, proyecto_id, correo, rol, "pendiente")
+
         self.window.withdraw()
         self.mostrar_ventana_emergente("Proyecto creado exitosamente")
         self.participantes_entries = []
@@ -262,6 +296,8 @@ class JP(ctk.CTk):
         #Paso 2: Listar los requerimientos del proyecto.
         self.reques_proyecto_actual = Proj.ObtenerRequerimientos(self.user_email, self.ID_activo)
         if self.reques_proyecto_actual == [] or None:
+            for widget in self.reques_texto.winfo_children():
+                widget.destroy()
             self.reque_label = ctk.CTkLabel(self.reques_texto, text="El proyecto aún no posee requerimientos", text_color="white",
                                 font=("Comic Sans MS", -15, "bold"))
             self.reque_label.pack(side=ctk.TOP, anchor=ctk.NW)
@@ -274,6 +310,7 @@ class JP(ctk.CTk):
                 self.reque_label.pack(side=ctk.TOP, anchor=ctk.NW)
         
         #Paso 3: Visualizar las métricas del proyecto.
+
 
     def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)
@@ -291,29 +328,29 @@ class JP(ctk.CTk):
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
-    def AnadirRequerimiento(self):
-        ventana_emergente = ctk.CTkToplevel(self)
-        ventana_emergente.configure(fg_color="#061d2c")
-        centrarVentana(ventana_emergente, 700, 450)
-        ventana_emergente.title("Añadir Requerimientos")
-        ventana_emergente.attributes('-topmost' , 1)
-        ventana_emergente.focus()
+        return ventana_emergente
 
+    def AnadirRequerimiento(self): #Ventana para añadir requerimientos al proyecto actual
+        self.ventana_rq = ctk.CTkToplevel(self)
+        self.ventana_rq.configure(fg_color="#061d2c")
+        centrarVentana(self.ventana_rq, 700, 450)
+        self.ventana_rq.title("Añadir Requerimientos")
+        self.ventana_rq.attributes('-topmost' , 1)
+        self.ventana_rq.focus()
 
-        
-        titulo = ctk.CTkLabel(ventana_emergente, text="Ingresa requerimientos al proyecto", text_color="#ffffff",
+        titulo = ctk.CTkLabel(self.ventana_rq, text="Ingresa requerimientos al proyecto", text_color="#ffffff",
                             font=("Poppins", -25, "bold"))
         titulo.pack(side=ctk.TOP, anchor=ctk.NW, padx=15, pady=3)
-        subtitulo = ctk.CTkLabel(ventana_emergente, text="A cada requerimiento se le asignará un ID automáticamente.", text_color="#ffffff",
+        subtitulo = ctk.CTkLabel(self.ventana_rq, text="A cada requerimiento se le asignará un ID automáticamente.", text_color="#ffffff",
                             font=("Poppins", -17, "italic"))
         subtitulo.pack(side=ctk.TOP, anchor=ctk.NW, padx=15, pady=3)
 
-        enviar = ctk.CTkButton(ventana_emergente, height=35, width=45, corner_radius=50, border_width=1.5, border_color="white",
+        enviar = ctk.CTkButton(self.ventana_rq, height=35, width=45, corner_radius=50, border_width=1.5, border_color="white",
                                     text="Agregar al proyecto", text_color="white", font=("Helvetica", -15, "bold"), command=self.reqs_query)
         enviar.pack(side=ctk.BOTTOM, anchor=ctk.S, pady=10)
 
         # Crear un frame para contener reques y el botón
-        self.REQ = ctk.CTkScrollableFrame(ventana_emergente, fg_color="transparent")
+        self.REQ = ctk.CTkScrollableFrame(self.ventana_rq, fg_color="transparent")
         self.REQ.pack(side=ctk.TOP, pady=5, fill="both", expand=True)
 
         #Crear subframes dentro de self.REQ
@@ -334,7 +371,7 @@ class JP(ctk.CTk):
         
         
 
-    def add_requerimiento_entry(self):
+    def add_requerimiento_entry(self): #Funcion para añadir más entrys para requerimientos
         self.req = ctk.CTkEntry(self.reques, placeholder_text="Ingresar requerimiento...", width=350, height=35, border_color="white",
                                 text_color="white")
         self.req.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5) 
@@ -347,13 +384,53 @@ class JP(ctk.CTk):
         self.requerimientos.append(self.req)
         self.contador+=45
     
-    def reqs_query(self):
+    def reqs_query(self): #Query para ingresar requerimientos al proyecto
         requerimientos = [entry.get() for entry in self.requerimientos]
-        print(self.user_email, self.ID_activo, requerimientos)
+        #Mandar la query con los requerimientos
         Proj.Ingresar_requerimientos(self.user_email, self.ID_activo, requerimientos)
-        #mandar query con los requerimientos
-        
-
+        #Reiniciar variables
         requerimientos= []
         self.requerimientos = []
         self.contador = 5
+
+        self.ventana_rq.withdraw()
+        ventanita = self.mostrar_ventana_emergente("Requerimientos agregados exitosamente.")
+        cerrar = ctk.CTkButton(ventanita, text="Aceptar", command=ventanita.withdraw)
+        cerrar.pack(pady=(0,5))
+        self.Update_reqs()
+
+    
+    def verificar_invitaciones(self):
+        invitaciones_pendientes = db['Invitaciones'].find({"correo_invitado": self.user_email, "estado": "pendiente"})
+        for inv in invitaciones_pendientes:
+            # Mostrar ventana de invitación
+            self.InvitationWindow = self.mostrar_ventana_invitacion(inv)
+            self.wait_window(self.InvitationWindow)
+
+    def mostrar_ventana_invitacion(self, invitacion):
+        ventana_invitacion = ctk.CTkToplevel(self)
+        ventana_invitacion.configure(fg_color="white")
+        centrarVentana(ventana_invitacion, 400, 200)
+        ventana_invitacion.title("Invitación a Proyecto")
+        ventana_invitacion.attributes('-topmost' , 1)
+
+        mensaje = f"Has sido invitado por {invitacion['owner_proyecto']}\n al proyecto ID: {invitacion['proyecto_id']}\n como {invitacion['rol']}."
+        etiqueta = ctk.CTkLabel(ventana_invitacion, text=mensaje, font=("Arial", -15), text_color="black")
+        etiqueta.pack(pady=20)
+
+        aceptar_button = ctk.CTkButton(ventana_invitacion, text="Aceptar", command=lambda: self.responder_invitacion(invitacion, "aceptada"))
+        aceptar_button.pack(side=ctk.LEFT, padx=20, pady=20)
+        return ventana_invitacion
+
+    def responder_invitacion(self, invitacion, respuesta):
+        self.InvitationWindow.destroy()
+        if respuesta == "aceptada":
+            db['Invitaciones'].update_one({"_id": invitacion["_id"]}, {"$set": {"estado": respuesta}})
+            window = self.mostrar_ventana_emergente(f"Invitación {respuesta}")
+            cerrar = ctk.CTkButton(window, text="Cerrar", command=window.destroy)
+            cerrar.pack(pady=(0,5))
+            self.wait_window(window)
+            
+            for widget in self.tabBar2.winfo_children():
+                widget.destroy()
+            self.ListarProyectosInvitados()
