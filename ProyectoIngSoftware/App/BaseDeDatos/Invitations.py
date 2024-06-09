@@ -1,5 +1,5 @@
 from BaseDeDatos.MainMongoDB import db
-import BaseDeDatos.UsersQuery_new as user
+import BaseDeDatos.UsersQuery as user
 import BaseDeDatos.ProjectsQuery as Proj
 from pymongo import MongoClient, errors
 
@@ -9,6 +9,7 @@ def IngresarInvitacion(owner:str, id_proyecto:int, invitado:str, rol:str, estado
     invitacion = {
         "owner_proyecto":owner,
         "proyecto_id": id_proyecto,
+        "nombre_proyecto": db['Projects'].find_one({'owner': owner, "id": id_proyecto}).get('nombre'),
         "correo_invitado": invitado,
         "rol": rol,
         "estado": estado

@@ -1,5 +1,5 @@
 from BaseDeDatos.MainMongoDB import db
-import BaseDeDatos.UsersQuery_new as user
+import BaseDeDatos.UsersQuery as user
 
 def CrearNuevoProyecto(Nombre, participantes: list, email_user):
     owner = email_user
@@ -61,6 +61,9 @@ def ObtenerDatosProyecto(email_user, id_proyecto):
     else:
         print("No se encontró el proyecto")
         return None
+def ObtenerNombreProyecto(email_user, id_proyecto):
+    """Funcion que retorna el nombre de un proyecto"""
+    
 
 def ObtenerNombresProyecto(email_user):
     """

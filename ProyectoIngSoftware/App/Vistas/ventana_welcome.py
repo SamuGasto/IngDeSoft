@@ -3,7 +3,7 @@ from PIL import Image
 import Vistas.ventana_jefeProject as JEFE
 import Vistas.ventana_crearCuenta as Crearc
 import os
-import BaseDeDatos.UsersQuery_new as db
+import BaseDeDatos.UsersQuery as db
 
 
 #creamos la clase ventana para la bienvenida

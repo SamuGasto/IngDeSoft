@@ -150,23 +150,23 @@ class JP(ctk.CTk):
         for nombre in nombres:
             nombre_proyecto = nombre
             self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, nombre_proyecto)
-            texto = "PRO-" + str(self.proyecto_id)
+            texto = f"{nombre_proyecto}"
             
-            self.new_proyect = ctk.CTkButton(self.tabBar1, text=texto, fg_color="orange",font=("Arial", -20),
+            self.new_proyect = ctk.CTkButton(self.tabBar1, text=texto, fg_color="light blue",font=("Arial", -20),text_color="black",
                                                     width=200, height=65, corner_radius=15,command=partial(self.cambiar_proyecto, nombre_proyecto))
-            self.new_proyect.pack(side=ctk.TOP, pady=10, padx=5)
+            self.new_proyect.pack(side=ctk.TOP, pady=10, fill="x")
 
     def ListarProyectosInvitados(self):
         proyectos_aceptados = INV.ObtenerProyectosAceptados(self.user_email)
         for proyecto in proyectos_aceptados:
-            self.agregar_boton_proyecto(proyecto["proyecto_id"])
+            self.agregar_boton_proyecto(proyecto["nombre_proyecto"])
         
 
-    def agregar_boton_proyecto(self, proyecto_id):
-        texto = f"PRO-{proyecto_id}"
-        self.proyecto_inv = ctk.CTkButton(self.tabBar2, text=texto, fg_color="orange", font=("Arial", -20),
+    def agregar_boton_proyecto(self, nombre_proyecto):
+        texto = f"{nombre_proyecto}"
+        self.proyecto_inv = ctk.CTkButton(self.tabBar2, text=texto, fg_color="orange", font=("Arial", -20),text_color="black",
                                         width=200, height=65, corner_radius=15)
-        self.proyecto_inv.pack(side=ctk.TOP, pady=10, padx=5)
+        self.proyecto_inv.pack(side=ctk.TOP, pady=10, fill="x")
 
     def crear_proyecto2(self): #Crea el botón de proyecto activo en el lateral
         self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)

@@ -50,7 +50,7 @@ for coleccion in colecciones:
 
 
 
-# print(db['Projects'].find_one({'owner' : 'prueba2@gmail.com'}))
+# eliminar_todos_los_documentos('Invitaciones')
 
 # db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':111})
 # db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':112})
