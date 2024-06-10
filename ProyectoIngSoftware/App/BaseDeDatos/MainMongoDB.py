@@ -39,12 +39,12 @@ def eliminar_coleccion(coleccion_nombre: str):
     except Exception as e:
         print(f"Error inesperado: {e}")
 
-"""# Obtén e imprime todas las colecciones
+# Obtén e imprime todas las colecciones
 colecciones = db.list_collection_names()
 
 print("Colecciones en la base de datos:")
 for coleccion in colecciones:
-    print(coleccion)"""
+    print(coleccion)
 
 
 
