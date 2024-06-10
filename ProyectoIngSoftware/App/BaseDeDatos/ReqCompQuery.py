@@ -89,4 +89,5 @@ def AgregarRequerimientos(id_proyecto:any, member:list, requesNcomp:list):
     print("Requerimientos agregados con éxito")
 
 
-def AgregarComponentes(id_proyecto)
+def AgregarComponentes(id_proyecto):
+    return

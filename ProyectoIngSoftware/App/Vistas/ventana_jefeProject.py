@@ -277,6 +277,7 @@ class JP(ctk.CTk):
         self.mostrar_ventana_emergente("Proyecto creado exitosamente")
         self.participantes_entries = []
         participantes_emails = []
+        participantes_roles = []
         self.crear_proyecto2()
 
     def cambiar_proyecto(self, texto): #Botón para mostrar el contenido de un proyecto (Botón lateral)

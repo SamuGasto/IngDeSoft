@@ -39,17 +39,18 @@ def eliminar_coleccion(coleccion_nombre: str):
     except Exception as e:
         print(f"Error inesperado: {e}")
 
-# Obtén e imprime todas las colecciones
-colecciones = db.list_collection_names()
+# # Obtén e imprime todas las colecciones
+# colecciones = db.list_collection_names()
 
-print("Colecciones en la base de datos:")
-for coleccion in colecciones:
-    print(coleccion)
-
-
+# print("Colecciones en la base de datos:")
+# for coleccion in colecciones:
+#     print(coleccion)
 
 
 
+
+
+# eliminar_todos_los_documentos('Projects')
 # eliminar_todos_los_documentos('Invitaciones')
 
 # db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':111})
