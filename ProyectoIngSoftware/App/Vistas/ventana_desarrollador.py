@@ -1,8 +1,8 @@
 #################################v2
+from xml.dom import HierarchyRequestErr
 import customtkinter as ctk
 from tkinter import ttk, Toplevel, StringVar, messagebox
 import Estilos as style
-
 #creamos la clase ventana para el jefe de proyecto
 class Dev(ctk.CTk):
     def __init__(self):
@@ -18,7 +18,7 @@ class Dev(ctk.CTk):
                             {"ID": "TAR-002", "Descripción": "Descripción Tarea 2", "Estado": "Realizada"}]
         
         self.complejidad = 0 #Complejidad
-        self.geometry("1200x720")
+        self.geometry("1200x560")
         self.title("PaltaEstimateApp")
         self.Paneles()
         #self.controles_sidebar()
@@ -27,36 +27,25 @@ class Dev(ctk.CTk):
         #self.mainloop() !! BORRAR EL COMENTARIO PARA USO FINAL
     
     def Paneles(self):
-        """#sección izquierda
-        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=0)
-        self.side_bar.pack(side="left", fill="y", expand=False)"""
+        
         #cuerpo principal
-        self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
+        self.body = ctk.CTkFrame(self, fg_color=style.Colores.backgroundVariant, corner_radius=0)
         self.body.pack(side="right", fill="both", expand=True)
-        """#frame que contiene ID del proyecto actual
-        self.top_subpanel = ctk.CTkFrame(self.body, fg_color="transparent", height=120, corner_radius=0)
-        self.top_subpanel.pack(side=ctk.TOP, fill="x", expand=False)
-        #frame para la imágen
-        self.topimage = ctk.CTkFrame(self.top_subpanel, fg_color="transparent", corner_radius=0)
-        self.topimage.pack(side=ctk.RIGHT, expand=False)"""
+        
 
-    """def controles_sidebar(self):
-        texto= "PRO-"+str(self.proyecto_id)
-        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20), fg_color="black")
-        self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
-        self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                            width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
-        self.boton_proyecto.pack(side=ctk.TOP, pady=10)
-
-        self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
-                                                fg_color="red", width=200, height=65, corner_radius=0, command= self.crear_proyecto)
-        self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10)"""
+    
     
     #INICIAIZAR TABLAS----------------------------------------------------------------------------------
     def contenido_body(self):
         #Creamos TabView
-        tabview = ctk.CTkTabview(master=self.body, height=400)
-        tabview.pack(padx=5, pady=5, fill="x")
+        tabview = ctk.CTkTabview(master=self.body,
+                                 fg_color=style.Colores.backgroundVariant2,
+                                 segmented_button_fg_color=style.Colores.backgroundVariant2,
+                                 segmented_button_selected_color=style.BotonNormal.fg_color,
+                                 segmented_button_selected_hover_color=style.BotonNormal.hover_color,
+                                 segmented_button_unselected_color=style.BotonSecundario.fg_color,
+                                 segmented_button_unselected_hover_color=style.BotonSecundario.hover_color,)
+        tabview.pack(padx=5, pady=5, fill="both", expand=True)
         #Agregamos Tabs
         self.tab1 = tabview.add("Puntos de Función")  
         self.tab2 = tabview.add("Requerimientos")  
@@ -72,44 +61,81 @@ class Dev(ctk.CTk):
         ## Crear la tabla en la pestaña "Tareas"
         self.create_table3(self.tab3)
 
-        
-
-        ##objetos del body
+        """##objetos del body
         self.administrar  = ctk.CTkButton(self.body, text="Administración\nCompleta", text_color="black",fg_color="white", font=("Comic Sans", -15, "bold"),
                                         width=150, height=35, corner_radius=25)
-        self.administrar.pack(side=ctk.LEFT, anchor=ctk.SE, pady=5, padx=5)
+        self.administrar.pack(side=ctk.LEFT, anchor=ctk.SE, pady=5, padx=5)"""
 
     #TABLA PUNTOS DE FUNCIÓN----------------------------------------------------------------------------------
     def create_table1(self, parent):
         columns = ("col1", "col2", "col3", "col4", "col5", "col6")
-        self.tree = ttk.Treeview(parent, columns=columns, show='headings')
-        self.tree.heading("col1", text="ID", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+
+        # Crear un nuevo estilo
+        custom_style = ttk.Style()
+        
+        # Configurar el estilo de la Treeview
+        custom_style.configure("Custom.Treeview", 
+                                background=style.BotonLista.fg_color,  # Cambiar el color de fondo
+                                foreground=style.BotonLista.text_color,  # Cambiar el color del texto
+                                font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
+                                highlightthickness=0,  # Eliminar el borde de resaltado
+                                borderwidth=0)  # Eliminar el ancho del borde
+
+        self.tree = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
+        self.tree.heading("col1", text="ID", anchor="center", )  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.heading("col2", text="Componente Funcional", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.heading("col3", text="Tipo", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.heading("col4", text="Número Atributos", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.heading("col5", text="Complejidad", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.heading("col6", text="Puntos de Función", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
-        self.tree.pack(fill="both", expand=True, padx=10, pady=10)
-
+        self.tree.pack(fill="both", expand=True, padx=10, pady=10, )
+        
+        
+        
         # Configurar la alineación de las columnas de datos
         for col in columns:
-            self.tree.column(col, anchor="center")  # Centrar los valores de las columnas
+            self.tree.column(col, anchor="center", )  # Centrar los valores de las columnas
         
         # Frame para contener los botones
-        button_frame = ctk.CTkFrame(parent)
+        button_frame = ctk.CTkFrame(parent, fg_color=style.Colores.backgroundVariant2)
         button_frame.pack(pady=10)
 
         # Botones
-        agregarComponente_button = ctk.CTkButton(button_frame, text="Agregar Componente", command=self.agregarComponenteVentana)
+        agregarComponente_button = ctk.CTkButton(button_frame, 
+                                                text="Agregar Componente", 
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color, 
+                                                command=self.agregarComponenteVentana)
         agregarComponente_button.grid(row=0, column=0, padx=5)
 
-        delete_row_button = ctk.CTkButton(button_frame, text="Eliminar Componente", command=self.eliminar_componente)
+        delete_row_button = ctk.CTkButton(button_frame, text="Eliminar Componente",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.eliminar_componente)
         delete_row_button.grid(row=0, column=1, padx=5)
 
-        update_db_button = ctk.CTkButton(button_frame, text="Regla de Estimación", command=None)
+        update_db_button = ctk.CTkButton(button_frame, text="Regla de Estimación",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=None)
         update_db_button.grid(row=0, column=2, padx=5)
 
-        estimation_rule_button = ctk.CTkButton(button_frame, text="Actualizar Base de Datos", command=self.mensajeBase)
+        estimation_rule_button = ctk.CTkButton(button_frame, text="Actualizar Base de Datos",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.mensajeBase)
         estimation_rule_button.grid(row=0, column=3, padx=5)
     
     def inicializar_requerimientos(self):#Agregar valores por defecto para demo funcionalidad REQUERIMIENTOS
@@ -124,26 +150,50 @@ class Dev(ctk.CTk):
     #TABLA REQUERIMIENTOS----------------------------------------------------------------------------------
     def create_table2(self, parent):
         columns = ("col1", "col2", "col3")
-        self.tree2 = ttk.Treeview(parent, columns=columns, show='headings')
-        self.tree2.heading("col1", text="ID", anchor="center")  # genera automaticamente ID
+
+        # Crear un nuevo estilo
+        custom_style = ttk.Style()
+        
+        # Configurar el estilo de la Treeview
+        custom_style.configure("Custom.Treeview", 
+                                background=style.BotonLista.fg_color,  # Cambiar el color de fondo
+                                foreground=style.BotonLista.text_color,  # Cambiar el color del texto
+                                font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
+                                highlightthickness=0,  # Eliminar el borde de resaltado
+                                borderwidth=0)  # Eliminar el ancho del borde
+        
+        self.tree2 = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
+        self.tree2.heading("col1", text="ID", anchor="center",)  # genera automaticamente ID
         self.tree2.heading("col2", text="descripcion", anchor="center")  # descripción
         self.tree2.heading("col3", text="Estado", anchor="center")  # Estados Pendiente y Revisado
         
-        self.tree2.pack(fill="both", expand=True, padx=10, pady=10)
+        self.tree2.pack(fill="both", expand=True, padx=10, pady=10,)
 
         # Configurar la alineación de las columnas de datos
         for col in columns:
             self.tree2.column(col, anchor="center")  # Centrar los valores de las columnas
 
         # FRAME para contener los botones
-        button_frame = ctk.CTkFrame(parent)
+        button_frame = ctk.CTkFrame(parent, fg_color=style.Colores.backgroundVariant2)
         button_frame.pack(pady=10)
 
         # BOTONES
-        update_db_button = ctk.CTkButton(button_frame, text="Editar estado", command=self.estadoRequerimiento)
+        update_db_button = ctk.CTkButton(button_frame, text="Editar estado",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.estadoRequerimiento)
         update_db_button.grid(row=0, column=3, padx=5)
 
-        estimation_rule_button = ctk.CTkButton(button_frame, text="Actualizar Base de Datos", command=self.mensajeBase)
+        estimation_rule_button = ctk.CTkButton(button_frame, text="Actualizar Base de Datos",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.mensajeBase)
         estimation_rule_button.grid(row=0, column=4, padx=5)
               
         return self.inicializar_requerimientos()
@@ -151,9 +201,21 @@ class Dev(ctk.CTk):
     #TABLA TAREAS----------------------------------------------------------------------------------
     def create_table3(self, parent):
         columns = ("col1", "col2", "col3")
-        self.tree3 = ttk.Treeview(parent, columns=columns, show='headings')
-        self.tree3.heading("col1", text="ID", anchor="center")  # generado automaticamente ID
-        self.tree3.heading("col2", text="descripcion", anchor="center")  # descripción
+
+        # Crear un nuevo estilo
+        custom_style = ttk.Style()
+        
+        # Configurar el estilo de la Treeview
+        custom_style.configure("Custom.Treeview", 
+                                background=style.BotonLista.fg_color,  # Cambiar el color de fondo
+                                foreground=style.BotonLista.text_color,  # Cambiar el color del texto
+                                font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
+                                highlightthickness=0,  # Eliminar el borde de resaltado
+                                borderwidth=0)  # Eliminar el ancho del borde
+        
+        self.tree3 = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
+        self.tree3.heading("col1", text="ID", anchor="center", )  # generado automaticamente ID
+        self.tree3.heading("col2", text="Descripción", anchor="center")  # descripción
         self.tree3.heading("col3", text="Estado", anchor="center")  # Estados Pendiente y Revisado
         
         self.tree3.pack(fill="both", expand=True, padx=10, pady=10)
@@ -163,14 +225,26 @@ class Dev(ctk.CTk):
             self.tree3.column(col, anchor="center")  # Centrar los valores de las columnas
 
         # FRAME para contener los botones
-        button_frame = ctk.CTkFrame(parent)
+        button_frame = ctk.CTkFrame(parent, fg_color=style.Colores.backgroundVariant2)
         button_frame.pack(pady=10)
 
         # BOTONES
-        update_db_button = ctk.CTkButton(button_frame, text="Editar estado", command=self.estadoTareas)
+        update_db_button = ctk.CTkButton(button_frame, text="Editar estado",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.estadoTareas)
         update_db_button.grid(row=0, column=3, padx=5)
 
-        estimation_rule_button = ctk.CTkButton(button_frame, text="Actualizar Base de Datos", command=self.mensajeBase)
+        estimation_rule_button = ctk.CTkButton(button_frame, text="Actualizar Base de Datos",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.mensajeBase)
         estimation_rule_button.grid(row=0, column=4, padx=5)
               
         return self.inicializar_tareas()
@@ -182,11 +256,11 @@ class Dev(ctk.CTk):
         estadoT_window.title("Cambiar Estado de la Tarea")
 
         # Frame para los campos de texto
-        frame_entries = ctk.CTkFrame(estadoT_window)
+        frame_entries = ctk.CTkFrame(estadoT_window, fg_color=style.Colores.backgroundVariant)
         frame_entries.pack(padx=10, pady=10, anchor="w")
 
         # Etiqueta y ComboBox para seleccionar el ID del requerimiento
-        id_label = ctk.CTkLabel(frame_entries, text="ID de la Tarea")
+        id_label = ctk.CTkLabel(frame_entries, text="ID de la Tarea", fg_color=style.Colores.backgroundVariant)
         id_label.grid(row=0, column=0, padx=10, pady=5)
 
         # ComboBox con los IDs existentes
@@ -196,18 +270,36 @@ class Dev(ctk.CTk):
         id_combo.grid(row=0, column=1, padx=10, pady=5)
 
         # Etiqueta y radiobuttons para seleccionar el nuevo estado
-        estado_label = ctk.CTkLabel(frame_entries, text="Nuevo Estado:")
+        estado_label = ctk.CTkLabel(frame_entries, text="Nuevo Estado:", fg_color=style.Colores.backgroundVariant)
         estado_label.grid(row=1, column=0, padx=10, pady=5)
 
         estado_var = StringVar(value="Pendiente")
-        pendiente_radio = ctk.CTkRadioButton(frame_entries, text="Pendiente", variable=estado_var, value="Pendiente")
+        pendiente_radio = ctk.CTkRadioButton(frame_entries, text="Pendiente",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                variable=estado_var, value="Pendiente")
         pendiente_radio.grid(row=1, column=1, padx=10, pady=5)
 
-        revisado_radio = ctk.CTkRadioButton(frame_entries, text="Realizada", variable=estado_var, value="Realizada")
+        revisado_radio = ctk.CTkRadioButton(frame_entries, text="Realizada",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                variable=estado_var, value="Realizada")
         revisado_radio.grid(row=2, column=1, padx=10, pady=5)
 
         # Botón para confirmar el cambio de estado
-        cambiar_button = ctk.CTkButton(frame_entries, text="Cambiar Estado", command=lambda: self.cambiar_estado_tarea(id_combo.get(), estado_var.get(), estadoT_window))
+        cambiar_button = ctk.CTkButton(frame_entries, text="Cambiar Estado",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=lambda: self.cambiar_estado_tarea(id_combo.get(), estado_var.get(), estadoT_window))
         cambiar_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
     def cambiar_estado_tarea(self, tarea_id, nuevo_estado, window): #ACTUALIZAR ESTADO EDITADO DE UNA TAREA
@@ -231,11 +323,11 @@ class Dev(ctk.CTk):
         estado_window.title("Cambiar Estado del Requerimiento")
 
         # Frame para los campos de texto
-        frame_entries = ctk.CTkFrame(estado_window)
+        frame_entries = ctk.CTkFrame(estado_window, fg_color=style.Colores.backgroundVariant)
         frame_entries.pack(padx=10, pady=10, anchor="w")
 
         # Etiqueta y ComboBox para seleccionar el ID del requerimiento
-        id_label = ctk.CTkLabel(frame_entries, text="ID del Requerimiento:")
+        id_label = ctk.CTkLabel(frame_entries, text="ID del Requerimiento:", fg_color=style.Colores.backgroundVariant)
         id_label.grid(row=0, column=0, padx=10, pady=5)
 
         # ComboBox con los IDs existentes
@@ -245,18 +337,36 @@ class Dev(ctk.CTk):
         id_combo.grid(row=0, column=1, padx=10, pady=5)
 
         # Etiqueta y radiobuttons para seleccionar el nuevo estado
-        estado_label = ctk.CTkLabel(frame_entries, text="Nuevo Estado:")
+        estado_label = ctk.CTkLabel(frame_entries, text="Nuevo Estado:", fg_color=style.Colores.backgroundVariant)
         estado_label.grid(row=1, column=0, padx=10, pady=5)
 
         estado_var = StringVar(value="Pendiente")
-        pendiente_radio = ctk.CTkRadioButton(frame_entries, text="Pendiente", variable=estado_var, value="Pendiente")
+        pendiente_radio = ctk.CTkRadioButton(frame_entries, text="Pendiente",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                variable=estado_var, value="Pendiente")
         pendiente_radio.grid(row=1, column=1, padx=10, pady=5)
 
-        revisado_radio = ctk.CTkRadioButton(frame_entries, text="Revisado", variable=estado_var, value="Revisado")
+        revisado_radio = ctk.CTkRadioButton(frame_entries, text="Revisado",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                variable=estado_var, value="Revisado")
         revisado_radio.grid(row=2, column=1, padx=10, pady=5)
 
         # Botón para confirmar el cambio de estado
-        cambiar_button = ctk.CTkButton(frame_entries, text="Cambiar Estado", command=lambda: self.cambiar_estado(id_combo.get(), estado_var.get(), estado_window))
+        cambiar_button = ctk.CTkButton(frame_entries, text="Cambiar Estado",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=lambda: self.cambiar_estado(id_combo.get(), estado_var.get(), estado_window))
         cambiar_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
     def cambiar_estado(self, req_id, nuevo_estado, window): #ACTUALIZAR ESTADO EDITADO DE UN REQUERIMIENTO
@@ -280,7 +390,7 @@ class Dev(ctk.CTk):
         agregarComponente_window.title("Agregar Fila")
 
         # Frame para los campos de texto
-        frame_entries = ctk.CTkFrame(agregarComponente_window)
+        frame_entries = ctk.CTkFrame(agregarComponente_window, fg_color=style.Colores.backgroundVariant)
         frame_entries.pack(padx=10, pady=10, anchor="w")
 
         # Etiquetas para las columnas deseadas
@@ -289,30 +399,66 @@ class Dev(ctk.CTk):
 
         # Crear campos de entrada y etiquetas
         for i, label in enumerate(labels):
-            frame = ctk.CTkFrame(frame_entries)
+            frame = ctk.CTkFrame(frame_entries, fg_color=style.Colores.backgroundVariant)
             frame.grid(row=i, column=0, padx=10, pady=5, sticky="w")
 
-            ctk.CTkLabel(frame, text=label).pack(side="left", padx=(0, 10))
-            ctk.CTkEntry(frame, textvariable=self.entries[i]).pack(side="left")
+            ctk.CTkLabel(frame, text=label, ).pack(side="left", padx=(0, 10), )
+            ctk.CTkEntry(frame, textvariable=self.entries[i], fg_color=style.Colores.backgroundVariant2).pack(side="left")
 
         # Agregar los radio buttons debajo de los campos de texto
-        role_picker = ctk.CTkLabel(frame_entries, text="Tipo de componente:", font=("Comic Sans", -25, "bold"))
+        role_picker = ctk.CTkLabel(frame_entries, text="Tipo de componente:", text_color=style.BotonNormal.fg_color, font=("Comic Sans", -25, "bold"), fg_color=style.Colores.backgroundVariant)
         role_picker.grid(row=len(labels), column=0, padx=10, pady=10, sticky="w")
 
         self.radio_var = ctk.StringVar(value="")
-        radiobutton_1 = ctk.CTkRadioButton(frame_entries, text="Entrada Externa", font=("Comic Sans", -18), variable=self.radio_var, value="Entrada Externa")
+        radiobutton_1 = ctk.CTkRadioButton(frame_entries, text="Entrada Externa",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                variable=self.radio_var, value="Entrada Externa")
         radiobutton_1.grid(row=len(labels) + 1, column=0, padx=10, pady=5, sticky="w")
-        radiobutton_2 = ctk.CTkRadioButton(frame_entries, text="Salida Externa", font=("Comic Sans", -18), variable=self.radio_var, value="Salida Externa")
+        radiobutton_2 = ctk.CTkRadioButton(frame_entries, text="Salida Externa",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                variable=self.radio_var, value="Salida Externa")
         radiobutton_2.grid(row=len(labels) + 2, column=0, padx=10, pady=5, sticky="w")
-        radiobutton_3 = ctk.CTkRadioButton(frame_entries, text="Consulta Externa", font=("Comic Sans", -18), variable=self.radio_var, value="Consulta Externa")
+        radiobutton_3 = ctk.CTkRadioButton(frame_entries, text="Consulta Externa",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                variable=self.radio_var, value="Consulta Externa")
         radiobutton_3.grid(row=len(labels) + 3, column=0, padx=10, pady=5, sticky="w")
-        radiobutton_4 = ctk.CTkRadioButton(frame_entries, text="Archivo lógico Interno", font=("Comic Sans", -18), variable=self.radio_var, value="Archivo lógico Interno")
+        radiobutton_4 = ctk.CTkRadioButton(frame_entries, text="Archivo lógico Interno",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                variable=self.radio_var, value="Archivo lógico Interno")
         radiobutton_4.grid(row=len(labels) + 4, column=0, padx=10, pady=5, sticky="w")
-        radiobutton_5 = ctk.CTkRadioButton(frame_entries, text="Archivo de interfaz externo", font=("Comic Sans", -18), variable=self.radio_var, value="Archivo de interfaz externo")
+        radiobutton_5 = ctk.CTkRadioButton(frame_entries, text="Archivo de interfaz externo",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                variable=self.radio_var, value="Archivo de interfaz externo")
         radiobutton_5.grid(row=len(labels) + 5, column=0, padx=10, pady=5, sticky="w")
         # Botón "Agregar"
-        ctk.CTkButton(agregarComponente_window, text="Agregar", command=self.agregarComponente).pack(pady=10)
-
+        ctk.CTkButton(agregarComponente_window, text="Agregar",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.agregarComponente).pack(pady=10)
+    
     def agregarComponente(self):#AGREGA NUEVO COMPONENTE A LA TABLA
         # Obtener los valores ingresados en los campos de texto
         descripcion = self.entries[0].get()
@@ -365,11 +511,11 @@ class Dev(ctk.CTk):
         eliminar_window.title("Eliminar Componente")
 
         # Frame para los campos de texto
-        frame_entries = ctk.CTkFrame(eliminar_window)
+        frame_entries = ctk.CTkFrame(eliminar_window, fg_color=style.Colores.backgroundVariant)
         frame_entries.pack(padx=10, pady=10, anchor="w")
 
         # Etiqueta y ComboBox para seleccionar la fila a eliminar
-        id_label = ctk.CTkLabel(frame_entries, text="Seleccionar Componente:")
+        id_label = ctk.CTkLabel(frame_entries, text="Seleccionar Componente:", fg_color=style.Colores.backgroundVariant)
         id_label.grid(row=0, column=0, padx=10, pady=5)
 
         # Obtener IDs de todas las filas
@@ -381,7 +527,13 @@ class Dev(ctk.CTk):
         id_combo.grid(row=0, column=1, padx=10, pady=5)
 
         # BOTON "Eliminar"
-        eliminar_button = ctk.CTkButton(frame_entries, text="Eliminar", command=lambda: self.eliminar_componente_seleccionado(id_combo.get(), eliminar_window))
+        eliminar_button = ctk.CTkButton(frame_entries, text="Eliminar",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=lambda: self.eliminar_componente_seleccionado(id_combo.get(), eliminar_window))
         eliminar_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
 
     def eliminar_componente_seleccionado(self, id_seleccionado, window):#ELIMINA UN COMPONENTE DE LA TABLA
@@ -549,3 +701,29 @@ app.mainloop()
         texto.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
     """
 
+
+"""def Paneles(self):
+        #sección izquierda
+        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=0)
+        self.side_bar.pack(side="left", fill="y", expand=False)
+        #cuerpo principal
+        self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
+        self.body.pack(side="right", fill="both", expand=True)
+        #frame que contiene ID del proyecto actual
+        self.top_subpanel = ctk.CTkFrame(self.body, fg_color="transparent", height=120, corner_radius=0)
+        self.top_subpanel.pack(side=ctk.TOP, fill="x", expand=False)
+        #frame para la imágen
+        self.topimage = ctk.CTkFrame(self.top_subpanel, fg_color="transparent", corner_radius=0)
+        self.topimage.pack(side=ctk.RIGHT, expand=False)
+
+    def controles_sidebar(self):
+        texto= "PRO-"+str(self.proyecto_id)
+        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20), fg_color="black")
+        self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
+        self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+                                            width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
+        self.boton_proyecto.pack(side=ctk.TOP, pady=10)
+
+        self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
+                                                fg_color="red", width=200, height=65, corner_radius=0, command= self.crear_proyecto)
+        self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10)"""

@@ -3,6 +3,7 @@ from PIL import Image
 import os
 import Vistas.ventana_welcome as inicio
 import BaseDeDatos.UsersQuery as db
+import Clases.Componentes.Estilos as style
 
 
 #creamos la clase ventana para crear la cuenta
@@ -11,6 +12,7 @@ class Crear_cuenta(ctk.CTk):
         super().__init__()
         self.geometry("1280x720")
         self.title("PaltaEstimateApp")
+        self.configure(fg_color=style.Colores.background)
         #ACÁ CENTRAMOS LA VENTANA MAIN
         #  Obtenemos el largo y  ancho de la pantalla
         wtotal = self.winfo_screenwidth()
@@ -41,9 +43,15 @@ class Crear_cuenta(ctk.CTk):
         ojo_cerrado_path = os.path.join(current_dir, "../Imagenes/ojo_cerrado.png")
         self.ojo_cerrado = ctk.CTkImage(light_image=Image.open(ojo_cerrado_path),size=(25,25))
         
-        nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans", -25, "italic"))
+        nombre_company = ctk.CTkLabel(self, 
+                                      text="PaltaEstimateApp", 
+                                      text_color = style.Titulo.text_color,
+                                      font = style.Titulo.font)
         nombre_company.place(relx=0.05, rely=0.025)
-        bienvenido = ctk.CTkLabel(self, text="¡Crea tu cuenta!", font=("Comic Sans", -50, "bold"))
+        bienvenido = ctk.CTkLabel(self, 
+                                  text="¡Crea tu cuenta!", 
+                                  text_color = style.MegaTitulo.text_color,
+                                  font = style.MegaTitulo.font)
         bienvenido.place(relx=0.135, rely=0.15)
 
         # Obtener la ruta absoluta del directorio actual del script
@@ -55,38 +63,95 @@ class Crear_cuenta(ctk.CTk):
         logo_label = ctk.CTkLabel(self, image=logo, text="")
         logo_label.place(relx=0.75, rely=0.1)
 
-        email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans", -25, "bold"))
+        email = ctk.CTkLabel(self, 
+                             text="Correo", 
+                             text_color = style.Texto.text_color,
+                             font = style.Texto.font)
         email.place(relx=0.55, rely=0.43)
-        self.email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
+        self.email_entry = ctk.CTkEntry(self, 
+                                        placeholder_text="Ingresa tu email...", 
+                                        fg_color = style.EntryNormal.fg_color,
+                                        border_color = style.EntryNormal.border_color,
+                                        text_color = style.EntryNormal.text_color,
+                                        font = style.EntryNormal.font,
+                                        corner_radius = style.EntryNormal.corner_radius,
+                                        width=250)
         self.email_entry.place(relx=0.55, rely=0.5)
 
-        user_name = ctk.CTkLabel(self, text="Nombre de usuario", font=("Comic Sans", -25, "bold"))
+        user_name = ctk.CTkLabel(self, 
+                                 text="Nombre de usuario", 
+                                 text_color = style.Texto.text_color,
+                                 font = style.Texto.font)
         user_name.place(relx=0.15, rely=0.43)
-        self.user_name_entry = ctk.CTkEntry(self, placeholder_text="Ingresa un nombre de usuario...", width=250)
+        self.user_name_entry = ctk.CTkEntry(self, 
+                                            placeholder_text="Ingresa un nombre de usuario...", 
+                                            fg_color = style.EntryNormal.fg_color,
+                                            border_color = style.EntryNormal.border_color,
+                                            text_color = style.EntryNormal.text_color,
+                                            font = style.EntryNormal.font,
+                                            corner_radius = style.EntryNormal.corner_radius,
+                                            width=250)
         self.user_name_entry.place(relx=0.15, rely=0.5)
 
-        passw = ctk.CTkLabel(self, text="Contraseña", font=("Comic Sans", -25, "bold"))
+        passw = ctk.CTkLabel(self, 
+                             text="Contraseña", 
+                             text_color = style.Texto.text_color,
+                             font = style.Texto.font)
         passw.place(relx=0.15, rely=0.58)
-        self.passw_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
+        self.passw_entry = ctk.CTkEntry(self, 
+                                        placeholder_text="Ingresa tu contraseña...",
+                                        fg_color = style.EntryNormal.fg_color,
+                                        border_color = style.EntryNormal.border_color,
+                                        text_color = style.EntryNormal.text_color,
+                                        font = style.EntryNormal.font,
+                                        corner_radius = style.EntryNormal.corner_radius,
+                                        width=250, 
+                                        show="*")
         self.passw_entry.place(relx=0.15, rely=0.65)
 
-        passw2 = ctk.CTkLabel(self, text="Repite la contraseña", font=("Comic Sans", -25, "bold"))
+        passw2 = ctk.CTkLabel(self, 
+                              text="Repite la contraseña", 
+                              text_color = style.Texto.text_color,
+                              font = style.Texto.font)
         passw2.place(relx=0.15, rely=0.73)
-        self.passw2_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
+        self.passw2_entry = ctk.CTkEntry(self, 
+                                         placeholder_text="Ingresa tu contraseña...",
+                                         fg_color = style.EntryNormal.fg_color,
+                                         border_color = style.EntryNormal.border_color,
+                                         text_color = style.EntryNormal.text_color,
+                                         font = style.EntryNormal.font,
+                                         corner_radius = style.EntryNormal.corner_radius,
+                                         width=250, 
+                                         show="*")
         self.passw2_entry.place(relx=0.15, rely=0.8)
         
-        self.passw_peak1 = ctk.CTkButton(self, image=self.ojo_cerrado,fg_color="transparent",hover_color="#4E4E4E",
-                                        text="", height=10, width=10, corner_radius=100,
+        self.passw_peak1 = ctk.CTkButton(self, 
+                                         image=self.ojo_cerrado,
+                                         fg_color="transparent",
+                                         hover_color="#4E4E4E",
+                                         text="", 
+                                         height=10, 
+                                         width=10,
                                         command=self.peak)
         self.passw_peak1.place(relx=0.415, rely=0.645)
 
 
-        Crear_btn = ctk.CTkButton(self, width=100, height=40, corner_radius=25, text="Crear cuenta",
-                                    font=("Comic Sans", -20), command=self.getAccountInfo)
+        Crear_btn = ctk.CTkButton(self, 
+                                  width=100, 
+                                  height=40,
+                                  text="Crear cuenta",
+                                  text_color = style.BotonGrande.text_color,
+                                  fg_color = style.BotonGrande.fg_color,
+                                  font = style.BotonGrande.font,
+                                  corner_radius = style.BotonGrande.corner_radius,
+                                  hover_color = style.BotonGrande.hover_color,
+                                  command=self.getAccountInfo)
         Crear_btn.place(relx=0.6, rely=0.87)
 
-        self.error = ctk.CTkLabel(self, text="Las contraseñas no coinciden.",text_color="Red",
-                                font=("Comic Sans", -15, "bold"), state="disabled")
+        self.error = ctk.CTkLabel(self, text="Las contraseñas no coinciden.",
+                                  text_color = style.Texto.text_color,
+                                  font = style.Texto.font, 
+                                  state="disabled")
         self.error.place(relx=0.15, rely=0.85)
         self.error.place_forget()
         
@@ -128,7 +193,9 @@ class Crear_cuenta(ctk.CTk):
     def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)
         ventana_emergente.configure(fg_color="white")
-        etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
+        etiqueta = ctk.CTkLabel(ventana_emergente, 
+                                text_color = style.Texto.text_color,
+                                font = style.Texto.font,
                                 text=texto)
         etiqueta.pack(padx=20, pady=20)
         # Centra la ventana emergente con respecto a la ventana principal

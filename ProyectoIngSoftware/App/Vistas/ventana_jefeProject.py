@@ -104,7 +104,7 @@ class JP(ctk.CTk):
                                  segmented_button_selected_color=style.BotonNormal.fg_color,
                                  segmented_button_selected_hover_color=style.BotonNormal.hover_color,
                                  segmented_button_unselected_color=style.BotonSecundario.fg_color,
-                                 segmented_button_unselected_hover_color=style.BotonSecundario.hover_color,)
+                                 segmented_button_unselected_hover_color=style.BotonSecundario.hover_color)
         tabview.pack(pady=(5,0), fill="both")
         #Agregamos Tabs
         self.tabBar1 = tabview.add("Mis proyectos")

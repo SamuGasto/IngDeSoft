@@ -9,7 +9,7 @@ colores = {
     "Blue" : ["#001023","#003253","#005c8d","#008fcf","#00cdff"],
 
     "MainColor" : ["#0b1e26","#18333d","#487070","#1c621b","#419310","#a5Ec60"],
-}
+} # type: ignore
 
 class colores():
     def __init__(self) -> None:
