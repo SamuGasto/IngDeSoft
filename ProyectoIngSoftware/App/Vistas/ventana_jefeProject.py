@@ -451,7 +451,9 @@ class JP(ctk.CTk):
     def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)
         ventana_emergente.configure(fg_color=style.Colores.background)
-        etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
+        etiqueta = ctk.CTkLabel(ventana_emergente, 
+                                text_color = style.Texto.text_color,
+                                font = style.Texto.font,
                                 text=texto)
         etiqueta.pack(padx=20, pady=20)
         # Centra la ventana emergente con respecto a la ventana principal
