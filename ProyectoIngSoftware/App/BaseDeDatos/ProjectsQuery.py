@@ -1,5 +1,5 @@
 from BaseDeDatos.MainMongoDB import db
-import BaseDeDatos.UsersQuery_new as user
+import BaseDeDatos.UsersQuery as user
 
 def CrearNuevoProyecto(Nombre, participantes: list, email_user):
     owner = email_user
@@ -27,12 +27,15 @@ def CrearNuevoProyecto(Nombre, participantes: list, email_user):
         "InstalacionesMultiples" : 0,
         "FacilidadDeCambios" : 0,
         "TotalFactorAjuste" : 0}
+    
+    requerimientos = []
 
     db['Projects'].insert_one({'owner':owner,
                                 'id':id_proyecto, 
                                 'nombre':nombre_proyecto, 
                                 "integrantes": integrantes,
                                 "TablaVAC": tablaVAC,
+                                "Requerimientos": requerimientos
                                 })
 
 def BuscarProyecto(email_user, id_proyecto):
@@ -58,6 +61,9 @@ def ObtenerDatosProyecto(email_user, id_proyecto):
     else:
         print("No se encontró el proyecto")
         return None
+def ObtenerNombreProyecto(email_user, id_proyecto):
+    """Funcion que retorna el nombre de un proyecto"""
+    
 
 def ObtenerNombresProyecto(email_user):
     """
@@ -122,3 +128,20 @@ def EliminarProyecto(email_user: str, id_proyecto: int)->bool:
     else:
         print(f'El proyecto que intentas eliminar no existe')
         return False
+    
+def Ingresar_requerimientos(email_user:str, id_proyecto:int, reques:list)-> None:
+    """Función para ingresar requerimientos al proyecto actual"""
+    if (BuscarProyecto(email_user, id_proyecto)):
+        db['Projects'].update_one({'owner': email_user, 'id': id_proyecto},
+                                {'$push': {'Requerimientos': {'$each': reques}}})
+    else:
+        print("No se pudo actualizar la lista de requerimientos")
+
+
+
+def ObtenerRequerimientos(email_user:str, id_proyecto:int)-> list:
+    """Función para obtener una lista con los requerimientos de un proyecto"""
+    proyecto = db['Projects'].find_one({'owner': email_user, 'id': id_proyecto})
+    requerimientos = proyecto.get('Requerimientos')
+
+    return requerimientos

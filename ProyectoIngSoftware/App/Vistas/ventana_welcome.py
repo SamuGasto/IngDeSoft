@@ -3,7 +3,7 @@ from PIL import Image
 import Vistas.ventana_jefeProject as JEFE
 import Vistas.ventana_crearCuenta as Crearc
 import os
-import BaseDeDatos.UsersQuery_new as db
+import BaseDeDatos.UsersQuery as db
 
 
 #creamos la clase ventana para la bienvenida
@@ -27,31 +27,12 @@ class Welcome(ctk.CTk):
         #self.resizable(False, False)
         self.Contenido()
 
-
+        # Vincular la tecla 'Enter' a la función IniciarSesion para la ventana principal
+        self.bind('<Return>', self.IniciarSesion)
 
         self.mainloop()
 
     def Contenido(self):#Frames
-        nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans", -25, "italic"))
-        nombre_company.place(relx=0.05, rely=0.025)
-        bienvenido = ctk.CTkLabel(self, text="¡Bienvenido!", font=("Comic Sans", -60, "bold"))
-        bienvenido.place(relx=0.15, rely=0.15)
-        subtext = ctk.CTkLabel(self, text="Inicia sesión para continuar...", font=("Comic Sans", -20))
-        subtext.place(relx=0.15, rely=0.3)
-
-        email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans", -25, "bold"))
-        email.place(relx=0.15, rely=0.43)
-        self.email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
-        self.email_entry.place(relx=0.15, rely=0.5)
-
-        passw = ctk.CTkLabel(self, text="Contraseña", font=("Comic Sans", -25, "bold"))
-        passw.place(relx=0.15, rely=0.58)
-        self.passw_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
-        self.passw_entry.place(relx=0.15, rely=0.65)
-
-        passw_peak = ctk.CTkButton(self, text="O", width=20, height=20, corner_radius=100, command=self.peak)
-        passw_peak.place(relx=0.415, rely=0.66)
-
         # Imágen del logo
         # Obtener la ruta absoluta del directorio actual del script
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -61,25 +42,66 @@ class Welcome(ctk.CTk):
         logo_label = ctk.CTkLabel(self, image=logo, text="")
         logo_label.place(relx=0.6, rely=0.25)
 
-        no_email = ctk.CTkLabel(self, text="¿No tienes cuenta?", font=("Comic Sans", -15, "italic", "underline"))
+        # Imagen ojo abierto
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        ojo_abierto_path = os.path.join(current_dir, "../Imagenes/ojo_abierto.png")
+        self.ojo_abierto = ctk.CTkImage(light_image=Image.open(ojo_abierto_path),size=(25,25))
+
+        # Imagen ojo cerrado
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        ojo_cerrado_path = os.path.join(current_dir, "../Imagenes/ojo_cerrado.png")
+        self.ojo_cerrado = ctk.CTkImage(light_image=Image.open(ojo_cerrado_path),size=(25,25))
+        
+        nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans MS", -25, "italic"))
+        nombre_company.place(relx=0.05, rely=0.025)
+        bienvenido = ctk.CTkLabel(self, text="¡Bienvenido!", font=("Comic Sans MS", -60, "bold"))
+        bienvenido.place(relx=0.15, rely=0.15)
+        subtext = ctk.CTkLabel(self, text="Inicia sesión para continuar...", font=("Comic Sans MS", -20))
+        subtext.place(relx=0.15, rely=0.3)
+
+        email = ctk.CTkLabel(self, text="Correo", font=("Comic Sans MS", -25, "bold"))
+        email.place(relx=0.15, rely=0.43)
+        self.email_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu email...", width=250)
+        self.email_entry.insert(0, "prueba2@gmail.com")
+        self.email_entry.place(relx=0.15, rely=0.5)
+
+        passw = ctk.CTkLabel(self, text="Contraseña", font=("Comic Sans MS", -25, "bold"))
+        passw.place(relx=0.15, rely=0.58)
+        self.passw_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
+        self.passw_entry.place(relx=0.15, rely=0.65)
+        self.passw_entry.insert(0, "123456")
+        # Vincular la tecla 'Enter' al CTkEntry de contraseña
+        self.passw_entry.bind('<Return>', self.IniciarSesion)
+
+        self.passw_peak = ctk.CTkButton(self, image=self.ojo_cerrado,fg_color="transparent",hover_color="#4E4E4E",
+                                        text="", height=10, width=10, corner_radius=100,
+                                        command=self.peak)
+        self.passw_peak.place(relx=0.415, rely=0.645)
+
+        
+
+        no_email = ctk.CTkLabel(self, text="¿No tienes cuenta?", font=("Comic Sans MS", -15, "italic", "underline"))
         no_email.place(relx=0.65, rely=0.81)
         no_email_btn = ctk.CTkButton(self, width=85, height=25, corner_radius=25, command=self.cambiar_ventana,
-                                    text="Crear cuenta", font=("Comic Sans", -15))
+                                    text="Crear cuenta", font=("Comic Sans MS", -15))
         no_email_btn.place(relx=0.815, rely=0.815)
 
         iniciar_btn = ctk.CTkButton(self, width=100, height=45, corner_radius=25, text="Iniciar sesión",
-                                    font=("Comic Sans", -20), command=self.IniciarSesion)
+                                    font=("Comic Sans MS", -20), command=self.IniciarSesion)
         iniciar_btn.place(relx=0.15, rely=0.8)
-        #Implementar lógica para iniciar la sesión, mandando la query a la BD.
 
+        
+        
 
     def peak(self):
         if self.passw_entry.cget("show") == "*":
             self.passw_entry.configure(show="")
+            self.passw_peak.configure(image=self.ojo_abierto)
         else:
             self.passw_entry.configure(show="*")
+            self.passw_peak.configure(image=self.ojo_cerrado)
 
-    def IniciarSesion(self):
+    def IniciarSesion(self, event=None):
         #obtenemos los datos del usuario
         self.user_email = self.email_entry.get()
         self.user_passsw = self.passw_entry.get()
@@ -113,5 +135,5 @@ class Welcome(ctk.CTk):
         ventana_emergente.focus()
         
 #borrar para uso final
-#app = Welcome()
-#app.mainloop()
+# app = Welcome()
+# app.mainloop()

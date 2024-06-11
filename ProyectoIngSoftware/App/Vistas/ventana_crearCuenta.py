@@ -2,7 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 import os
 import Vistas.ventana_welcome as inicio
-import BaseDeDatos.UsersQuery_new as db
+import BaseDeDatos.UsersQuery as db
 
 
 #creamos la clase ventana para crear la cuenta
@@ -30,6 +30,17 @@ class Crear_cuenta(ctk.CTk):
         self.mainloop() #!! BORRAR EL COMENTARIO PARA USO FINAL
 
     def Contenido(self):#Frames
+
+        # Imagen ojo abierto
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        ojo_abierto_path = os.path.join(current_dir, "../Imagenes/ojo_abierto.png")
+        self.ojo_abierto = ctk.CTkImage(light_image=Image.open(ojo_abierto_path),size=(25,25))
+
+        # Imagen ojo cerrado
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        ojo_cerrado_path = os.path.join(current_dir, "../Imagenes/ojo_cerrado.png")
+        self.ojo_cerrado = ctk.CTkImage(light_image=Image.open(ojo_cerrado_path),size=(25,25))
+        
         nombre_company = ctk.CTkLabel(self, text="PaltaEstimateApp", font=("Comic Sans", -25, "italic"))
         nombre_company.place(relx=0.05, rely=0.025)
         bienvenido = ctk.CTkLabel(self, text="¡Crea tu cuenta!", font=("Comic Sans", -50, "bold"))
@@ -64,6 +75,11 @@ class Crear_cuenta(ctk.CTk):
         self.passw2_entry = ctk.CTkEntry(self, placeholder_text="Ingresa tu contraseña...", width=250, show="*")
         self.passw2_entry.place(relx=0.15, rely=0.8)
         
+        self.passw_peak1 = ctk.CTkButton(self, image=self.ojo_cerrado,fg_color="transparent",hover_color="#4E4E4E",
+                                        text="", height=10, width=10, corner_radius=100,
+                                        command=self.peak)
+        self.passw_peak1.place(relx=0.415, rely=0.645)
+
 
         Crear_btn = ctk.CTkButton(self, width=100, height=40, corner_radius=25, text="Crear cuenta",
                                     font=("Comic Sans", -20), command=self.getAccountInfo)
@@ -127,4 +143,12 @@ class Crear_cuenta(ctk.CTk):
         return ventana_emergente  # Asegúrate de retornar la ventana emergente
     def comprobar_gmail(self, cadena):
         return cadena.endswith("@gmail.com")
+    
+    def peak(self):
+        if self.passw_entry.cget("show") == "*":
+            self.passw_entry.configure(show="")
+            self.passw_peak1.configure(image=self.ojo_abierto)
+        else:
+            self.passw_entry.configure(show="*")
+            self.passw_peak1.configure(image=self.ojo_cerrado)
 
