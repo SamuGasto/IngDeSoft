@@ -1,6 +1,13 @@
 import customtkinter as ctk
 from PIL import Image
+import tkinter as tk
+from tkinter import ttk, font
+import textwrap
+import re
 import os
+import Estilos as style
+
+#import Clases.Componentes.Estilos as style
 #import BaseDeDatos.UsersQuery as db
 
 
@@ -27,28 +34,52 @@ class JP(ctk.CTk):
     
     def Paneles(self):#FRAMES
         #sección izquierda
-        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=25)
+        self.side_bar = ctk.CTkFrame(self, 
+                                     fg_color=style.Colores.background, 
+                                     width=200, 
+                                     corner_radius=0)
         self.side_bar.pack(side="left", fill="y", expand=False)
         #cuerpo principal
-        self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
+        self.body = ctk.CTkFrame(self, 
+                                 fg_color=style.Colores.backgroundVariant, 
+                                 corner_radius=0)
         self.body.pack(side="right", fill="both", expand=True)
-        #frame que contiene ID del proyecto actual
-        self.top_subpanel = ctk.CTkFrame(self.body, fg_color="transparent", height=120, corner_radius=0)
+        #frame que contiene Nombre del proyecto actual
+        self.top_subpanel = ctk.CTkFrame(self.body, 
+                                         fg_color=style.Colores.backgroundVariant, 
+                                         height=120, 
+                                         corner_radius=0)
         self.top_subpanel.pack(side=ctk.TOP, fill="x", expand=False)
         #frame para la imágen
-        self.topimage = ctk.CTkFrame(self.top_subpanel, fg_color="transparent", corner_radius=0)
+        self.topimage = ctk.CTkFrame(self.top_subpanel, 
+                                     fg_color=style.Colores.background, 
+                                     corner_radius=0)
         self.topimage.pack(side=ctk.RIGHT, expand=False)
 
     def controles_sidebar(self):
         texto= "PRO-"+str(self.proyecto_id)
-        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20))
+        self.mis_proyectos = ctk.CTkLabel(self.side_bar, 
+                                          text="Mis Proyectos", 
+                                          font=("Comic Sans", -20))
         self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
-        self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                            width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
+        self.boton_proyecto = ctk.CTkButton(self.side_bar, 
+                                            text=texto, 
+                                            fg_color="orange",
+                                            font=("Arial", -20),
+                                            width=200, 
+                                            height=65, 
+                                            corner_radius=0, 
+                                            command=lambda: self.boton_clickeado_global(texto))
         self.boton_proyecto.pack(side=ctk.TOP, pady=10)
 
-        self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
-                                                fg_color="red", width=200, height=65, corner_radius=0, command= self.crear_proyecto)
+        self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, 
+                                                  text="Crear Proyecto +", 
+                                                  font=("Comic Sans", -20),
+                                                  fg_color="red", 
+                                                  width=200, 
+                                                  height=65, 
+                                                  corner_radius=0, 
+                                                  command= self.crear_proyecto)
         self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10)
 
     def contenido_body(self):
@@ -56,35 +87,42 @@ class JP(ctk.CTk):
         tabview = ctk.CTkTabview(master=self.body, height=550)
         tabview.pack(padx=5, pady=5, fill="both")
         #Agregamos Tabs
-        tab1 = tabview.add("Integrantes")  
-        tab2 = tabview.add("Requerimientos")  
-        tab3 = tabview.add("Métricas")  
+        self.tab1 = tabview.add("Tabla PF")  
+        self.tab2 = tabview.add("Complejidad")  
+        self.tab3 = tabview.add("Métricas")  
         
         ##Objetos de tab1
 
         vcmd = (self.register(self.callback))
 
-        frame1 = ctk.CTkFrame(master=tab1)
+        frame1 = ctk.CTkFrame(master=self.tab1)
         frame1.pack(side=ctk.TOP)
-        frame2 = ctk.CTkFrame(master=tab1)
+        frame2 = ctk.CTkFrame(master=self.tab1)
         frame2.pack(side=ctk.TOP)
-        frame3 = ctk.CTkFrame(master=tab1)
+        frame3 = ctk.CTkFrame(master=self.tab1)
         frame3.pack(side=ctk.TOP)
-        frame4 = ctk.CTkFrame(master=tab1)
+        frame4 = ctk.CTkFrame(master=self.tab1)
         frame4.pack(side=ctk.TOP)
-        frame5 = ctk.CTkFrame(master=tab1)
+        frame5 = ctk.CTkFrame(master=self.tab1)
         frame5.pack(side=ctk.TOP)
-        frame6 = ctk.CTkFrame(master=tab1)
+        frame6 = ctk.CTkFrame(master=self.tab1)
         frame6.pack(side=ctk.TOP)
-        frame7 = ctk.CTkFrame(master=tab1)
+        frame7 = ctk.CTkFrame(master=self.tab1)
         frame7.pack(side=ctk.TOP)
-        frame8 = ctk.CTkFrame(master=tab1)
+        frame8 = ctk.CTkFrame(master=self.tab1)
         frame8.pack(side=ctk.TOP)
-        frame9 = ctk.CTkFrame(master=tab1)
+        frame9 = ctk.CTkFrame(master=self.tab1)
         frame9.pack(side=ctk.TOP)
 
         #FRAME1
-        self.email_entry = ctk.CTkLabel(frame1, text="Tabla de puntos de función", state=ctk.DISABLED, cursor="arrow", text_color="black", fg_color="dodger blue", width=600, corner_radius=4)
+        self.email_entry = ctk.CTkLabel(frame1, 
+                                        text="Tabla de puntos de función", 
+                                        state=ctk.DISABLED, 
+                                        cursor="arrow",
+                                        text_color = style.Texto.text_color,
+                                        font = style.Texto.font,
+                                        width=600, 
+                                        corner_radius=4)
         self.email_entry.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
 
         #FRAME2
@@ -186,11 +224,58 @@ class JP(ctk.CTk):
 
 
 
-        ##Objetos de tab2
-        scroll = ctk.CTkScrollableFrame(master=tab2)
-        scroll.pack(fill="both",expand=True)
-        texto = ctk.CTkLabel(master=scroll, font=("Calibri", -15, "italic"), text="· REQ-111: ")
-        texto.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
+        ##-------------------------------------------------------------Objetos de tab2
+
+        #------------FRAMES
+        
+        frame1_1 = ctk.CTkFrame(master=self.tab2)
+        frame1_1.pack(side=ctk.LEFT)
+        frame2_2 = ctk.CTkFrame(master=self.tab2)
+        frame2_2.pack()
+
+        #------------STYLES
+
+        style1 = ttk.Style()
+        style1.configure("Treeview.Heading", font=("Helvetica", 28))
+        style1.configure("Treeview", font=("Helvetica", 17), rowheight=80)
+        small_font = font.Font(size=17)
+
+        #------------LISTBOX
+
+        self.selected_element = str()
+        listbox = tk.Listbox(frame1_1, listvariable=self.selected_element, font=small_font, height=15, width=30)
+        for item in self.getLista():
+            listbox.insert(tk.END, item)
+
+        self.a()
+        listbox.bind('<<ListboxSelect>>', self.actualizar_tabla) #al seleccionar un elemento de la lista, actualiza la tabla correspondiente
+        listbox.pack(padx=10, pady=10)
+
+        #------------TABLA
+
+        #frame de la tabla
+        self.tabla_frame = ctk.CTkFrame(frame2_2, fg_color=style.Colores.background, corner_radius=10)
+        self.tabla_frame.pack()
+
+
+        columns = ("Grado", "Descripción")
+        self.tree = ttk.Treeview(self.tabla_frame, columns=columns, show="headings", style="Treeview", height=7)
+        self.tree.heading("Grado", text="Grado")
+        self.tree.heading("Descripción", text="Descripción")
+        self.tree.column("Grado", width=200, anchor="center")
+        self.tree.column("Descripción", width=900, anchor="w")
+        self.tree.tag_configure('monospace')
+        self.tree.pack(fill="both")
+
+        self.grado_label = ctk.CTkLabel(frame1_1, text="Grado actual registrado: {a}".format(a=self.currentGrado))
+        self.grado_label.pack(pady=10)
+
+        enviar_button = ctk.CTkButton(frame1_1, text="Mandar", command=self.mandar_grado)
+        enviar_button.pack(pady=10)
+
+        #------------EXTRAS
+
+        self.cargar_datos_iniciales()
         
         
         ##Objetos de tab3
@@ -200,7 +285,7 @@ class JP(ctk.CTk):
                                         width=150, height=35, corner_radius=25)
         self.eliminar_proyecto.pack(side=ctk.RIGHT, anchor=ctk.SW, pady=5, padx=5)
 
-        self.administrar  = ctk.CTkButton(self.body, text="Administración\nCompleta", text_color="black",fg_color="white", font=("Comic Sans", -15, "bold"),
+        self.administrar  = ctk.CTkButton(self.body, text="Administración\nCompleta", text_color="black",fg_color=style.Colores.background, font=("Comic Sans", -15, "bold"),
                                         width=150, height=35, corner_radius=25)
         self.administrar.pack(side=ctk.LEFT, anchor=ctk.SE, pady=5, padx=5)
 
@@ -209,6 +294,26 @@ class JP(ctk.CTk):
             return True
         else:
             return False
+        
+    def a(self):
+        self.currentGrado = 1
+
+    def getLista(self):
+        lista = ["1.   Comunicacion De Datos",
+                 "2.   Procesamiento Distribuido",
+                 "3.   Objetivos De Rendimiento",
+                 "4.   Configuracion Del Equipamiento",
+                 "5.   Tasa De Transacciones",
+                 "6.   Entrada De Datos En Linea",
+                 "7.   Interfase Con El Usuario",
+                 "8.   Actualizacion En Linea",
+                 "9.   Procesamiento Complejo",
+                 "10. Reusabilidad Del Codigo",
+                 "11. Facilidad De Implementacion",
+                 "12. Facilidad De Operacion",
+                 "13. Instalaciones Multiples",
+                 "14. Facilidad De Cambios"]
+        return lista
         
     def actualizarTablaPF(self):
 
@@ -244,6 +349,45 @@ class JP(ctk.CTk):
         #db.actualizarTablaPF(e)
 
 
+    def mandar_grado(self): #Manda la query de que se selecciona un grado para la tabla
+        curItem = self.tree.focus()
+        curGrado = self.tree.item(curItem)["values"][0]
+        curTab = self.tab_seleccionada
+        #Mandar Query, en la tabla "curTab" se selecciona el curGrado
+        print(curTab, curGrado)
+
+
+
+    def actualizar_tabla(self, event):
+        patron = r'^(.*?)\.'  # El patrón busca cualquier cosa (non-greedy) antes del primer punto
+        coincidencia = re.search(patron, event.widget.get(event.widget.curselection()[0]))
+        self.tab_seleccionada = coincidencia.group(1)
+        print(self.tab_seleccionada)
+        self.cargarTabla()
+
+    def cargarTabla(self):
+        #realizar query, extraer la tabla N°self.tab_seleccionada de los ajustes de complejidad de la BD y cargarla
+        pass
+
+    def cargar_datos_iniciales(self):
+        datos = [
+            ("0", "Aplicación puramente batch o funciona en una computadora aislada"),
+            ("1", "La aplicación es batch, pero utiliza entrada de datos remota o impresión remota"),
+            ("2", "La aplicación es batch, pero utiliza entrada de datos remota e impresión remota"),
+            ("3", "La aplicación incluye entrada de datos on-line vía entrada de video o un procesador front-end para alimentar procesos batch o sistemas de consultas."),
+            ("4", "La aplicación es más que una entrada on-line, y soporta apenas un protocolo de comunicación"),
+            ("5", "La aplicación es más que una entrada on-line y soporta más de un protocolo de comunicación")
+        ]
+        for grado, descripcion in datos:
+            self.tree.insert("", tk.END, values=(grado, self.wrap(descripcion))) #con saltos de linea
+
+    def wrap(self,string, lenght=85): #realiza saltos de linea en la fila de largo lenght caracteres
+        return '\n'.join(textwrap.wrap(string, lenght))
+
+    def insert_with_line_breaks(self, text):
+        lines = text.split("\n")
+        for line in lines:
+            self.tree.insert(tk.END, line)
 
     def contenido_subpanel(self):
         texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
@@ -281,7 +425,7 @@ class JP(ctk.CTk):
 
     def mostrar_ventana_emergente(self):
         ventana_emergente = ctk.CTkToplevel(self)
-        ventana_emergente.configure(fg_color="white")
+        ventana_emergente.configure(fg_color=style.Colores.background)
         etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
                                 text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
         etiqueta.pack(padx=20, pady=20)
