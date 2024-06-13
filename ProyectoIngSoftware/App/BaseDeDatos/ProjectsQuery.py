@@ -10,7 +10,7 @@ def CrearNuevoProyecto(Nombre, participantes: list, email_user):
     integrantes = []
     for persona in participantes:
         integrantes.append(persona)
-    id_proyecto = 110 + user.BuscarProyectos(owner)
+    id_proyecto = 111 + user.BuscarProyectos(owner)
 
     tablaVAC = {"ComunicacionDeDatos" : 0,
         "ProcesamientoDistribuido" : 0,
@@ -28,14 +28,12 @@ def CrearNuevoProyecto(Nombre, participantes: list, email_user):
         "FacilidadDeCambios" : 0,
         "TotalFactorAjuste" : 0}
     
-    requerimientos = []
 
     db['Projects'].insert_one({'owner':owner,
                                 'id':id_proyecto, 
                                 'nombre':nombre_proyecto, 
                                 "integrantes": integrantes,
                                 "TablaVAC": tablaVAC,
-                                "Requerimientos": requerimientos
                                 })
 
 def BuscarProyecto(email_user, id_proyecto):

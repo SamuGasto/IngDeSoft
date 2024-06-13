@@ -4,11 +4,12 @@ import BaseDeDatos.ProjectsQuery as Proj
 from pymongo import MongoClient, errors
 from datetime import date
 
-def AgregarRequerimientos(id_proyecto:any, member:list, requesNcomp:list):
+def AgregarRequerimientos(id_proyecto:int, member:list, requesNcomp:list):
     """
     Función para agregar requerimientos a\nun proyecto existente
     
     requesNcomp --> [ (Requerimiento, [ componentes ] ) ]
+    id_proyecto --> ObjectId de MongoDB
     """
 
     #Falta agregar lógica para asignar a usuarios a estimar un requerimiento
@@ -91,3 +92,5 @@ def AgregarRequerimientos(id_proyecto:any, member:list, requesNcomp:list):
 
 def AgregarComponentes(id_proyecto):
     return
+
+def ObtenerRequerimientos()

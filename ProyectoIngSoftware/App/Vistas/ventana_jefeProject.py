@@ -1,12 +1,13 @@
 import customtkinter as ctk
 from PIL import Image
 import os
+from functools import partial
+
 import BaseDeDatos.UsersQuery as User
 import BaseDeDatos.ProjectsQuery as Proj
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.Invitations as INV
 from Vistas.util import centrarVentana
-from functools import partial
 import Clases.Componentes.Estilos as style
 
 #creamos la clase ventana para el jefe de proyecto
@@ -35,11 +36,7 @@ class JP(ctk.CTk):
         self.contenido_subpanel()
         self.contenido_image()
         
-        
-        if Proj.BuscarProyectos(self.user_email) == 0:
-            pass
-        else:
-            self.ListarProyectosExistentes()
+        self.ListarProyectosExistentes()
         
         if db['Invitaciones'].count_documents({"correo_invitado": self.user_email, "estado": "aceptada"}) == 0:
             pass
@@ -48,7 +45,7 @@ class JP(ctk.CTk):
             
         self.after(100, self.verificar_invitaciones)
         
-        #self.mainloop()
+        self.mainloop()
 
 
 
@@ -197,33 +194,29 @@ class JP(ctk.CTk):
     
     def ListarProyectosExistentes(self): #Funcion que busca y lista los proyectos del usuario
         nombres = Proj.ObtenerNombresProyecto(self.user_email)
-
         for nombre in nombres:
             nombre_proyecto = nombre
             self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, nombre_proyecto)
             texto = f"{nombre_proyecto}"
-            
             self.new_proyect = ctk.CTkButton(self.tabBar1, 
-                                             text=texto,
-                                             text_color = style.BotonLista.text_color,
-                                             fg_color = style.BotonLista.fg_color,
-                                             font = style.BotonLista.font,
-                                             corner_radius = style.BotonLista.corner_radius,
-                                             hover_color = style.BotonLista.hover_color,
-                                             border_width=2,
-                                             border_color=style.Colores.Gray[4],
-                                             width=200, 
-                                             height=65, 
-                                             command=partial(self.cambiar_proyecto, nombre_proyecto))
-            self.new_proyect.pack(side=ctk.TOP, pady=10, fill="x")
+                                         text=texto,
+                                         text_color = style.BotonNormal.text_color,
+                                         fg_color = style.BotonNormal.fg_color,
+                                         font = style.BotonNormal.font,
+                                         corner_radius = style.BotonNormal.corner_radius,
+                                         hover_color = style.BotonNormal.hover_color,
+                                         width=200, 
+                                         height=65,
+                                         command=partial(self.cambiar_proyecto, nombre_proyecto))
+            self.new_proyect.pack(side=ctk.TOP, pady=10)
 
-    def ListarProyectosInvitados(self):
+    def ListarProyectosInvitados(self): #Funcion que busca y lista los proyectos invitados del usuario
         proyectos_aceptados = INV.ObtenerProyectosAceptados(self.user_email)
         for proyecto in proyectos_aceptados:
             self.agregar_boton_proyecto(proyecto["nombre_proyecto"])
         
 
-    def agregar_boton_proyecto(self, nombre_proyecto):
+    def agregar_boton_proyecto(self, nombre_proyecto):#Botón para agregar los proyectos a los que te invitaron
         texto = f"{nombre_proyecto}"
         self.proyecto_inv = ctk.CTkButton(self.tabBar2, 
                                           text=texto, 
@@ -240,9 +233,9 @@ class JP(ctk.CTk):
 
     def crear_proyecto2(self): #Crea el botón de proyecto activo en el lateral
         self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)
-        texto = "PRO-" + str(self.proyecto_id)
         nombre_proyecto = Proj.ObtenerDatosProyecto(self.user_email, self.proyecto_id)
         nombre_proyecto = nombre_proyecto[0]
+        texto = f"{nombre_proyecto}"
         self.new_proyect = ctk.CTkButton(self.tabBar1, 
                                          text=texto,
                                          text_color = style.BotonNormal.text_color,
@@ -252,7 +245,7 @@ class JP(ctk.CTk):
                                          hover_color = style.BotonNormal.hover_color,
                                          width=200, 
                                          height=65,
-                                         command=lambda: self.cambiar_proyecto(nombre_proyecto))
+                                         command=partial(self.cambiar_proyecto, nombre_proyecto))
         self.new_proyect.pack(side=ctk.TOP, pady=10)
 
     def crear_proyecto(self): #Ventana para crear un proyecto
@@ -373,16 +366,13 @@ class JP(ctk.CTk):
     
 
     def crear_proyecto_query(self): #Query para añadir el proyecto la base de datos
-        Proj.AumentarProyectos(self.user_email)
-        print("Numero de proyectos activos: " + str(Proj.BuscarProyectos(self.user_email)))
-        
         participantes_emails = [entry.get() for entry in self.participantes_entries]
         participantes_roles = [rol.get() for rol in self.participantes_rol]
         self.Nombre_Proyecto = self.nombre_entry.get()
         miembros = [(miembro, rol) for miembro, rol in zip(participantes_emails, participantes_roles)]
 
         Proj.CrearNuevoProyecto(self.Nombre_Proyecto, miembros, self.user_email)
-        
+        Proj.AumentarProyectos(self.user_email)
         # Enviar invitaciones
         proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)
         for correo, rol in zip(participantes_emails, participantes_roles):
@@ -393,6 +383,7 @@ class JP(ctk.CTk):
         self.participantes_entries = []
         participantes_emails = []
         participantes_roles = []
+        self.participantes_rol = []
         self.crear_proyecto2()
 
     def cambiar_proyecto(self, texto): #Botón para mostrar el contenido de un proyecto (Botón lateral)
@@ -590,7 +581,7 @@ class JP(ctk.CTk):
                                        corner_radius = style.BotonNormal.corner_radius,
                                        hover_color = style.BotonNormal.hover_color,
                                        command=lambda: self.responder_invitacion(invitacion, "aceptada"))
-        aceptar_button.pack(side=ctk.LEFT, padx=20, pady=20)
+        aceptar_button.pack(padx=20, pady=20)
         return ventana_invitacion
 
     def responder_invitacion(self, invitacion, respuesta):
@@ -612,6 +603,3 @@ class JP(ctk.CTk):
             for widget in self.tabBar2.winfo_children():
                 widget.destroy()
             self.ListarProyectosInvitados()
-
-app = JP("prueba@gmail.com")
-app.mainloop()
