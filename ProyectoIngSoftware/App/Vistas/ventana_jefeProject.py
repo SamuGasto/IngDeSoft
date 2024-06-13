@@ -82,6 +82,7 @@ class JP(ctk.CTk):
                                           font = style.Titulo.font)
         self.mis_proyectos.pack(side=ctk.TOP, pady=5, padx=5)
 
+
         self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar,
                                                   text_color = style.BotonGrande.text_color,
                                                   fg_color = style.BotonGrande.fg_color,
@@ -106,6 +107,18 @@ class JP(ctk.CTk):
         #Agregamos Tabs
         self.tabBar1 = tabview.add("Mis proyectos")
         self.tabBar2 = tabview.add("Otros Proyectos")
+
+        self.proyectos = ctk.CTkScrollableFrame(self.tabBar1,
+                                                fg_color=style.Colores.background, 
+                                                width=200, 
+                                                corner_radius=0)
+        self.proyectos.pack(side=ctk.TOP, pady=(10,5), fill="both", expand=True)
+
+        self.otros_proyectos = ctk.CTkScrollableFrame(self.tabBar2,
+                                                fg_color=style.Colores.background, 
+                                                width=200, 
+                                                corner_radius=0)
+        self.otros_proyectos.pack(side=ctk.TOP, pady=(10,5), fill="both", expand=True)
 
         
 
@@ -198,7 +211,7 @@ class JP(ctk.CTk):
             nombre_proyecto = nombre
             self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, nombre_proyecto)
             texto = f"{nombre_proyecto}"
-            self.new_proyect = ctk.CTkButton(self.tabBar1, 
+            self.new_proyect = ctk.CTkButton(self.proyectos, 
                                          text=texto,
                                          text_color = style.BotonNormal.text_color,
                                          fg_color = style.BotonNormal.fg_color,
@@ -218,7 +231,7 @@ class JP(ctk.CTk):
 
     def agregar_boton_proyecto(self, nombre_proyecto):#Botón para agregar los proyectos a los que te invitaron
         texto = f"{nombre_proyecto}"
-        self.proyecto_inv = ctk.CTkButton(self.tabBar2, 
+        self.proyecto_inv = ctk.CTkButton(self.otros_proyectos, 
                                           text=texto, 
                                           text_color = style.BotonLista.text_color,
                                           fg_color = style.BotonLista.fg_color,
@@ -236,7 +249,7 @@ class JP(ctk.CTk):
         nombre_proyecto = Proj.ObtenerDatosProyecto(self.user_email, self.proyecto_id)
         nombre_proyecto = nombre_proyecto[0]
         texto = f"{nombre_proyecto}"
-        self.new_proyect = ctk.CTkButton(self.tabBar1, 
+        self.new_proyect = ctk.CTkButton(self.proyectos, 
                                          text=texto,
                                          text_color = style.BotonNormal.text_color,
                                          fg_color = style.BotonNormal.fg_color,
@@ -566,14 +579,16 @@ class JP(ctk.CTk):
         ventana_invitacion.title("Invitación a Proyecto")
         ventana_invitacion.attributes('-topmost' , 1)
 
-        mensaje = f"Has sido invitado por {invitacion['owner_proyecto']}\n al proyecto ID: {invitacion['proyecto_id']}\n como {invitacion['rol']}."
+        mensaje = f"Has sido invitado por: '{invitacion['owner_proyecto']}'\nAl proyecto: '{invitacion['nombre_proyecto']}'\nCon el rol de: '{invitacion['rol']}'"
         etiqueta = ctk.CTkLabel(ventana_invitacion, 
                                 text=mensaje, 
                                 text_color = style.Texto.text_color,
-                                font = style.Texto.font)
-        etiqueta.pack(pady=20)
+                                font = style.Texto.font,
+                                anchor="w",  # Alineación a la izquierda
+                                justify="left") # Justificación a la izquierda
+        etiqueta.pack(side=ctk.TOP, pady=10, padx=5,anchor=ctk.W)
 
-        aceptar_button = ctk.CTkButton(ventana_invitacion, 
+        aceptar_button = ctk.CTkButton(ventana_invitacion,
                                        text="Aceptar",
                                        text_color = style.BotonNormal.text_color,
                                        fg_color = style.BotonNormal.fg_color,
@@ -581,7 +596,7 @@ class JP(ctk.CTk):
                                        corner_radius = style.BotonNormal.corner_radius,
                                        hover_color = style.BotonNormal.hover_color,
                                        command=lambda: self.responder_invitacion(invitacion, "aceptada"))
-        aceptar_button.pack(padx=20, pady=20)
+        aceptar_button.pack(side=ctk.TOP)
         return ventana_invitacion
 
     def responder_invitacion(self, invitacion, respuesta):
@@ -599,7 +614,6 @@ class JP(ctk.CTk):
                                    command=window.destroy)
             cerrar.pack(pady=(0,5))
             self.wait_window(window)
-            
-            for widget in self.tabBar2.winfo_children():
+            for widget in self.otros_proyectos.winfo_children():
                 widget.destroy()
             self.ListarProyectosInvitados()

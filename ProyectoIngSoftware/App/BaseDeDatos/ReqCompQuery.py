@@ -6,10 +6,11 @@ from datetime import date
 
 def AgregarRequerimientos(id_proyecto:int, member:list, requesNcomp:list):
     """
-    Función para agregar requerimientos a\nun proyecto existente
+    Función para agregar requerimientos a\nun proyecto existente.
     
     requesNcomp --> [ (Requerimiento, [ componentes ] ) ]
     id_proyecto --> ObjectId de MongoDB
+    member --> [ (correo_miembro, rol) ]
     """
 
     #Falta agregar lógica para asignar a usuarios a estimar un requerimiento
@@ -17,10 +18,14 @@ def AgregarRequerimientos(id_proyecto:int, member:list, requesNcomp:list):
     lista_de_requerimientos = [] #Lista que contiene cada requerimiento con sus datos.
     lista_de_componentes = [] #Lista que contiene cada componente de un requerimiento.
     id = 1
+
     reques_W_id = [] #Creamos una lista nueva de requerimientos con un id
     for req in requesNcomp:
         reques_W_id.append([id,req])
         id +=1
+    """
+    reques_W_id --> [  ]
+    """
 
     requerimiento = {
         "ID" : int,
@@ -30,9 +35,9 @@ def AgregarRequerimientos(id_proyecto:int, member:list, requesNcomp:list):
         "Estimado" : bool,
         "Componentes" : lista_de_componentes
     }
-    Componente = {
+    Componente = { #Descripción, Tipo, atributos, PF, own y razón vendrán desde la query para agregar en la ventana de desarrollador.
         "ID" : int,
-        "Componente" : str,
+        "Descripcion" : str,
         "Tipo" : int, #in (0,1,2,3,4)
         "Atributos" : int,
         "PF" : int, #automático desde atributos
@@ -40,7 +45,25 @@ def AgregarRequerimientos(id_proyecto:int, member:list, requesNcomp:list):
         "Razon" : str
     }
 
-    # Agregamos cada requerimiento como un diccionario una lista
+    """Agregamos cada requerimiento como un diccionario en una lista
+    
+            Requerimiento = {
+                        "ID" = 0,
+                        "Asignado" = "prueba@gmail.com,
+                        "Descripción" = Lorem Ipsum,
+                        "FechaAsignación" = date.today(),
+                        "Estimado" = False,
+                        "Componentes" = [
+                                        "ID" = 0,
+                                        "Descripcion" = "Ingresar datos de usuario.",
+                                        "Tipo" = 3,
+                                        "Atributos" = 5, 
+                                        "PF" = x,
+                                        "PF_own" = (False, None),
+                                        "Razon" = None
+                                        ]
+                            }
+    """
     for req in reques_W_id:
         id = 0
         id_req = req[0]
@@ -54,15 +77,17 @@ def AgregarRequerimientos(id_proyecto:int, member:list, requesNcomp:list):
         if componentes == []:
             pass
         else:
+            j = 0
             for comp in componentes:
-                Componente["ID"] = None
-                Componente["Componente"] = comp
+                Componente["ID"] = j
+                Componente["Descripcion"] = comp
                 Componente["Tipo"] = int
                 Componente["Atributos"] = int
                 Componente["PF"] = None
                 Componente["PF_own"] = None
                 Componente["Razon"] = None
                 lista_de_componentes.append(Componente)
+                j+=1
 
         requerimiento["Componentes"] = lista_de_componentes
 
@@ -80,17 +105,23 @@ def AgregarRequerimientos(id_proyecto:int, member:list, requesNcomp:list):
                 puntos_de_funcion_totales += pf
 
     query = {
-        "id_proyecto": id_proyecto,#id de mongoDB???? Acá se asocia el proyecto para los requerimientos
+        "id_proyecto": id_proyecto,#id de mongoDB. Acá se asocia el proyecto para los requerimientos
         "Requerimientos": lista_de_requerimientos,
         "TotalPF" : puntos_de_funcion_totales
     }
 
-    db["ReqComp"].insert_one(query)
+    try : 
+        db["ReqComp"].insert_one(query)
+        print("Requerimientos agregados con éxito")
+    except Exception as e:
+        print("Ocurrió un error")
 
-    print("Requerimientos agregados con éxito")
+
+    
 
 
 def AgregarComponentes(id_proyecto):
     return
 
-def ObtenerRequerimientos()
+def ObtenerRequerimientos(email, id_proyecto):
+    return
