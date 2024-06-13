@@ -61,6 +61,7 @@ def ObtenerDatosProyecto(email_user, id_proyecto):
     else:
         print("No se encontró el proyecto")
         return None
+    
 def ObtenerNombreProyecto(email_user, id_proyecto):
     """Funcion que retorna el nombre de un proyecto"""
     
@@ -83,34 +84,31 @@ def ObtenerIdProyecto(email_user:str, nombre:str):
     else:
         print("No se encontró el proyecto.")
     
-def AumentarProyectos(email: str)->None:
+def AumentarProyectos(email: str) -> None:#Se eliminó la condición de tener menos de 3 proyectos
     '''Aumenta el numero de proyectos del usuario'''
-    if (user.BuscarUsuario(email)):
+    if user.BuscarUsuario(email):
         usuario = db['Users'].find_one({'email': email}, {'proyectos': 1})
         n_proyectos = usuario['proyectos']
-        if  n_proyectos <= 3:
-            # Incrementa el valor de "proyectos"
-            db['Users'].update_one(
-                {'email': email},
-                {'$set': {'proyectos': n_proyectos + 1}}
-            )
-            print(f"Proyectos incrementados a: {n_proyectos + 1}")
-            n_proyectos = usuario['proyectos']
-        else:
-            print("El usuario ya tiene 3 proyectos.")
+        # Incrementa el valor de "proyectos"
+        db['Users'].update_one(
+            {'email': email},
+            {'$set': {'proyectos': n_proyectos + 1}}
+        )
+        print(f"Proyectos incrementados a: {n_proyectos + 1}")
     else:
-        print("El usuario no existe (Aumentarproyectos)")
+        print("El usuario no existe")
 
-def BuscarProyectos(email: str)-> int:
-    """
-    Función que busca y retorna la cantidad de proyectos del usuario
-    """
+
+"""def BuscarProyectos(email: str)-> int:
+    
+    #Función que busca y retorna la cantidad de proyectos del usuario
+    
     if (user.BuscarUsuario(email)):
         usuario = db['Users'].find_one({'email': email}, {'proyectos': 1})
         n_proyectos = usuario['proyectos']
         return n_proyectos
     else:
-        print("Error: No se encontró el usuario (Buscarproyectos)")
+        print("Error: No se encontró el usuario (Buscarproyectos)")"""
 
 def SetearProyectos(email:str)->None:
     """Función que setea los proyectos del usuario en 0"""
@@ -118,6 +116,8 @@ def SetearProyectos(email:str)->None:
         db['Users'].update_one({'email': email},{'$set': {'proyectos': 0}})
     else:
         print("Error: No se encontró el usuario (Setearproyectos)")
+
+#HACER FUNCION PARA DISMINUIR EN 1 LOS PROYECTOS DEL USUARIO (ELIMINAR)
 
 def EliminarProyecto(email_user: str, id_proyecto: int)->bool:
     '''Elimina un proyecto de la base de datos'''

@@ -48,7 +48,7 @@ class JP(ctk.CTk):
             
         self.after(100, self.verificar_invitaciones)
         
-        self.mainloop()
+        #self.mainloop()
 
 
 
@@ -166,7 +166,6 @@ class JP(ctk.CTk):
         self.principal.pack(fill="both",expand=True)
 
     def contenido_subpanel(self):
-        #texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
         self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, 
                                             text="Selecciona o crea un proyecto", 
                                             text_color = style.Titulo.text_color,
@@ -198,7 +197,6 @@ class JP(ctk.CTk):
     
     def ListarProyectosExistentes(self): #Funcion que busca y lista los proyectos del usuario
         nombres = Proj.ObtenerNombresProyecto(self.user_email)
-        #proj_activos = Proj.BuscarProyectos(self.user_email)
 
         for nombre in nombres:
             nombre_proyecto = nombre
@@ -258,102 +256,94 @@ class JP(ctk.CTk):
         self.new_proyect.pack(side=ctk.TOP, pady=10)
 
     def crear_proyecto(self): #Ventana para crear un proyecto
-        if Proj.BuscarProyectos(self.user_email) >= 3:
-            ventana_aviso = self.mostrar_ventana_emergente("Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+        self.window = ctk.CTkToplevel(self)
+        self.window.configure(fg_color=style.Colores.background)
+        centrarVentana(self.window, 800, 500)
+        self.window.title("Error")
+        self.window.attributes('-topmost' , 1)
+        self.window.focus()
 
-            cerrar = ctk.CTkButton(ventana_aviso, text="Aceptar", command=ventana_aviso.withdraw)
-            cerrar.pack(pady=(0,5))
+        titulo = ctk.CTkLabel(self.window,
+                                text="Crear un proyecto nuevo",
+                                text_color = style.Titulo.text_color,
+                                font = style.Titulo.font)
+        titulo.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
 
-            return
-        else:
-            self.window = ctk.CTkToplevel(self)
-            self.window.configure(fg_color=style.Colores.background)
-            centrarVentana(self.window, 800, 500)
-            self.window.title("Error")
-            self.window.attributes('-topmost' , 1)
-            self.window.focus()
+        subtitulo = ctk.CTkLabel(self.window, 
+                                    text="Llena los campos con la información de tu proyecto", 
+                                    text_color = style.Titulo.text_color,
+                                    font = style.Titulo.font)
+        subtitulo.pack(side=ctk.TOP, pady=3, anchor=ctk.NW)
 
-            titulo = ctk.CTkLabel(self.window,
-                                  text="Crear un proyecto nuevo",
-                                  text_color = style.Titulo.text_color,
-                                  font = style.Titulo.font)
-            titulo.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
+        # Crear un frame para contener nombre y nombre_entry
+        NOMBRE = ctk.CTkFrame(self.window, fg_color=style.Colores.background)
+        NOMBRE.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
+        
+        nombre = ctk.CTkLabel(NOMBRE, 
+                                text="Nombre del proyecto (obligatorio):", 
+                                text_color = style.Titulo.text_color,
+                                font = style.Titulo.font)
+        nombre.pack(side=ctk.LEFT, padx=2)
+        
+        self.nombre_entry = ctk.CTkEntry(NOMBRE, 
+                                            placeholder_text="Nombre del proyecto...", 
+                                            width=200,
+                                            fg_color = style.EntryNormal.fg_color,
+                                            border_color = style.EntryNormal.border_color,
+                                            text_color = style.EntryNormal.text_color,
+                                            font = style.EntryNormal.font,
+                                            corner_radius = style.EntryNormal.corner_radius)
+        self.nombre_entry.pack(side=ctk.LEFT, padx=2)
 
-            subtitulo = ctk.CTkLabel(self.window, 
-                                     text="Llena los campos con la información de tu proyecto", 
-                                     text_color = style.Titulo.text_color,
-                                     font = style.Titulo.font)
-            subtitulo.pack(side=ctk.TOP, pady=3, anchor=ctk.NW)
+        # Crear un frame para participantes
+        self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color=style.Colores.background)
+        self.PARTICIPANTES.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X, expand=True)
+        
+        participantes_label = ctk.CTkLabel(self.PARTICIPANTES, 
+                                            text="Introduce el correo de los miembros de tu proyecto para invitarlos:", 
+                                            text_color = style.Texto.text_color,
+                                            font = style.Texto.font)
+        participantes_label.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
 
-            # Crear un frame para contener nombre y nombre_entry
-            NOMBRE = ctk.CTkFrame(self.window, fg_color=style.Colores.background)
-            NOMBRE.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X)
-            
-            nombre = ctk.CTkLabel(NOMBRE, 
-                                  text="Nombre del proyecto (obligatorio):", 
-                                  text_color = style.Titulo.text_color,
-                                  font = style.Titulo.font)
-            nombre.pack(side=ctk.LEFT, padx=2)
-            
-            self.nombre_entry = ctk.CTkEntry(NOMBRE, 
-                                             placeholder_text="Nombre del proyecto...", 
-                                             width=200,
-                                             fg_color = style.EntryNormal.fg_color,
-                                             border_color = style.EntryNormal.border_color,
-                                             text_color = style.EntryNormal.text_color,
-                                             font = style.EntryNormal.font,
-                                             corner_radius = style.EntryNormal.corner_radius)
-            self.nombre_entry.pack(side=ctk.LEFT, padx=2)
+        # Crear subframes dentro de PARTICIPANTES
+        
+        self.indice_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color=style.Colores.background)
+        self.indice_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
 
-            # Crear un frame para participantes
-            self.PARTICIPANTES = ctk.CTkFrame(self.window, fg_color=style.Colores.background)
-            self.PARTICIPANTES.pack(side=ctk.TOP, pady=5, anchor=ctk.NW, fill=ctk.X, expand=True)
-            
-            participantes_label = ctk.CTkLabel(self.PARTICIPANTES, 
-                                               text="Introduce el correo de los miembros de tu proyecto para invitarlos:", 
-                                               text_color = style.Texto.text_color,
-                                               font = style.Texto.font)
-            participantes_label.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
+        self.participantes_entries_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color=style.Colores.background)
+        self.participantes_entries_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
 
-            # Crear subframes dentro de PARTICIPANTES
-            
-            self.indice_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color=style.Colores.background)
-            self.indice_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
+        self.Combobox_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color=style.Colores.background)
+        self.Combobox_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
 
-            self.participantes_entries_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color=style.Colores.background)
-            self.participantes_entries_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
+        self.add_participante_entry()
+        
+        # Botón para agregar más participantes
+        self.more_button_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color=style.Colores.backgroundVariant)
+        self.more_button_frame.pack(side=ctk.LEFT, padx=5, pady=2,anchor=ctk.NW)
+        
+        more_button = ctk.CTkButton(self.more_button_frame, 
+                                    width=25, 
+                                    height=25, 
+                                    text="+",
+                                    text_color = style.BotonNormal.text_color,
+                                    fg_color = style.BotonNormal.fg_color,
+                                    font = style.BotonNormal.font,
+                                    corner_radius = style.BotonNormal.corner_radius,
+                                    hover_color = style.BotonNormal.hover_color,
+                                    command=self.add_participante_entry)
+        more_button.pack(anchor=ctk.CENTER)
 
-            self.Combobox_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color=style.Colores.background)
-            self.Combobox_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
-
-            self.add_participante_entry()
-            
-            # Botón para agregar más participantes
-            self.more_button_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color=style.Colores.backgroundVariant)
-            self.more_button_frame.pack(side=ctk.LEFT, padx=5, pady=2,anchor=ctk.NW)
-            
-            more_button = ctk.CTkButton(self.more_button_frame, 
-                                        width=25, 
-                                        height=25, 
-                                        text="+",
-                                        text_color = style.BotonNormal.text_color,
-                                        fg_color = style.BotonNormal.fg_color,
-                                        font = style.BotonNormal.font,
-                                        corner_radius = style.BotonNormal.corner_radius,
-                                        hover_color = style.BotonNormal.hover_color,
-                                        command=self.add_participante_entry)
-            more_button.pack(anchor=ctk.CENTER)
-
-            # Botón para mandar la query y crear proyecto
-            crear_proyecto_button = ctk.CTkButton(self.window, 
-                                                  text="Crear Proyecto",
-                                                  text_color = style.BotonNormal.text_color,
-                                                  fg_color = style.BotonNormal.fg_color,
-                                                  font = style.BotonNormal.font,
-                                                  corner_radius = style.BotonNormal.corner_radius,
-                                                  hover_color = style.BotonNormal.hover_color,
-                                                  command=self.crear_proyecto_query)
-            crear_proyecto_button.pack(side=ctk.BOTTOM, pady=10)
+        # Botón para mandar la query y crear proyecto
+        crear_proyecto_button = ctk.CTkButton(self.window, 
+                                                text="Crear Proyecto",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.crear_proyecto_query)
+        crear_proyecto_button.pack(side=ctk.BOTTOM, pady=10)
 
     def add_participante_entry(self):
         self.indice_participante += 1
@@ -622,3 +612,6 @@ class JP(ctk.CTk):
             for widget in self.tabBar2.winfo_children():
                 widget.destroy()
             self.ListarProyectosInvitados()
+
+app = JP("prueba@gmail.com")
+app.mainloop()
