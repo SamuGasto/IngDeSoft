@@ -1,5 +1,6 @@
 from pymongo.mongo_client import MongoClient
 from pymongo import errors
+from bson.objectid import ObjectId
 uri = "mongodb+srv://ingDeSoft02024:utwbTnVD9VHDGO9n@ingdesoft.u850jdj.mongodb.net/?retryWrites=true&w=majority&appName=IngDeSoft"
 # Create a new client and connect to the server
 client = MongoClient(uri,
@@ -52,6 +53,7 @@ def eliminar_coleccion(coleccion_nombre: str):
 
 # eliminar_todos_los_documentos('Projects')
 # eliminar_todos_los_documentos('Invitaciones')
+# eliminar_todos_los_documentos('ReqComp')
 
 # db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':111})
 # db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':112})
@@ -70,3 +72,5 @@ print("Datos en la colección 'Projects':")
 for project in projects:
     print(project)
 """
+# id_proyecto = ObjectId('666b3e038081382ca4e514ac')
+# print(db["Projects"].find_one({"_id": ObjectId("666b3e038081382ca4e514ac")}))

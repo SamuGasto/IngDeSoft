@@ -1,100 +1,168 @@
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.UsersQuery as user
 import BaseDeDatos.ProjectsQuery as Proj
-from pymongo import MongoClient, errors
+from pymongo import errors
 from datetime import date
+from bson.objectid import ObjectId
 
-def AgregarRequerimientos(id_proyecto:int, member:list, requesNcomp:list):
+collection = db["ReqComp"]
+
+def CrearColeccionDeRequerimientos(id_proyecto):
     """
-    Función para agregar requerimientos a\nun proyecto existente.
+    Función que crea un documento para los requerimientos de un proyecto nuevo.
+    """
+    query = {
+            "id_proyecto": id_proyecto, #id de mongoDB. Acá se asocia el proyecto con los requerimientos
+            "Requerimientos": [],
+            }   
+
+    try : 
+        db["ReqComp"].insert_one(query)
+        print("Doc de requerimientos creado con éxito")
+    except Exception as e:
+        print(e)
+
+def AgregarRequerimientos(id_proyecto:int, reques:list):
+    """
+    Función para agregar requerimientos a\nun doc de proyecto existente.
     
-    requesNcomp --> [ (Requerimiento, [ componentes ] ) ]
+    reques --> [Requerimiento : str]
     id_proyecto --> ObjectId de MongoDB
-    member --> [ (correo_miembro, rol) ]
     """
-
-    #Falta agregar lógica para asignar a usuarios a estimar un requerimiento
 
     lista_de_requerimientos = [] #Lista que contiene cada requerimiento con sus datos.
-    lista_de_componentes = [] #Lista que contiene cada componente de un requerimiento.
-    id = 1
+    id = 0
 
     reques_W_id = [] #Creamos una lista nueva de requerimientos con un id
-    for req in requesNcomp:
-        reques_W_id.append([id,req])
+    for req in reques:
+        reques_W_id.append((id,req))
         id +=1
     """
-    reques_W_id --> [  ]
+    reques_W_id --> [ (0,texto_req1), (1,texto_req1), ... , (N-1,texto_reqN) ]
     """
 
-    requerimiento = {
-        "ID" : int,
-        "Asignado" : None,
-        "Descripción" : str,
-        "FechaAsignación" : date.today(),
-        "Estimado" : bool,
-        "Componentes" : lista_de_componentes
-    }
-    Componente = { #Descripción, Tipo, atributos, PF, own y razón vendrán desde la query para agregar en la ventana de desarrollador.
-        "ID" : int,
-        "Descripcion" : str,
-        "Tipo" : int, #in (0,1,2,3,4)
-        "Atributos" : int,
-        "PF" : int, #automático desde atributos
-        "PF_own" : (bool,int),
-        "Razon" : str
-    }
-
-    """Agregamos cada requerimiento como un diccionario en una lista
-    
-            Requerimiento = {
-                        "ID" = 0,
-                        "Asignado" = "prueba@gmail.com,
-                        "Descripción" = Lorem Ipsum,
-                        "FechaAsignación" = date.today(),
-                        "Estimado" = False,
-                        "Componentes" = [
-                                        "ID" = 0,
-                                        "Descripcion" = "Ingresar datos de usuario.",
-                                        "Tipo" = 3,
-                                        "Atributos" = 5, 
-                                        "PF" = x,
-                                        "PF_own" = (False, None),
-                                        "Razon" = None
-                                        ]
-                            }
-    """
+    # Aquí recorremos todos los requerimientos recibidos
+    # para agregarlos a la colección.
     for req in reques_W_id:
-        id = 0
-        id_req = req[0]
-        descripcion = req[1][0]
-        componentes = req[1][1]
-        requerimiento["ID"] = id_req
-        requerimiento["Asignado"] = None
-        requerimiento["Descripción"] = descripcion
-        requerimiento["FechaAsignación"] = date.today()
-        requerimiento["Estimado"] = False
-        if componentes == []:
-            pass
-        else:
-            j = 0
-            for comp in componentes:
-                Componente["ID"] = j
-                Componente["Descripcion"] = comp
-                Componente["Tipo"] = int
-                Componente["Atributos"] = int
-                Componente["PF"] = None
-                Componente["PF_own"] = None
-                Componente["Razon"] = None
-                lista_de_componentes.append(Componente)
-                j+=1
+        id_req = req[0]  # obtenemos el id de la nueva lista
+        descripcion = req[1]  # Guardamos el texto del requerimiento
 
-        requerimiento["Componentes"] = lista_de_componentes
+        requerimiento = {
+            "ID": id_req,
+            "Asignado": None,
+            "Descripción": descripcion,
+            "FechaAsignación": f"{date.today()}",
+            "Estimado": False,
+            "Componentes": []  # Al ingresar requerimientos, vienen sin componentes
+        }
 
         lista_de_requerimientos.append(requerimiento)
+
+    try : 
+        db["ReqComp"].update_one({'id_proyecto': id_proyecto},
+                                 {'$push': {'Requerimientos': {'$each': lista_de_requerimientos}}})
+        print("Requerimientos agregados con éxito")
+    except Exception as e:
+        print(e)
+
+
     
 
-    puntos_de_funcion_totales = 0
+def AgregarComponentes(id_proyecto, id_requerimiento, componentes):
+    """
+    Función para agregar componentes a un requerimiento específico de un proyecto.
+    
+    id_proyecto --> ObjectId del proyecto de MongoDB
+    id_requerimiento --> ID del requerimiento dentro del proyecto
+    componentes --> lista de componentes a agregar, cada componente es un diccionario
+    """
+    
+    # Definir la estructura de un componente
+    Componente = { 
+        "ID": int,
+        "Descripcion": str,
+        "Tipo": int, # in (0,1,2,3,4)
+        "Atributos": int,
+        "PF": int, # automático desde atributos
+        "PF_own": (bool, int),
+        "Razon": str
+    }
+
+    # Buscar el proyecto y requerimiento específico
+    proyecto = collection.find_one(ObjectId(id_proyecto))
+    if not proyecto:
+        print(f"Proyecto con id {id_proyecto} no encontrado")
+        return
+
+    # Buscar el requerimiento específico
+    requerimientos = proyecto.get("Requerimientos", [])
+    requerimiento = None
+    for req in requerimientos:
+        if req["ID"] == id_requerimiento:
+            requerimiento = req
+            break
+
+    if not requerimiento:
+        print(f"Requerimiento con id {id_requerimiento} no encontrado en el proyecto")
+        return
+
+    # Lista para agregar nuevos componentes
+    lista_de_componentes = requerimiento.get("Componentes", [])
+
+    # Añadir los componentes a la lista
+    j = len(lista_de_componentes)
+    for comp in componentes:
+        nuevo_componente = Componente.copy()
+        nuevo_componente["ID"] = j
+        nuevo_componente["Descripcion"] = comp["Descripcion"]
+        nuevo_componente["Tipo"] = comp["Tipo"]
+        nuevo_componente["Atributos"] = comp["Atributos"]
+        nuevo_componente["PF"] = comp["Atributos"]  # Suponiendo que PF se calcula automáticamente desde atributos
+        nuevo_componente["PF_own"] = comp["PF_own"]
+        nuevo_componente["Razon"] = comp["Razon"]
+        lista_de_componentes.append(nuevo_componente)
+        j += 1
+
+    # Actualizar el requerimiento con los nuevos componentes
+    collection.update_one(
+        {"id_proyecto": id_proyecto, "Requerimientos.ID": id_requerimiento},
+        {"$set": {"Requerimientos.$.Componentes": lista_de_componentes}}
+    )
+
+    print("Componentes agregados con éxito")
+    print(lista_de_componentes)
+
+def ObtenerRequerimientos(id_proyecto) ->list :
+    """
+    Función para obtener los requerimientos de un proyecto.
+    
+    id_proyecto --> ObjectId del proyecto de MongoDB
+
+    return ->> lista de tuplas (id, "req")
+    """
+    
+    # Buscar el proyecto en la base de datos
+    proyecto = collection.find_one({"id_proyecto" : ObjectId(id_proyecto)})
+    if not proyecto:
+        print(f"Proyecto con id {id_proyecto} no encontrado")
+        return []
+
+    # Obtener los requerimientos del proyecto
+    requerimientos = proyecto.get("Requerimientos", [])
+
+    # Crear una lista de tuplas con el ID del requerimiento y la descripción
+    lista_de_requerimientos = [(req["ID"], req["Descripción"]) for req in requerimientos]
+
+    return lista_de_requerimientos
+
+def AsignarMiembro(email, email_miembro, id_proyecto, id_req):
+    return
+
+
+"""
+#CÓDIGO QUE PODRÍA SERVIR(para cuando se agreguen los componentes)
+
+puntos_de_funcion_totales = 0
     for req in lista_de_requerimientos:#iteramos sobre un diccionario
         compo = req["Componentes"]#es una lista
         for dicc in compo:
@@ -104,24 +172,5 @@ def AgregarRequerimientos(id_proyecto:int, member:list, requesNcomp:list):
             else:
                 puntos_de_funcion_totales += pf
 
-    query = {
-        "id_proyecto": id_proyecto,#id de mongoDB. Acá se asocia el proyecto para los requerimientos
-        "Requerimientos": lista_de_requerimientos,
-        "TotalPF" : puntos_de_funcion_totales
-    }
 
-    try : 
-        db["ReqComp"].insert_one(query)
-        print("Requerimientos agregados con éxito")
-    except Exception as e:
-        print("Ocurrió un error")
-
-
-    
-
-
-def AgregarComponentes(id_proyecto):
-    return
-
-def ObtenerRequerimientos(email, id_proyecto):
-    return
+"""

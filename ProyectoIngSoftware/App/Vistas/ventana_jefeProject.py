@@ -7,6 +7,8 @@ import BaseDeDatos.UsersQuery as User
 import BaseDeDatos.ProjectsQuery as Proj
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.Invitations as INV
+import BaseDeDatos.ReqCompQuery as Req
+
 from Vistas.util import centrarVentana
 import Clases.Componentes.Estilos as style
 
@@ -14,10 +16,10 @@ import Clases.Componentes.Estilos as style
 class JP(ctk.CTk):
     def __init__(self, email:str):
         super().__init__()
-        #self.proyecto_id = 110
         self.title("PaltaEstimateApp")
         #ACÁ CENTRAMOS LA VENTANA 
         centrarVentana(self, 1200, 600)
+        self.after(0, lambda:self.state('zoomed'))
 
         #VARIABLES
         self.participantes_entries = []
@@ -183,14 +185,30 @@ class JP(ctk.CTk):
         self.proyecto_actual.pack(side=ctk.TOP)
 
     def Update_reqs(self): #Función para actualizar en pantalla los requerimientos de la base de datos
-        self.reques_proyecto_actual = Proj.ObtenerRequerimientos(self.user_email, self.ID_activo)
-        for widget in self.reques_texto.winfo_children():
-            widget.destroy()
-        for req in self.reques_proyecto_actual:
-            self.reque_label = ctk.CTkLabel(self.reques_texto, text="- Requerimiento: " + req, 
+        print(self.ID_activo)
+        self.documento = db['Projects'].find_one({'owner': self.user_email, 'id': self.ID_activo})
+        if self.documento:
+            self.object_id = self.documento['_id']
+        else:
+            print("No se encontró el proyecto")
+
+        self.reques_proyecto_actual = Req.ObtenerRequerimientos(self.object_id)
+        if self.reques_proyecto_actual == [] or None:
+            for widget in self.reques_texto.winfo_children():
+                widget.destroy()
+            self.reque_label = ctk.CTkLabel(self.reques_texto, 
+                                            text="El proyecto aún no posee requerimientos", 
                                             text_color = style.Texto.text_color,
                                             font = style.Texto.font)
             self.reque_label.pack(side=ctk.TOP, anchor=ctk.NW)
+        else:
+            for widget in self.reques_texto.winfo_children():
+                widget.destroy()
+            for req in self.reques_proyecto_actual:
+                self.reque_label = ctk.CTkLabel(self.reques_texto, text=f"- ID: {req[0]}. Descripción: {req[1]}",
+                                                text_color = style.Texto.text_color,
+                                                font = style.Texto.font)
+                self.reque_label.pack(side=ctk.TOP, anchor=ctk.NW)
 
     def contenido_image(self): #Imagen compañía
         # Obtener la ruta absoluta del directorio actual del script
@@ -421,7 +439,13 @@ class JP(ctk.CTk):
                                     pady = 5)
 
         #Paso 2: Listar los requerimientos del proyecto.
-        self.reques_proyecto_actual = Proj.ObtenerRequerimientos(self.user_email, self.ID_activo)
+        self.documento = db['Projects'].find_one({'owner': self.user_email, 'id': self.ID_activo})
+        if self.documento:
+            self.object_id = self.documento['_id']
+        else:
+            print("No se encontró el proyecto")
+
+        self.reques_proyecto_actual = Req.ObtenerRequerimientos(self.object_id)
         if self.reques_proyecto_actual == [] or None:
             for widget in self.reques_texto.winfo_children():
                 widget.destroy()
@@ -434,7 +458,7 @@ class JP(ctk.CTk):
             for widget in self.reques_texto.winfo_children():
                 widget.destroy()
             for req in self.reques_proyecto_actual:
-                self.reque_label = ctk.CTkLabel(self.reques_texto, text="- Requerimiento: " + req,
+                self.reque_label = ctk.CTkLabel(self.reques_texto, text=f"- ID: {req[0]}. Descripción: {req[1]}",
                                                 text_color = style.Texto.text_color,
                                                 font = style.Texto.font)
                 self.reque_label.pack(side=ctk.TOP, anchor=ctk.NW)
@@ -544,25 +568,36 @@ class JP(ctk.CTk):
     
     def reqs_query(self): #Query para ingresar requerimientos al proyecto
         requerimientos = [entry.get() for entry in self.requerimientos]
-        #Mandar la query con los requerimientos
-        Proj.Ingresar_requerimientos(self.user_email, self.ID_activo, requerimientos)
+        #obtenemos el ObjectId del proyecto
+        self.documento = db['Projects'].find_one({'owner' : self.user_email, 'id' : self.ID_activo})
+        if self.documento:
+            self.object_id = self.documento['_id']
+            #Mandar la query con los requerimientos
+            Req.AgregarRequerimientos(self.object_id, requerimientos)
+
+            self.ventana_rq.withdraw()
+            ventanita = self.mostrar_ventana_emergente("Requerimientos agregados exitosamente.")
+            cerrar = ctk.CTkButton(ventanita, 
+                                text="Aceptar",
+                                text_color = style.BotonNormal.text_color,
+                                fg_color = style.BotonNormal.fg_color,
+                                font = style.BotonNormal.font,
+                                corner_radius = style.BotonNormal.corner_radius,
+                                hover_color = style.BotonNormal.hover_color,
+                                command=ventanita.withdraw)
+            cerrar.pack(pady=(0,5))
+        else:
+            print("Documento no encontrado")
+        #Proj.Ingresar_requerimientos(self.user_email, self.ID_activo, requerimientos)
+
         #Reiniciar variables
         requerimientos= []
         self.requerimientos = []
         self.contador = 5
 
-        self.ventana_rq.withdraw()
-        ventanita = self.mostrar_ventana_emergente("Requerimientos agregados exitosamente.")
-        cerrar = ctk.CTkButton(ventanita, 
-                               text="Aceptar",
-                               text_color = style.BotonNormal.text_color,
-                               fg_color = style.BotonNormal.fg_color,
-                               font = style.BotonNormal.font,
-                               corner_radius = style.BotonNormal.corner_radius,
-                               hover_color = style.BotonNormal.hover_color,
-                               command=ventanita.withdraw)
-        cerrar.pack(pady=(0,5))
+        
         self.Update_reqs()
+        print(self.ID_activo)
 
     
     def verificar_invitaciones(self):

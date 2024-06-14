@@ -1,5 +1,7 @@
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.UsersQuery as user
+import BaseDeDatos.ReqCompQuery as Req
+from bson.objectid import ObjectId
 
 def CrearNuevoProyecto(Nombre, participantes: list, email_user):
     owner = email_user
@@ -35,7 +37,14 @@ def CrearNuevoProyecto(Nombre, participantes: list, email_user):
                                 "integrantes": integrantes,
                                 "TablaVAC": tablaVAC,
                                 })
-
+    doc = db['Projects'].find_one({'owner': email_user, 'id': id_proyecto})
+    object_id = doc['_id']
+    Req.CrearColeccionDeRequerimientos(ObjectId(object_id))
+"""
+self.documento = db['Projects'].find_one({'owner': self.user_email, 'id': self.ID_activo})
+        if self.documento:
+            self.object_id = self.documento['_id']
+"""
 def BuscarProyecto(email_user, id_proyecto):
     '''Busca el proyecto en la base de datos'''
     if (db['Projects'].find_one({'owner':email_user, 'id': id_proyecto}) != None):
@@ -122,24 +131,19 @@ def EliminarProyecto(email_user: str, id_proyecto: int)->bool:
     if (BuscarProyecto(email_user, id_proyecto)):
         db['Projects'].delete_one({'owner':email_user, 'id':id_proyecto})
         print(f'Proyecto con id "{id_proyecto}" eliminado.')
+        if user.BuscarUsuario(email_user):
+            usuario = db['Users'].find_one({'email': email_user}, {'proyectos': 1})
+            n_proyectos = usuario['proyectos']
+            # Decrementa el valor de "proyectos"
+            db['Users'].update_one(
+                {'email': email_user},
+                {'$set': {'proyectos': n_proyectos - 1}}
+            )
+            print(f"Proyectos decrementados a: {n_proyectos -1}")
+        else:
+            print("El usuario no existe")
         return True
     else:
         print(f'El proyecto que intentas eliminar no existe')
         return False
     
-def Ingresar_requerimientos(email_user:str, id_proyecto:int, reques:list)-> None:
-    """Función para ingresar requerimientos al proyecto actual"""
-    if (BuscarProyecto(email_user, id_proyecto)):
-        db['Projects'].update_one({'owner': email_user, 'id': id_proyecto},
-                                {'$push': {'Requerimientos': {'$each': reques}}})
-    else:
-        print("No se pudo actualizar la lista de requerimientos")
-
-
-
-def ObtenerRequerimientos(email_user:str, id_proyecto:int)-> list:
-    """Función para obtener una lista con los requerimientos de un proyecto"""
-    proyecto = db['Projects'].find_one({'owner': email_user, 'id': id_proyecto})
-    requerimientos = proyecto.get('Requerimientos')
-
-    return requerimientos
