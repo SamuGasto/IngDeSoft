@@ -2,9 +2,9 @@
 from xml.dom import HierarchyRequestErr
 import customtkinter as ctk
 from tkinter import ttk, Toplevel, StringVar, messagebox
-import Estilos as style
+import Clases.Componentes.Estilos as style
 #creamos la clase ventana para el jefe de proyecto
-class Dev(ctk.CTk):
+class Dev(ctk.CTkToplevel):
     def __init__(self):
         super().__init__()
         
@@ -23,8 +23,10 @@ class Dev(ctk.CTk):
         self.Paneles()
         #self.controles_sidebar()
         self.contenido_body()
+        self.after(0, lambda:self.state('zoomed'))
+
         #self.contenido_subpanel()
-        #self.mainloop() !! BORRAR EL COMENTARIO PARA USO FINAL
+        self.mainloop() 
     
     def Paneles(self):
         
@@ -387,6 +389,7 @@ class Dev(ctk.CTk):
     def agregarComponenteVentana(self): #VENTANA EMERGENTE PARA AGREGAR NUEVO COMPONENTE A LA TABLA
         # Crear la ventana emergente
         agregarComponente_window = Toplevel(self)
+
         agregarComponente_window.title("Agregar Fila")
 
         # Frame para los campos de texto
@@ -651,7 +654,7 @@ class Dev(ctk.CTk):
     def boton_clickeado_global(self, texto):
         self.boton_clickeado(texto)
 
-    def mostrar_ventana_emergente(self):
+    """def mostrar_ventana_emergente(self):
         ventana_emergente = ctk.CTkToplevel(app)
         ventana_emergente.configure(fg_color="white")
         etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
@@ -664,11 +667,11 @@ class Dev(ctk.CTk):
         ventana_emergente.geometry("+{}+{}".format(x_ventana_emergente, y_ventana_emergente))
         ventana_emergente.title("Error")
         ventana_emergente.attributes('-topmost' , 1)
-        ventana_emergente.focus()
+        ventana_emergente.focus()"""
 
-#Borrar para uso final
-app = Dev()
-app.mainloop()
+# #Borrar para uso final
+# app = Dev()
+# app.mainloop()
 
 
 

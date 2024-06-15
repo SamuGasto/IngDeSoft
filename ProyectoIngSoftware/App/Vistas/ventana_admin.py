@@ -6,7 +6,7 @@ from tkinter import ttk, font
 import textwrap
 import re
 import os
-import Estilos as style
+import Clases.Componentes.Estilos as style
 
 #import Clases.Componentes.Estilos as style
 #import BaseDeDatos.UsersQuery as db
@@ -31,7 +31,7 @@ class JP(ctk.CTk):
 
         
 
-        #self.mainloop() 
+        self.mainloop() 
     
     def Paneles(self):#FRAMES
         #cuerpo principal
@@ -611,5 +611,5 @@ class JP(ctk.CTk):
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
 
-appi = JP()
-appi.mainloop()
+# appi = JP()
+# appi.mainloop()

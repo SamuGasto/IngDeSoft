@@ -8,6 +8,8 @@ import BaseDeDatos.ProjectsQuery as Proj
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.Invitations as INV
 import BaseDeDatos.ReqCompQuery as Req
+import Vistas.ventana_desarrollador as DEV
+import Vistas.ventana_admin as ADMIN
 
 from Vistas.util import centrarVentana
 import Clases.Componentes.Estilos as style
@@ -20,6 +22,7 @@ class JP(ctk.CTk):
         #ACÁ CENTRAMOS LA VENTANA 
         centrarVentana(self, 1200, 600)
         self.after(0, lambda:self.state('zoomed'))
+        self.attributes('-topmost', 0)
 
         #VARIABLES
         self.participantes_entries = []
@@ -249,6 +252,7 @@ class JP(ctk.CTk):
 
     def agregar_boton_proyecto(self, nombre_proyecto):#Botón para agregar los proyectos a los que te invitaron
         texto = f"{nombre_proyecto}"
+        self.Nombre_Proyecto_Invitado = nombre_proyecto
         self.proyecto_inv = ctk.CTkButton(self.otros_proyectos, 
                                           text=texto, 
                                           text_color = style.BotonLista.text_color,
@@ -259,8 +263,20 @@ class JP(ctk.CTk):
                                           border_width=2,
                                           border_color=style.Colores.Gray[4],
                                           width=200, 
-                                          height=65)
+                                          height=65,
+                                          command=partial(self.SwitchWindow, self.Nombre_Proyecto_Invitado))
         self.proyecto_inv.pack(side=ctk.TOP, pady=10, fill="x")
+
+    def SwitchWindow(self, nombre_proyecto):
+        proj = db['Invitaciones'].find_one({'nombre_proyecto' : nombre_proyecto, 'correo_invitado' : self.user_email})
+        print(proj['rol'])
+        if proj['rol'] == "Administrador":
+            return
+        elif proj['rol'] == "Desarrollador":
+            nueva = DEV.Dev()
+        else:
+            print(f"Ocurrió un problema al buscar el rol en el proyecto {self.Nombre_Proyecto_Invitado}")
+        
 
     def crear_proyecto2(self): #Crea el botón de proyecto activo en el lateral
         self.proyecto_id = Proj.ObtenerIdProyecto(self.user_email, self.Nombre_Proyecto)

@@ -25,7 +25,7 @@ class Crear_cuenta(ctk.CTk):
         pheight = round(htotal/2-hventana/2)
         #  Se lo aplicamos a la geometría de la ventana
         self.geometry(str(wventana)+"x"+str(hventana)+"+"+str(pwidth)+"+"+str(pheight))
-        #self.resizable(False, False)
+        self.after(0, lambda:self.state('zoomed'))
         self.Contenido()
 
         
