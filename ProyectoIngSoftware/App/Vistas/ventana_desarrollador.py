@@ -5,9 +5,9 @@ from tkinter import ttk, Toplevel, StringVar, messagebox
 import Clases.Componentes.Estilos as style
 #creamos la clase ventana para el jefe de proyecto
 class Dev(ctk.CTkToplevel):
-    def __init__(self):
-        super().__init__()
-        
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent 
         self.n_proyectos = 1 
         self.proyecto_id = 111
         self.next_row_id = 1  # ID inicial para las filas
@@ -139,6 +139,15 @@ class Dev(ctk.CTkToplevel):
                                                 hover_color = style.BotonNormal.hover_color,
                                                 command=self.mensajeBase)
         estimation_rule_button.grid(row=0, column=3, padx=5)
+
+        cerrar = ctk.CTkButton(button_frame, text="Cerrar",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.close_window)
+        cerrar.grid(row=0, column=4, padx=5)
     
     def inicializar_requerimientos(self):#Agregar valores por defecto para demo funcionalidad REQUERIMIENTOS
         for req in self.filasReq:
@@ -626,7 +635,12 @@ class Dev(ctk.CTkToplevel):
             print("Datos actualizados correctamente.")
         else:
             # Aquí puedes manejar lo que quieres hacer si se cancela la acción
-            print("La actualización de datos fue cancelada.")        
+            print("La actualización de datos fue cancelada.")    
+
+    def close_window(self):
+        if self.parent:
+            self.parent.deiconify()  # Restaurar la ventana principal
+        self.destroy()    
     
     #ROBADO DEL JEFE DE PROYECTO-------------------------------------------------------------------------------------------------
     def contenido_subpanel(self):

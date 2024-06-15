@@ -273,7 +273,8 @@ class JP(ctk.CTk):
         if proj['rol'] == "Administrador":
             return
         elif proj['rol'] == "Desarrollador":
-            nueva = DEV.Dev()
+            self.iconify()
+            self.nueva = DEV.Dev(self)  # Pasar la referencia de la ventana principal
         else:
             print(f"Ocurrió un problema al buscar el rol en el proyecto {self.Nombre_Proyecto_Invitado}")
         
