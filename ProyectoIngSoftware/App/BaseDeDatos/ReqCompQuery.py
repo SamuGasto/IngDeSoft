@@ -138,7 +138,7 @@ def ObtenerRequerimientos(id_proyecto) ->list :
     
     id_proyecto --> ObjectId del proyecto de MongoDB
 
-    return ->> lista de tuplas (id, "req")
+    return ->> lista de tuplas (id, "req", "estimado")
     """
     
     # Buscar el proyecto en la base de datos
@@ -151,7 +151,7 @@ def ObtenerRequerimientos(id_proyecto) ->list :
     requerimientos = proyecto.get("Requerimientos", [])
 
     # Crear una lista de tuplas con el ID del requerimiento y la descripción
-    lista_de_requerimientos = [(req["ID"], req["Descripción"]) for req in requerimientos]
+    lista_de_requerimientos = [(req["ID"], req["Descripción"], req["Estimado"]) for req in requerimientos]
 
     return lista_de_requerimientos
 

@@ -65,12 +65,12 @@ def eliminar_coleccion(coleccion_nombre: str):
 # db['Projects'].delete_one({'owner':"prueba2@gmail.com", 'id':113})
 # db['Users'].update_one({'email': "prueba2@gmail.com"},{'$set': {'proyectos': 0}})
 
-"""
-projects_collection = db['Projects']
+
+"""projects_collection = db['ReqComp']
 projects = projects_collection.find()
-print("Datos en la colección 'Projects':")
+print("Datos en la colección 'ReqComp':")
 for project in projects:
-    print(project)
-"""
+    print(project)"""
+
 # id_proyecto = ObjectId('666b3e038081382ca4e514ac')
 # print(db["Projects"].find_one({"_id": ObjectId("666b3e038081382ca4e514ac")}))

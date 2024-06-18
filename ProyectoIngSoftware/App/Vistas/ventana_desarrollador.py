@@ -3,17 +3,38 @@ from xml.dom import HierarchyRequestErr
 import customtkinter as ctk
 from tkinter import ttk, Toplevel, StringVar, messagebox
 import Clases.Componentes.Estilos as style
+import BaseDeDatos.ReqCompQuery as Req
 #creamos la clase ventana para el jefe de proyecto
 class Dev(ctk.CTkToplevel):
-    def __init__(self, parent):
+    def __init__(self, parent, user, proyecto, id_proyecto):
         super().__init__(parent)
         self.parent = parent 
-        self.n_proyectos = 1 
-        self.proyecto_id = 111
+        self.user = user
+        self.proyecto = proyecto
+        self.id_proyecto = id_proyecto
+
         self.next_row_id = 1  # ID inicial para las filas
         self.filas = [] #Información filas
-        self.filasReq = [{"ID": "REQ-001", "Descripción": "Descripción del requerimiento 1", "Estado": "Pendiente"},
-                        {"ID": "REQ-002", "Descripción": "Descripción del requerimiento 2", "Estado": "Revisado"}]
+        #Listamos los requerimientos del proyecto
+        lista_requerimientos = Req.ObtenerRequerimientos(self.id_proyecto)
+
+
+        """ self.filasReq = [{"ID": "REQ-001", "Descripción": "Descripción del requerimiento 1", "Estado": "Pendiente"},
+                        {"ID": "REQ-002", "Descripción": "Descripción del requerimiento 2", "Estado": "Revisado"}]"""
+        self.filasReq = []
+        for reque in lista_requerimientos:
+            if reque[2] == False:
+                estado = "Pendiente"
+            else:
+                estado = "Revisado"
+            self.filasReq.append(
+                {"ID": f"REQ-{reque[0]}",
+                 "Descripción": reque[1],
+                 "Estado": estado
+                 }
+            )
+
+        #Listamos las tareas asignadas al usuario (IMPLEMENTAR)
         self.filasTareas = [{"ID": "TAR-001", "Descripción": "Descripción Tarea 1", "Estado": "Pendiente"},
                             {"ID": "TAR-002", "Descripción": "Descripción Tarea 2", "Estado": "Realizada"}]
         
@@ -49,8 +70,8 @@ class Dev(ctk.CTkToplevel):
                                  segmented_button_unselected_hover_color=style.BotonSecundario.hover_color,)
         tabview.pack(padx=5, pady=5, fill="both", expand=True)
         #Agregamos Tabs
-        self.tab1 = tabview.add("Puntos de Función")  
-        self.tab2 = tabview.add("Requerimientos")  
+        self.tab2 = tabview.add("Requerimientos")
+        self.tab1 = tabview.add("Agregar componentes")  
         self.tab3 = tabview.add("Tareas")
           
         
@@ -62,11 +83,6 @@ class Dev(ctk.CTkToplevel):
         
         ## Crear la tabla en la pestaña "Tareas"
         self.create_table3(self.tab3)
-
-        """##objetos del body
-        self.administrar  = ctk.CTkButton(self.body, text="Administración\nCompleta", text_color="black",fg_color="white", font=("Comic Sans", -15, "bold"),
-                                        width=150, height=35, corner_radius=25)
-        self.administrar.pack(side=ctk.LEFT, anchor=ctk.SE, pady=5, padx=5)"""
 
     #TABLA PUNTOS DE FUNCIÓN----------------------------------------------------------------------------------
     def create_table1(self, parent):
@@ -642,31 +658,6 @@ class Dev(ctk.CTkToplevel):
             self.parent.deiconify()  # Restaurar la ventana principal
         self.destroy()    
     
-    #ROBADO DEL JEFE DE PROYECTO-------------------------------------------------------------------------------------------------
-    def contenido_subpanel(self):
-        texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
-        self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text=texto_boton, font=("Comic Sans", -25))
-        self.proyecto_actual.pack(side=ctk.TOP)
-
-    def crear_proyecto(self):
-        self.n_proyectos += 1
-        if self.n_proyectos > 3:
-            self.mostrar_ventana_emergente()
-        else:
-            self.proyecto_id += 1
-            texto = "PRO-" + str(self.proyecto_id)
-            self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                                width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
-            self.new_proyect.pack(side=ctk.TOP, pady=10)
-
-    def cambiar_proyecto(self, texto):
-        self.proyecto_actual.configure(text=texto)
-
-    def boton_clickeado(self, texto):
-        self.cambiar_proyecto(texto)
-
-    def boton_clickeado_global(self, texto):
-        self.boton_clickeado(texto)
 
     """def mostrar_ventana_emergente(self):
         ventana_emergente = ctk.CTkToplevel(app)
@@ -709,38 +700,3 @@ class Dev(ctk.CTkToplevel):
             ctk.CTkLabel(frame, text=decor_label, fg_color="gray").pack(side="left", padx=(0, 10))
         
     """
-
-        ##Objetos de tab2
-"""
-    scroll = ctk.CTkScrollableFrame(master=tab2)
-        scroll.pack(fill="both",expand=True)
-        texto = ctk.CTkLabel(master=scroll, font=("Calibri", -15, "italic"), text="· REQ-111: ")
-        texto.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
-    """
-
-
-"""def Paneles(self):
-        #sección izquierda
-        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=0)
-        self.side_bar.pack(side="left", fill="y", expand=False)
-        #cuerpo principal
-        self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
-        self.body.pack(side="right", fill="both", expand=True)
-        #frame que contiene ID del proyecto actual
-        self.top_subpanel = ctk.CTkFrame(self.body, fg_color="transparent", height=120, corner_radius=0)
-        self.top_subpanel.pack(side=ctk.TOP, fill="x", expand=False)
-        #frame para la imágen
-        self.topimage = ctk.CTkFrame(self.top_subpanel, fg_color="transparent", corner_radius=0)
-        self.topimage.pack(side=ctk.RIGHT, expand=False)
-
-    def controles_sidebar(self):
-        texto= "PRO-"+str(self.proyecto_id)
-        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20), fg_color="black")
-        self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
-        self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                            width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
-        self.boton_proyecto.pack(side=ctk.TOP, pady=10)
-
-        self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
-                                                fg_color="red", width=200, height=65, corner_radius=0, command= self.crear_proyecto)
-        self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10)"""

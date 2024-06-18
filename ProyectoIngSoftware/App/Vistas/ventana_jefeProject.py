@@ -2,6 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 import os
 from functools import partial
+from bson.objectid import ObjectId
 
 import BaseDeDatos.UsersQuery as User
 import BaseDeDatos.ProjectsQuery as Proj
@@ -97,18 +98,17 @@ class JP(ctk.CTk):
                                                   text="Crear Proyecto +", 
                                                   width=200, height=65, 
                                                   command= self.crear_proyecto)
-        self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10, padx=5)
+        self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=(0, 10), padx=5)
 
         #Creamos TabView
-        tabview = ctk.CTkTabview(master=self.side_bar, 
-                                 height=400,
+        tabview = ctk.CTkTabview(master=self.side_bar,
                                  fg_color=style.Colores.background,
                                  segmented_button_fg_color=style.Colores.background,
                                  segmented_button_selected_color=style.BotonNormal.fg_color,
                                  segmented_button_selected_hover_color=style.BotonNormal.hover_color,
                                  segmented_button_unselected_color=style.BotonSecundario.fg_color,
                                  segmented_button_unselected_hover_color=style.BotonSecundario.hover_color)
-        tabview.pack(pady=(5,0), fill="both")
+        tabview.pack(pady=(5,0), fill="both", expand=True)
         #Agregamos Tabs
         self.tabBar1 = tabview.add("Mis proyectos")
         self.tabBar2 = tabview.add("Otros Proyectos")
@@ -137,7 +137,7 @@ class JP(ctk.CTk):
                                  segmented_button_selected_hover_color=style.BotonNormal.hover_color,
                                  segmented_button_unselected_color=style.BotonSecundario.fg_color,
                                  segmented_button_unselected_hover_color=style.BotonSecundario.hover_color,)
-        tabview.pack(padx=5, pady=5, fill="x")
+        tabview.pack(padx=5, pady=5, fill="both", expand = True)
         #Agregamos Tabs
         self.tab1 = tabview.add("Integrantes")  
         self.tab2 = tabview.add("Requerimientos")  
@@ -270,11 +270,20 @@ class JP(ctk.CTk):
     def SwitchWindow(self, nombre_proyecto):
         proj = db['Invitaciones'].find_one({'nombre_proyecto' : nombre_proyecto, 'correo_invitado' : self.user_email})
         print(proj['rol'])
+
+        #Buscamos y guardamos en variables los datos del proyecto
+        """
+        doc = db['Projects'].find_one({'owner': email_user, 'id': id_proyecto})
+        object_id = doc['_id']
+        """
+        self.objectId_Proy_invitado = db['Projects'].find_one({'owner': proj['owner_proyecto'], 'id': proj['proyecto_id']})['_id']#ObjectId para buscar la coleccion de requerimientos del proyecto
+        self.objectId_Proy_invitado = ObjectId(self.objectId_Proy_invitado)
+
         if proj['rol'] == "Administrador":
             return
         elif proj['rol'] == "Desarrollador":
             self.iconify()
-            self.nueva = DEV.Dev(self)  # Pasar la referencia de la ventana principal
+            self.nueva = DEV.Dev(self, self.user_email, self.Nombre_Proyecto_Invitado, self.objectId_Proy_invitado)  # Pasar la referencia de la ventana principal
         else:
             print(f"Ocurrió un problema al buscar el rol en el proyecto {self.Nombre_Proyecto_Invitado}")
         
@@ -297,10 +306,11 @@ class JP(ctk.CTk):
         self.new_proyect.pack(side=ctk.TOP, pady=10)
 
     def crear_proyecto(self): #Ventana para crear un proyecto
+        self.participantes_entries = []
         self.window = ctk.CTkToplevel(self)
         self.window.configure(fg_color=style.Colores.background)
         centrarVentana(self.window, 800, 500)
-        self.window.title("Error")
+        self.window.title("Crear un proyecto")
         self.window.attributes('-topmost' , 1)
         self.window.focus()
 
@@ -356,7 +366,7 @@ class JP(ctk.CTk):
 
         self.Combobox_frame = ctk.CTkFrame(self.PARTICIPANTES, fg_color=style.Colores.background)
         self.Combobox_frame.pack(side=ctk.LEFT, padx=2, pady=2, anchor=ctk.NW)
-
+        
         self.add_participante_entry()
         
         # Botón para agregar más participantes
@@ -427,7 +437,8 @@ class JP(ctk.CTk):
             INV.IngresarInvitacion(self.user_email, proyecto_id, correo, rol, "pendiente")
 
         self.window.withdraw()
-        self.mostrar_ventana_emergente("Proyecto creado exitosamente")
+        win = self.mostrar_ventana_emergente("Proyecto creado exitosamente")
+        win.title("Éxito")
         self.participantes_entries = []
         participantes_emails = []
         participantes_roles = []
@@ -504,6 +515,8 @@ class JP(ctk.CTk):
         return ventana_emergente
 
     def AnadirRequerimiento(self): #Ventana para añadir requerimientos al proyecto actual
+        self.contador = 5
+        self.requerimientos = []
         self.ventana_rq = ctk.CTkToplevel(self)
         self.ventana_rq.configure(fg_color="#061d2c")
         centrarVentana(self.ventana_rq, 700, 450)
@@ -594,6 +607,7 @@ class JP(ctk.CTk):
 
             self.ventana_rq.withdraw()
             ventanita = self.mostrar_ventana_emergente("Requerimientos agregados exitosamente.")
+            ventanita.title("Éxito")
             cerrar = ctk.CTkButton(ventanita, 
                                 text="Aceptar",
                                 text_color = style.BotonNormal.text_color,
@@ -632,8 +646,8 @@ class JP(ctk.CTk):
         ventana_invitacion.attributes('-topmost' , 1)
 
         mensaje = f"Has sido invitado por: '{invitacion['owner_proyecto']}'\nAl proyecto: '{invitacion['nombre_proyecto']}'\nCon el rol de: '{invitacion['rol']}'"
-        etiqueta = ctk.CTkLabel(ventana_invitacion, 
-                                text=mensaje, 
+        etiqueta = ctk.CTkLabel(ventana_invitacion,
+                                text=mensaje,
                                 text_color = style.Texto.text_color,
                                 font = style.Texto.font,
                                 anchor="w",  # Alineación a la izquierda
@@ -656,6 +670,7 @@ class JP(ctk.CTk):
         if respuesta == "aceptada":
             db['Invitaciones'].update_one({"_id": invitacion["_id"]}, {"$set": {"estado": respuesta}})
             window = self.mostrar_ventana_emergente(f"Invitación {respuesta}")
+            window.title("Éxito")
             cerrar = ctk.CTkButton(window, 
                                    text="Cerrar",
                                    text_color = style.BotonNormal.text_color,
