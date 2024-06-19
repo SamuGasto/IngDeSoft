@@ -15,12 +15,9 @@ class Dev(ctk.CTkToplevel):
 
         self.next_row_id = 1  # ID inicial para las filas
         self.filas = [] #Información filas
+
         #Listamos los requerimientos del proyecto
         lista_requerimientos = Req.ObtenerRequerimientos(self.id_proyecto)
-
-
-        """ self.filasReq = [{"ID": "REQ-001", "Descripción": "Descripción del requerimiento 1", "Estado": "Pendiente"},
-                        {"ID": "REQ-002", "Descripción": "Descripción del requerimiento 2", "Estado": "Revisado"}]"""
         self.filasReq = []
         for reque in lista_requerimientos:
             if reque[2] == False:
@@ -42,11 +39,10 @@ class Dev(ctk.CTkToplevel):
         self.geometry("1200x560")
         self.title("PaltaEstimateApp")
         self.Paneles()
-        #self.controles_sidebar()
+
         self.contenido_body()
         self.after(0, lambda:self.state('zoomed'))
 
-        #self.contenido_subpanel()
         self.mainloop() 
     
     def Paneles(self):
@@ -60,6 +56,11 @@ class Dev(ctk.CTkToplevel):
     
     #INICIAIZAR TABLAS----------------------------------------------------------------------------------
     def contenido_body(self):
+        nombre_proyecto = ctk.CTkLabel(self.body,
+                                        text=self.proyecto, 
+                                        text_color = style.Titulo.text_color,
+                                        font = style.Titulo.font)
+        nombre_proyecto.pack(anchor=ctk.CENTER, pady=5)
         #Creamos TabView
         tabview = ctk.CTkTabview(master=self.body,
                                  fg_color=style.Colores.backgroundVariant2,

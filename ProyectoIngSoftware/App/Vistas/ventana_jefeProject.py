@@ -278,7 +278,7 @@ class JP(ctk.CTk):
         """
         self.objectId_Proy_invitado = db['Projects'].find_one({'owner': proj['owner_proyecto'], 'id': proj['proyecto_id']})['_id']#ObjectId para buscar la coleccion de requerimientos del proyecto
         self.objectId_Proy_invitado = ObjectId(self.objectId_Proy_invitado)
-
+        self.Nombre_Proyecto_Invitado = db['Projects'].find_one({'owner': proj['owner_proyecto'], 'id': proj['proyecto_id']})['nombre']
         if proj['rol'] == "Administrador":
             return
         elif proj['rol'] == "Desarrollador":
@@ -310,6 +310,8 @@ class JP(ctk.CTk):
         self.window = ctk.CTkToplevel(self)
         self.window.configure(fg_color=style.Colores.background)
         centrarVentana(self.window, 800, 500)
+
+        self.after(100, lambda: self.window.state("zoomed"))
         self.window.title("Crear un proyecto")
         self.window.attributes('-topmost' , 1)
         self.window.focus()
@@ -317,13 +319,13 @@ class JP(ctk.CTk):
         titulo = ctk.CTkLabel(self.window,
                                 text="Crear un proyecto nuevo",
                                 text_color = style.Titulo.text_color,
-                                font = style.Titulo.font)
+                                font = style.MegaTitulo.font)
         titulo.pack(side=ctk.TOP, pady=5, anchor=ctk.NW)
 
         subtitulo = ctk.CTkLabel(self.window, 
                                     text="Llena los campos con la información de tu proyecto", 
                                     text_color = style.Titulo.text_color,
-                                    font = style.Titulo.font)
+                                    font = style.Subtitulo.font)
         subtitulo.pack(side=ctk.TOP, pady=3, anchor=ctk.NW)
 
         # Crear un frame para contener nombre y nombre_entry
