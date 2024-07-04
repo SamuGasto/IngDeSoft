@@ -173,19 +173,13 @@ class JP(ctk.CTk):
                                                    fg_color=style.Colores.backgroundVariant,)
         self.reques_frame.pack(side=ctk.TOP, fill="both", expand=True, anchor = ctk.N, pady=(5,4), padx=4)
 
-        self.reques_texto = ctk.CTkScrollableFrame(self.reques_frame,
-                                        fg_color=style.Colores.backgroundVariant,
-                                        orientation = "horizontal",
-                                        width=500)
-        self.reques_texto.pack(side=ctk.LEFT, padx=4, pady=(4,0), fill="both", expand=True)
-
-        self.reques_asignado = ctk.CTkFrame(self.reques_frame,
+        self.reques_texto = ctk.CTkFrame(self.reques_frame,
                                         fg_color=style.Colores.backgroundVariant)
-        self.reques_asignado.pack(side=ctk.LEFT, padx=4, pady=(4,0), fill="both", expand=True)
+        self.reques_texto.pack(side=ctk.LEFT, padx=4, pady=(4,0))
 
         self.reques_miembros = ctk.CTkFrame(self.reques_frame,
-                                            fg_color=style.Colores.backgroundVariant)
-        self.reques_miembros.pack(side=ctk.LEFT, padx=4, pady=(4,0), fill="both", expand=True)
+                                            fg_color="white")
+        self.reques_miembros.pack(side=ctk.RIGHT, anchor=ctk.W, padx=4, pady=(4,0))
 
         
         ##Objetos de tab3(MÉTRICAS)
@@ -214,10 +208,6 @@ class JP(ctk.CTk):
         if self.reques_proyecto_actual == [] or None:
             for widget in self.reques_texto.winfo_children():
                 widget.destroy()
-            for widget in self.reques_asignado.winfo_children():
-                widget.destroy()
-            for widget in self.reques_miembros.winfo_children():
-                widget.destroy()
             self.reque_label = ctk.CTkLabel(self.reques_texto, 
                                             text="El proyecto aún no posee requerimientos", 
                                             text_color = style.Texto.text_color,
@@ -226,41 +216,11 @@ class JP(ctk.CTk):
         else:
             for widget in self.reques_texto.winfo_children():
                 widget.destroy()
-            for widget in self.reques_asignado.winfo_children():
-                widget.destroy()
-            for widget in self.reques_miembros.winfo_children():
-                widget.destroy()
-
             for req in self.reques_proyecto_actual:
-                if req[2] is None:
-                    miembro_asignado = "Miembro no asignado"
-                else:
-                    miembro_asignado = req[2]
-                self.reque_label = ctk.CTkLabel(self.reques_texto, text=f"- ID: {req[0]}. Descripción: {req[1]}",
-                                                height=30,
+                self.reque_label = ctk.CTkLabel(self.reques_texto, text=f"- ID: {req[0]}. Descripción: {req[1]}. Miembro asignado: {req[2]}",
                                                 text_color = style.Texto.text_color,
                                                 font = style.Texto.font)
-                self.reque_label.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
-                
-                self.req_mem = ctk.CTkLabel(self.reques_asignado, text="Miembro Asignado: ",
-                                                height=30,
-                                                text_color = style.Texto.text_color,
-                                                font = style.Texto.font)
-                self.req_mem.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
-
-                self.req_member = ctk.CTkComboBox(self.reques_miembros, 
-                                                    width=200, 
-                                                    height=30, 
-                                                    fg_color = style.EntryNormal.fg_color,
-                                                    border_color = style.EntryNormal.border_color,
-                                                    border_width=2,
-                                                    text_color = style.EntryNormal.text_color,
-                                                    font = style.EntryNormal.font,
-                                                    corner_radius = style.EntryNormal.corner_radius,
-                                                    values = [person[0] for person in self.miembros if person[1] == "Desarrollador"]
-                                                    )
-                self.req_member.pack(side=ctk.TOP, anchor=ctk.NW, pady=5)
-                self.req_member.set(miembro_asignado)
+                self.reque_label.pack(side=ctk.TOP, anchor=ctk.NW, pady=5)
 
     def contenido_image(self): #Imagen compañía
         # Obtener la ruta absoluta del directorio actual del script
@@ -529,11 +489,6 @@ class JP(ctk.CTk):
         if self.reques_proyecto_actual == [] or None:
             for widget in self.reques_texto.winfo_children():
                 widget.destroy()
-            for widget in self.reques_asignado.winfo_children():
-                widget.destroy()
-            for widget in self.reques_miembros.winfo_children():
-                widget.destroy()
-
             self.reque_label = ctk.CTkLabel(self.reques_texto, 
                                             text="El proyecto aún no posee requerimientos", 
                                             text_color = style.Texto.text_color,
@@ -542,41 +497,16 @@ class JP(ctk.CTk):
         else:
             for widget in self.reques_texto.winfo_children():
                 widget.destroy()
-            for widget in self.reques_asignado.winfo_children():
-                widget.destroy()
-            for widget in self.reques_miembros.winfo_children():
-                widget.destroy()
-
             for req in self.reques_proyecto_actual:
                 if req[2] is None:
                     miembro_asignado = "Miembro no asignado"
                 else:
                     miembro_asignado = req[2]
-                self.reque_label = ctk.CTkLabel(self.reques_texto, text=f"- ID: {req[0]}. Descripción: {req[1]}",
-                                                height=30,
+                self.reque_label = ctk.CTkLabel(self.reques_texto, text=f"- ID: {req[0]}. Descripción: {req[1]}. Miembro Asignado: {miembro_asignado}.",
                                                 text_color = style.Texto.text_color,
                                                 font = style.Texto.font)
                 self.reque_label.pack(side=ctk.TOP, anchor=ctk.NW, pady=5)
-
-                self.req_mem = ctk.CTkLabel(self.reques_asignado, text="Miembro Asignado: ",
-                                                height=30,
-                                                text_color = style.Texto.text_color,
-                                                font = style.Texto.font)
-                self.req_mem.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
-
-                self.req_member = ctk.CTkComboBox(self.reques_miembros, 
-                                                    width=200, 
-                                                    height=30, 
-                                                    fg_color = style.EntryNormal.fg_color,
-                                                    border_color = style.EntryNormal.border_color,
-                                                    border_width=2,
-                                                    text_color = style.EntryNormal.text_color,
-                                                    font = style.EntryNormal.font,
-                                                    corner_radius = style.EntryNormal.corner_radius,
-                                                    values = [person[0] for person in self.miembros if person[1] == "Desarrollador"]
-                                                    )
-                self.req_member.pack(side=ctk.TOP, anchor=ctk.NW, pady=5)
-                self.req_member.set(miembro_asignado)
+        
         #Paso 3: Visualizar las métricas del proyecto.
 
 

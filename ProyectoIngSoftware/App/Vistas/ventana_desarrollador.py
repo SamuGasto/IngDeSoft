@@ -16,20 +16,23 @@ class Dev(ctk.CTkToplevel):
         self.next_row_id = 1  # ID inicial para las filas
         self.filas = [] #Información filas
 
-        #Listamos los requerimientos del proyecto
+        #Listamos los requerimientos del proyecto, asignados al miembro
         lista_requerimientos = Req.ObtenerRequerimientos(self.id_proyecto)
         self.filasReq = []
         for reque in lista_requerimientos:
-            if reque[2] == False:
-                estado = "Pendiente"
+            if reque[2] == self.user:
+                if reque[3] == False:
+                    estado = "Pendiente"
+                else:
+                    estado = "Revisado"
+                self.filasReq.append(
+                    {"ID": f"REQ-{reque[0]}",
+                    "Descripción": reque[1],
+                    "Estado": estado
+                    }
+                )
             else:
-                estado = "Revisado"
-            self.filasReq.append(
-                {"ID": f"REQ-{reque[0]}",
-                 "Descripción": reque[1],
-                 "Estado": estado
-                 }
-            )
+                continue
 
         #Listamos las tareas asignadas al usuario (IMPLEMENTAR)
         self.filasTareas = [{"ID": "TAR-001", "Descripción": "Descripción Tarea 1", "Estado": "Pendiente"},
@@ -107,7 +110,7 @@ class Dev(ctk.CTkToplevel):
         self.tree.heading("col4", text="Número Atributos", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.heading("col5", text="Complejidad", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.heading("col6", text="Puntos de Función", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
-        self.tree.pack(fill="both", expand=True, padx=10, pady=10, )
+        self.tree.pack(fill="both", expand=True, padx=10, pady=10 )
         
         
         

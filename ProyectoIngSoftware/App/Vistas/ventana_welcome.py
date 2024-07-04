@@ -85,7 +85,7 @@ class Welcome(ctk.CTk):
                                         font = style.EntryNormal.font,
                                         corner_radius = style.EntryNormal.corner_radius,
                                         width=250)
-        self.email_entry.insert(0, "prueba2@gmail.com")
+        self.email_entry.insert(0, "prueba@gmail.com")
         self.email_entry.place(relx=0.15, rely=0.5)
 
         passw = ctk.CTkLabel(self, text="Contraseña", font=style.Texto.font)
