@@ -81,14 +81,14 @@ def AgregarComponentes(id_proyecto, id_requerimiento, componentes):
     
     id_proyecto --> ObjectId del proyecto de MongoDB
     id_requerimiento --> ID del requerimiento dentro del proyecto
-    componentes --> lista de componentes a agregar, cada componente es un diccionario
+    componentes --> componente a agregar, que es un diccionario
     """
     
     # Definir la estructura de un componente
     Componente = { 
         "ID": int,
         "Descripcion": str,
-        "Tipo": str, # in (0,1,2,3,4)
+        "Tipo": str, 
         "Atributos": int,
         "PF": int, # automático desde atributos
         "PF_own": (bool, int),
@@ -113,31 +113,25 @@ def AgregarComponentes(id_proyecto, id_requerimiento, componentes):
         print(f"Requerimiento con id {id_requerimiento} no encontrado en el proyecto")
         return
 
-    # Lista para agregar nuevos componentes
-    lista_de_componentes = requerimiento.get("Componentes", [])
+    # Añadir el componente a la lista
+    nuevo_componente = Componente.copy()
+    nuevo_componente["ID"] = componentes["ID"]
+    nuevo_componente["Descripcion"] = componentes["Descripcion"]
+    nuevo_componente["Tipo"] = componentes["Tipo"]
+    nuevo_componente["Atributos"] = componentes["Atributos"]
+    nuevo_componente["PF"] = componentes["Atributos"]  # Suponiendo que PF se calcula automáticamente desde atributos
+    nuevo_componente["PF_own"] = ""
+    nuevo_componente["Razon"] = ""
 
-    # Añadir los componentes a la lista
-    j = len(lista_de_componentes)
-    for comp in componentes:
-        nuevo_componente = Componente.copy()
-        nuevo_componente["ID"] = j
-        nuevo_componente["Descripcion"] = comp["Descripcion"]
-        nuevo_componente["Tipo"] = comp["Tipo"]
-        nuevo_componente["Atributos"] = comp["Atributos"]
-        nuevo_componente["PF"] = comp["Atributos"]  # Suponiendo que PF se calcula automáticamente desde atributos
-        nuevo_componente["PF_own"] = comp["PF_own"]
-        nuevo_componente["Razon"] = comp["Razon"]
-        lista_de_componentes.append(nuevo_componente)
-        j += 1
 
     # Actualizar el requerimiento con los nuevos componentes
     collection.update_one(
         {"id_proyecto": id_proyecto, "Requerimientos.ID": id_requerimiento},
-        {"$set": {"Requerimientos.$.Componentes": lista_de_componentes}}
+        {"$set": {"Requerimientos.$.Componentes": nuevo_componente}}
     )
 
-    print("Componentes agregados con éxito")
-    print(lista_de_componentes)
+    print("Componente agregado con éxito")
+    print(nuevo_componente)
 
 def ObtenerRequerimientos(id_proyecto) ->list :
     """
@@ -162,7 +156,7 @@ def ObtenerRequerimientos(id_proyecto) ->list :
 
     return lista_de_requerimientos
 
-def AsignarMiembro(id_proyecto, email_miembro, req_id):
+def AsignarMiembro(id_proyecto, email_miembro, req_text):
     """
     Funcion para asignar un miembro (email) a un requerimiento específico.
     Argumentos:
@@ -180,12 +174,12 @@ def AsignarMiembro(id_proyecto, email_miembro, req_id):
     requerimientos = proyecto.get("Requerimientos", [])
     requerimiento = None
     for req in requerimientos:
-        if req["ID"] == req_id:
+        if req["Descripción"] == req_text:
             requerimiento = req
             break
 
     if not requerimiento:
-        print(f"Requerimiento con id {req_id} no encontrado en el proyecto")
+        print(f"Requerimiento '{req_text}' no encontrado en el proyecto")
         return
 
     # Asignar el email del miembro al requerimiento
@@ -193,11 +187,11 @@ def AsignarMiembro(id_proyecto, email_miembro, req_id):
 
     # Actualizar el documento en la base de datos
     collection.update_one(
-        {"id_proyecto": id_proyecto, "Requerimientos.ID": req_id},
+        {"id_proyecto": id_proyecto, "Requerimientos.Descripción": req_text},
         {"$set": {"Requerimientos.$.Asignado": email_miembro}}
     )
 
-    print(f"Miembro {email_miembro} asignado al requerimiento {req_id} con éxito")
+    print(f"Miembro {email_miembro} asignado al requerimiento con éxito")
 
 
 """

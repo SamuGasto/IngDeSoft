@@ -1,52 +1,29 @@
 #################################v2
-from xml.dom import HierarchyRequestErr
 import customtkinter as ctk
 from tkinter import ttk, Toplevel, StringVar, messagebox
-import Clases.Componentes.Estilos as style
-import BaseDeDatos.ReqCompQuery as Req
+import Estilos as style
 #creamos la clase ventana para el jefe de proyecto
-class Dev(ctk.CTkToplevel):
-    def __init__(self, parent, user, proyecto, id_proyecto):
-        super().__init__(parent)
-        self.parent = parent 
-        self.user = user
-        self.proyecto = proyecto
-        self.id_proyecto = id_proyecto
-
+class Dev(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        
+        self.n_proyectos = 1 
+        self.proyecto_id = 111
         self.next_row_id = 1  # ID inicial para las filas
         self.filas = [] #Información filas
-
-        #Listamos los requerimientos del proyecto, asignados al miembro
-        lista_requerimientos = Req.ObtenerRequerimientos(self.id_proyecto)
-        self.filasReq = []
-        for reque in lista_requerimientos:
-            if reque[2] == self.user:
-                if reque[3] == False:
-                    estado = "Pendiente"
-                else:
-                    estado = "Revisado"
-                self.filasReq.append(
-                    {"ID": f"REQ-{reque[0]}",
-                    "Descripción": reque[1],
-                    "Estado": estado
-                    }
-                )
-            else:
-                continue
-
-        #Listamos las tareas asignadas al usuario (IMPLEMENTAR)
+        self.filasReq = [{"ID": "REQ-001", "Descripción": "Descripción del requerimiento 1", "Estado": "Pendiente"},
+                        {"ID": "REQ-002", "Descripción": "Descripción del requerimiento 2", "Estado": "Revisado"}]
         self.filasTareas = [{"ID": "TAR-001", "Descripción": "Descripción Tarea 1", "Estado": "Pendiente"},
                             {"ID": "TAR-002", "Descripción": "Descripción Tarea 2", "Estado": "Realizada"}]
         
         self.complejidad = 0 #Complejidad
-        self.geometry("1200x560")
+        self.geometry("1200x720")
         self.title("PaltaEstimateApp")
         self.Paneles()
-
+        #self.controles_sidebar()
         self.contenido_body()
-        self.after(0, lambda:self.state('zoomed'))
-
-        self.mainloop() 
+        #self.contenido_subpanel()
+        #self.mainloop() !! BORRAR EL COMENTARIO PARA USO FINAL
     
     def Paneles(self):
         
@@ -59,23 +36,17 @@ class Dev(ctk.CTkToplevel):
     
     #INICIAIZAR TABLAS----------------------------------------------------------------------------------
     def contenido_body(self):
-        nombre_proyecto = ctk.CTkLabel(self.body,
-                                        text=self.proyecto, 
-                                        text_color = style.Titulo.text_color,
-                                        font = style.Titulo.font)
-        nombre_proyecto.pack(anchor=ctk.CENTER, pady=5)
         #Creamos TabView
-        tabview = ctk.CTkTabview(master=self.body,
-                                 fg_color=style.Colores.backgroundVariant2,
+        tabview = ctk.CTkTabview(master=self.body, height=400, fg_color=style.Colores.backgroundVariant2,
                                  segmented_button_fg_color=style.Colores.backgroundVariant2,
                                  segmented_button_selected_color=style.BotonNormal.fg_color,
                                  segmented_button_selected_hover_color=style.BotonNormal.hover_color,
                                  segmented_button_unselected_color=style.BotonSecundario.fg_color,
                                  segmented_button_unselected_hover_color=style.BotonSecundario.hover_color,)
-        tabview.pack(padx=5, pady=5, fill="both", expand=True)
+        tabview.pack(padx=5, pady=5, fill="x")
         #Agregamos Tabs
-        self.tab2 = tabview.add("Requerimientos")
-        self.tab1 = tabview.add("Agregar componentes")  
+        self.tab1 = tabview.add("Puntos de Función")  
+        self.tab2 = tabview.add("Requerimientos")  
         self.tab3 = tabview.add("Tareas")
           
         
@@ -87,6 +58,11 @@ class Dev(ctk.CTkToplevel):
         
         ## Crear la tabla en la pestaña "Tareas"
         self.create_table3(self.tab3)
+
+        """##objetos del body
+        self.administrar  = ctk.CTkButton(self.body, text="Administración\nCompleta", text_color="black",fg_color="white", font=("Comic Sans", -15, "bold"),
+                                        width=150, height=35, corner_radius=25)
+        self.administrar.pack(side=ctk.LEFT, anchor=ctk.SE, pady=5, padx=5)"""
 
     #TABLA PUNTOS DE FUNCIÓN----------------------------------------------------------------------------------
     def create_table1(self, parent):
@@ -110,7 +86,7 @@ class Dev(ctk.CTkToplevel):
         self.tree.heading("col4", text="Número Atributos", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.heading("col5", text="Complejidad", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.heading("col6", text="Puntos de Función", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
-        self.tree.pack(fill="both", expand=True, padx=10, pady=10 )
+        self.tree.pack(fill="both", expand=True, padx=10, pady=10, )
         
         
         
@@ -159,15 +135,6 @@ class Dev(ctk.CTkToplevel):
                                                 hover_color = style.BotonNormal.hover_color,
                                                 command=self.mensajeBase)
         estimation_rule_button.grid(row=0, column=3, padx=5)
-
-        cerrar = ctk.CTkButton(button_frame, text="Cerrar",
-                                                text_color = style.BotonNormal.text_color,
-                                                fg_color = style.BotonNormal.fg_color,
-                                                font = style.BotonNormal.font,
-                                                corner_radius = style.BotonNormal.corner_radius,
-                                                hover_color = style.BotonNormal.hover_color,
-                                                command=self.close_window)
-        cerrar.grid(row=0, column=4, padx=5)
     
     def inicializar_requerimientos(self):#Agregar valores por defecto para demo funcionalidad REQUERIMIENTOS
         for req in self.filasReq:
@@ -209,25 +176,23 @@ class Dev(ctk.CTkToplevel):
         button_frame.pack(pady=10)
 
         # BOTONES
-        editar_estado = ctk.CTkButton(button_frame, text="Editar estado",
+        update_db_button = ctk.CTkButton(button_frame, text="Editar estado",
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
                                                 font = style.BotonNormal.font,
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color,
                                                 command=self.estadoRequerimiento)
-        editar_estado.grid(row=0, column=3, padx=5)
+        update_db_button.grid(row=0, column=3, padx=5)
 
-        update_db = ctk.CTkButton(button_frame, text="Actualizar Base de Datos",
+        estimation_rule_button = ctk.CTkButton(button_frame, text="Actualizar Base de Datos",
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
                                                 font = style.BotonNormal.font,
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color,
                                                 command=self.mensajeBase)
-        update_db.grid(row=0, column=4, padx=5)
-
-        #agregar_componente
+        estimation_rule_button.grid(row=0, column=4, padx=5)
               
         return self.inicializar_requerimientos()
     
@@ -248,7 +213,7 @@ class Dev(ctk.CTkToplevel):
         
         self.tree3 = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
         self.tree3.heading("col1", text="ID", anchor="center", )  # generado automaticamente ID
-        self.tree3.heading("col2", text="Descripción", anchor="center")  # descripción
+        self.tree3.heading("col2", text="descripcion", anchor="center")  # descripción
         self.tree3.heading("col3", text="Estado", anchor="center")  # Estados Pendiente y Revisado
         
         self.tree3.pack(fill="both", expand=True, padx=10, pady=10)
@@ -420,7 +385,6 @@ class Dev(ctk.CTkToplevel):
     def agregarComponenteVentana(self): #VENTANA EMERGENTE PARA AGREGAR NUEVO COMPONENTE A LA TABLA
         # Crear la ventana emergente
         agregarComponente_window = Toplevel(self)
-
         agregarComponente_window.title("Agregar Fila")
 
         # Frame para los campos de texto
@@ -528,13 +492,13 @@ class Dev(ctk.CTkToplevel):
             "Descripción": descripcion,
             "Tipo": tipo,
             "Número de Atributos": num_atributos,
-            "Clasificación": self.clasificación,
-            "Puntos de Función": self.pf
+            "Clasificación": "",
+            "Puntos de Función": ""
         }
         self.filas.append(nueva_fila)
 
         # Imprimir el contenido del diccionario self.filas
-        print(nueva_fila)
+        print(self.filas)
 
 
     # Dentro de la clase Dev
@@ -588,7 +552,6 @@ class Dev(ctk.CTkToplevel):
     def actualizar_complejidad(self):#CALCULA LA COMPLEJIDA SEGUN TABLA ESTANDAR PPT4
         for item in self.tree.get_children():
             values = self.tree.item(item, 'values')
-            print(f"Los values son: {values}")
             tipo = values[2]
             num_atributos = int(values[3])
 
@@ -597,87 +560,56 @@ class Dev(ctk.CTkToplevel):
                 if num_atributos <= 4:
                     self.tree.set(item, column="col5", value="Baja")
                     self.tree.set(item, column="col6", value=3)
-                    self.clasificación = "Baja"
-                    self.pf = 3
                 elif num_atributos >= 5 and num_atributos <= 15:
                     self.tree.set(item, column="col5", value="Media")
                     self.tree.set(item, column="col6", value=4)
-                    self.clasificación = "Media"
-                    self.pf = 4
                 else:
                     self.tree.set(item, column="col5", value="Alta")
                     self.tree.set(item, column="col6", value=6)
-                    self.clasificación = "Alta"
-                    self.pf = 6
 
             elif tipo == "Salida Externa":
                 if num_atributos <= 5:
                     self.tree.set(item, column="col5", value="Baja")
                     self.tree.set(item, column="col6", value=4)
-                    self.clasificación = "Baja"
-                    self.pf = 4
                 elif num_atributos >= 6 and num_atributos <= 19:
                     self.tree.set(item, column="col5", value="Media")
                     self.tree.set(item, column="col6", value=5)
-                    self.clasificación = "Media"
-                    self.pf = 5
                 else:
                     self.tree.set(item, column="col5", value="Alta")
                     self.tree.set(item, column="col6", value=7)
-                    self.clasificación = "Alta"
-                    self.pf = 7
 
             elif tipo == "Consulta Externa":
                 if num_atributos <= 4:
                     self.tree.set(item, column="col5", value="Baja")
                     self.tree.set(item, column="col6", value=3)
-                    self.clasificación = "Baja"
-                    self.pf = 3
                 elif num_atributos >= 5 and num_atributos <= 15:
                     self.tree.set(item, column="col5", value="Media")
                     self.tree.set(item, column="col6", value=4)
-                    self.clasificación = "Media"
-                    self.pf = 4
                 else:
                     self.tree.set(item, column="col5", value="Alta")
                     self.tree.set(item, column="col6", value=6)
-                    self.clasificación = "Alta"
-                    self.pf = 6
             
             elif tipo == "Archivo lógico Interno":
                 if num_atributos <= 5:
                     self.tree.set(item, column="col5", value="Baja")
                     self.tree.set(item, column="col6", value=7)
-                    self.clasificación = "Baja"
-                    self.pf = 7
                 elif num_atributos >= 6 and num_atributos <= 19:
                     self.tree.set(item, column="col5", value="Media")
                     self.tree.set(item, column="col6", value=10)
-                    self.clasificación = "Media"
-                    self.pf = 10
                 else:
                     self.tree.set(item, column="col5", value="Alta")
                     self.tree.set(item, column="col6", value=15)
-                    self.clasificación = "Alta"
-                    self.pf = 15
 
             if tipo == "Archivo de interfaz externo":
                 if num_atributos <= 4:
                     self.tree.set(item, column="col5", value="Baja")
                     self.tree.set(item, column="col6", value=5)
-                    self.clasificación = "Baja"
-                    self.pf = 5
                 elif num_atributos >= 5 and num_atributos <= 15:
                     self.tree.set(item, column="col5", value="Media")
                     self.tree.set(item, column="col6", value=7)
-                    self.clasificación = "Media"
-                    self.pf = 7
                 else:
                     self.tree.set(item, column="col5", value="Alta")
                     self.tree.set(item, column="col6", value=10)
-                    self.clasificación = "Alta"
-                    self.pf = 10
-        
 
     def mensajeBase(self):#MENSAJE BOTON ACTUALIZAR BASE DE DATOS
         # Mostrar un mensaje de confirmación
@@ -689,13 +621,107 @@ class Dev(ctk.CTkToplevel):
             print("Datos actualizados correctamente.")
         else:
             # Aquí puedes manejar lo que quieres hacer si se cancela la acción
-            print("La actualización de datos fue cancelada.")    
+            print("La actualización de datos fue cancelada.")        
+    
+    #ROBADO DEL JEFE DE PROYECTO-------------------------------------------------------------------------------------------------
+    def contenido_subpanel(self):
+        texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
+        self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text=texto_boton, font=("Comic Sans", -25))
+        self.proyecto_actual.pack(side=ctk.TOP)
 
-    def close_window(self):
-        if self.parent:
-            self.parent.deiconify()  # Restaurar la ventana principal
-        self.destroy()    
+    def crear_proyecto(self):
+        self.n_proyectos += 1
+        if self.n_proyectos > 3:
+            self.mostrar_ventana_emergente()
+        else:
+            self.proyecto_id += 1
+            texto = "PRO-" + str(self.proyecto_id)
+            self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+                                                width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
+            self.new_proyect.pack(side=ctk.TOP, pady=10)
 
-# #Borrar para uso final
-# app = Dev()
-# app.mainloop()
+    def cambiar_proyecto(self, texto):
+        self.proyecto_actual.configure(text=texto)
+
+    def boton_clickeado(self, texto):
+        self.cambiar_proyecto(texto)
+
+    def boton_clickeado_global(self, texto):
+        self.boton_clickeado(texto)
+
+    def mostrar_ventana_emergente(self):
+        ventana_emergente = ctk.CTkToplevel(app)
+        ventana_emergente.configure(fg_color="white")
+        etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color="black",
+                                text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
+        etiqueta.pack(padx=20, pady=20)
+        ancho_ventana_principal = app.winfo_width()
+        alto_ventana_principal = app.winfo_height()
+        x_ventana_emergente = app.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
+        y_ventana_emergente = app.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
+        ventana_emergente.geometry("+{}+{}".format(x_ventana_emergente, y_ventana_emergente))
+        ventana_emergente.title("Error")
+        ventana_emergente.attributes('-topmost' , 1)
+        ventana_emergente.focus()
+
+#Borrar para uso final
+app = Dev()
+app.mainloop()
+
+
+
+"""
+- Solicitudes LISTO
+- Clasificacion LISTO
+- Calculo de puntos LISTO
+- Boton de eliminar LISTO
+- Boton de Actualizar BD LISTO
+- Boton cambiar regla de estimacion NO LISTO
+
+"""
+
+"""
+    # Agregar texto decorativo junto a cada campo de texto
+        decor_labels = ["Texto 1", "Texto 2", "Texto 3", "Texto 4", "Texto 5"]
+        for i, decor_label in enumerate(decor_labels):
+            frame = ctk.CTkFrame(agregarComponente_window)
+            frame.grid(row=i, column=1, padx=10, pady=5, sticky="w")
+        
+            ctk.CTkLabel(frame, text=decor_label, fg_color="gray").pack(side="left", padx=(0, 10))
+        
+    """
+
+        ##Objetos de tab2
+"""
+    scroll = ctk.CTkScrollableFrame(master=tab2)
+        scroll.pack(fill="both",expand=True)
+        texto = ctk.CTkLabel(master=scroll, font=("Calibri", -15, "italic"), text="· REQ-111: ")
+        texto.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
+    """
+
+
+"""def Paneles(self):
+        #sección izquierda
+        self.side_bar = ctk.CTkFrame(self, fg_color="blue", width=200, corner_radius=0)
+        self.side_bar.pack(side="left", fill="y", expand=False)
+        #cuerpo principal
+        self.body = ctk.CTkFrame(self, fg_color="black", corner_radius=0)
+        self.body.pack(side="right", fill="both", expand=True)
+        #frame que contiene ID del proyecto actual
+        self.top_subpanel = ctk.CTkFrame(self.body, fg_color="transparent", height=120, corner_radius=0)
+        self.top_subpanel.pack(side=ctk.TOP, fill="x", expand=False)
+        #frame para la imágen
+        self.topimage = ctk.CTkFrame(self.top_subpanel, fg_color="transparent", corner_radius=0)
+        self.topimage.pack(side=ctk.RIGHT, expand=False)
+
+    def controles_sidebar(self):
+        texto= "PRO-"+str(self.proyecto_id)
+        self.mis_proyectos = ctk.CTkLabel(self.side_bar, text="Mis Proyectos", font=("Comic Sans", -20), fg_color="black")
+        self.mis_proyectos.pack(side=ctk.TOP, pady=5, fill="both")
+        self.boton_proyecto = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
+                                            width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
+        self.boton_proyecto.pack(side=ctk.TOP, pady=10)
+
+        self.boton_nuevo_proyecto = ctk.CTkButton(self.side_bar, text="Crear Proyecto +", font=("Comic Sans", -20),
+                                                fg_color="red", width=200, height=65, corner_radius=0, command= self.crear_proyecto)
+        self.boton_nuevo_proyecto.pack(side=ctk.BOTTOM, pady=10)"""

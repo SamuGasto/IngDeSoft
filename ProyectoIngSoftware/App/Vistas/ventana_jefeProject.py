@@ -9,7 +9,7 @@ import BaseDeDatos.ProjectsQuery as Proj
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.Invitations as INV
 import BaseDeDatos.ReqCompQuery as Req
-import Vistas.ventana_desarrollador as DEV
+import Vistas.ventana_desarrollador_copy as DEV
 import Vistas.ventana_admin as ADMIN
 
 from Vistas.util import centrarVentana
@@ -157,20 +157,41 @@ class JP(ctk.CTk):
                                       border_color=style.Colores.Gray[4])
         self.principal.pack(fill="both",expand=True)
 
-        self.agregarReq = ctk.CTkButton(self.principal, 
+        self.superior = ctk.CTkFrame(master=self.principal,
+                                      fg_color=style.Colores.backgroundVariant)
+        self.superior.pack(side=ctk.TOP, fill="both")
+        
+        self.agregarReq_frame = ctk.CTkFrame(master=self.superior,
+                                            fg_color=style.Colores.backgroundVariant)
+        self.agregarReq_frame.pack(side=ctk.LEFT, anchor= ctk.N, pady=5)
+
+        self.editar_miembro_frame = ctk.CTkFrame(master=self.superior,
+                                            fg_color=style.Colores.backgroundVariant)
+        self.editar_miembro_frame.pack(side=ctk.RIGHT, anchor= ctk.N, pady=5)
+
+
+        self.agregarReq = ctk.CTkButton(self.agregarReq_frame, 
                                         text="Agregar Requerimientos",
                                         text_color = style.BotonNormal.text_color,
                                         fg_color = style.BotonNormal.fg_color,
                                         font = style.BotonNormal.font,
                                         corner_radius = style.BotonNormal.corner_radius,
                                         hover_color = style.BotonNormal.hover_color,
-                                        width=150, 
-                                        height=35, 
                                         command=self.AnadirRequerimiento)
-        self.agregarReq.pack(side=ctk.TOP, anchor= ctk.N, pady=5)
+        self.agregarReq.pack(anchor=ctk.N, pady=5, padx=35)
+
+        self.editar_miembro = ctk.CTkButton(self.editar_miembro_frame, 
+                                        text="Editar miembro asignado",
+                                        text_color = style.BotonNormal.text_color,
+                                        fg_color = style.BotonNormal.fg_color,
+                                        font = style.BotonNormal.font,
+                                        corner_radius = style.BotonNormal.corner_radius,
+                                        hover_color = style.BotonNormal.hover_color,
+                                        command = self.editar_miembro_asignado)
+        self.editar_miembro.pack(anchor=ctk.N, pady=5, padx=35)
 
         self.reques_frame = ctk.CTkScrollableFrame(self.principal,
-                                                   fg_color=style.Colores.backgroundVariant,)
+                                                   fg_color=style.Colores.backgroundVariant)
         self.reques_frame.pack(side=ctk.TOP, fill="both", expand=True, anchor = ctk.N, pady=(5,4), padx=4)
 
         self.reques_texto = ctk.CTkScrollableFrame(self.reques_frame,
@@ -248,19 +269,11 @@ class JP(ctk.CTk):
                                                 font = style.Texto.font)
                 self.req_mem.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
 
-                self.req_member = ctk.CTkComboBox(self.reques_miembros, 
-                                                    width=200, 
-                                                    height=30, 
-                                                    fg_color = style.EntryNormal.fg_color,
-                                                    border_color = style.EntryNormal.border_color,
-                                                    border_width=2,
-                                                    text_color = style.EntryNormal.text_color,
-                                                    font = style.EntryNormal.font,
-                                                    corner_radius = style.EntryNormal.corner_radius,
-                                                    values = [person[0] for person in self.miembros if person[1] == "Desarrollador"]
-                                                    )
+                self.req_member = ctk.CTkLabel(self.reques_miembros, text=miembro_asignado,
+                                                height=30,
+                                                text_color = style.Texto.text_color,
+                                                font = style.Texto.font)
                 self.req_member.pack(side=ctk.TOP, anchor=ctk.NW, pady=5)
-                self.req_member.set(miembro_asignado)
 
     def contenido_image(self): #Imagen compañía
         # Obtener la ruta absoluta del directorio actual del script
@@ -321,10 +334,6 @@ class JP(ctk.CTk):
         print(proj['rol'])
 
         #Buscamos y guardamos en variables los datos del proyecto
-        """
-        doc = db['Projects'].find_one({'owner': email_user, 'id': id_proyecto})
-        object_id = doc['_id']
-        """
         self.objectId_Proy_invitado = db['Projects'].find_one({'owner': proj['owner_proyecto'], 'id': proj['proyecto_id']})['_id']#ObjectId para buscar la coleccion de requerimientos del proyecto
         self.objectId_Proy_invitado = ObjectId(self.objectId_Proy_invitado)
         self.Nombre_Proyecto_Invitado = db['Projects'].find_one({'owner': proj['owner_proyecto'], 'id': proj['proyecto_id']})['nombre']
@@ -564,19 +573,11 @@ class JP(ctk.CTk):
                                                 font = style.Texto.font)
                 self.req_mem.pack(side=ctk.TOP, anchor=ctk.NW, padx=5, pady=5)
 
-                self.req_member = ctk.CTkComboBox(self.reques_miembros, 
-                                                    width=200, 
-                                                    height=30, 
-                                                    fg_color = style.EntryNormal.fg_color,
-                                                    border_color = style.EntryNormal.border_color,
-                                                    border_width=2,
-                                                    text_color = style.EntryNormal.text_color,
-                                                    font = style.EntryNormal.font,
-                                                    corner_radius = style.EntryNormal.corner_radius,
-                                                    values = [person[0] for person in self.miembros if person[1] == "Desarrollador"]
-                                                    )
+                self.req_member = ctk.CTkLabel(self.reques_miembros, text=miembro_asignado,
+                                                height=30,
+                                                text_color = style.Texto.text_color,
+                                                font = style.Texto.font)
                 self.req_member.pack(side=ctk.TOP, anchor=ctk.NW, pady=5)
-                self.req_member.set(miembro_asignado)
         #Paso 3: Visualizar las métricas del proyecto.
 
 
@@ -726,7 +727,6 @@ class JP(ctk.CTk):
             cerrar.pack(pady=(0,5))
         else:
             print("Documento no encontrado")
-        #Proj.Ingresar_requerimientos(self.user_email, self.ID_activo, requerimientos)
 
         #Reiniciar variables
         requerimientos= []
@@ -791,3 +791,67 @@ class JP(ctk.CTk):
             for widget in self.otros_proyectos.winfo_children():
                 widget.destroy()
             self.ListarProyectosInvitados()
+    def editar_miembro_asignado(self):
+        self.win = ctk.CTkToplevel(self)
+        self.win.configure(fg_color=style.Colores.background)
+        centrarVentana(self.win, 650, 300)
+        self.win.title("Editar")
+        self.win.attributes('-topmost' , 1)
+        self.win.focus()
+
+        requerimiento = ctk.CTkLabel(self.win, 
+                                    text="Seleccionar requerimiento",
+                                    text_color = style.Texto.text_color,
+                                    font = style.Texto.font)
+        requerimiento.grid(row=0, column=0, sticky="w",padx=5)
+
+        miembro = ctk.CTkLabel(self.win, 
+                            text="Seleccionar miembro",
+                            text_color = style.Texto.text_color,
+                            font = style.Texto.font)
+        miembro.grid(row=1, column=0, sticky="w", padx=5)
+
+        self.reques_box = ctk.CTkComboBox(self.win, 
+                                    width=250, 
+                                    height=30, 
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    border_width=2,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    values = [req[1] for req in self.reques_proyecto_actual]
+                                    )
+        self.reques_box.grid(row=0, column = 1)
+        self.reques_box.set("Selecciona un requerimiento")
+
+        self.miembro_box = ctk.CTkComboBox(self.win, 
+                                    width=250, 
+                                    height=30, 
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    border_width=2,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    values = [person[0] for person in self.miembros if person[1] == "Desarrollador"]
+                                    )
+        self.miembro_box.grid(row=1, column = 1)
+        self.miembro_box.set("Selecciona un miembro")
+
+        asignar_miembro = ctk.CTkButton(self.win,
+                                        text="Asignar Miembro",
+                                        text_color = style.BotonNormal.text_color,
+                                        fg_color = style.BotonNormal.fg_color,
+                                        font = style.BotonNormal.font,
+                                        corner_radius = style.BotonNormal.corner_radius,
+                                        hover_color = style.BotonNormal.hover_color,
+                                        command=self.switch_project)
+        asignar_miembro.grid(row=2, column=0, sticky="ew")
+
+    def switch_project(self):
+        Req.AsignarMiembro(self.object_id, self.miembro_box.get(), self.reques_box.get())
+        self.Update_reqs()
+
+
+
