@@ -3,35 +3,32 @@ import customtkinter as ctk
 from PIL import Image
 import tkinter as tk
 from tkinter import ttk, font
+from BaseDeDatos.MainMongoDB import db
 import textwrap
 import re
 import os
-import Estilos as style
+import Clases.Componentes.Estilos as style
 
-#import Clases.Componentes.Estilos as style
-#import BaseDeDatos.UsersQuery as db
 
 
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
-    def __init__(self):
+    def __init__(self, parent, user, proyecto, id_proyecto):
         super().__init__()
         
-        self.n_proyectos = 1 
-        self.proyecto_id = 111
+        self.parent = parent 
+        self.user = user
+        self.proyecto = proyecto
+        self.id_proyecto = id_proyecto
+
         self.geometry("1280x560")
         self.title("PaltaEstimateApp")
         #self.resizable(False, False)
         self.Paneles()
-        self.controles_sidebar()
         self.contenido_body()
-        #self.contenido_top_panel()
-        #self.contenido_subpanel()
-        #self.contenido_image()
-
         
-
-        #self.mainloop() 
+        self.after(0, lambda:self.state('zoomed') )
+        self.mainloop() 
     
     def Paneles(self):#FRAMES
         #cuerpo principal
@@ -39,23 +36,21 @@ class JP(ctk.CTk):
                                  fg_color=style.Colores.backgroundVariant, 
                                  corner_radius=0)
         self.body.pack(side="right", fill="both", expand=True)
-        #frame que contiene Nombre del proyecto actual
-        #self.top_subpanel = ctk.CTkFrame(self.body, 
-        #                                 fg_color=style.Colores.backgroundVariant, 
-        #                                 height=120, 
-        #                                 corner_radius=0)
-        #self.top_subpanel.pack(side=ctk.TOP, fill="x", expand=False)
-        #frame para la imágen
-        #self.topimage = ctk.CTkFrame(self.top_subpanel, 
-        #                             fg_color=style.Colores.background, 
-        #                             corner_radius=0)
-        #self.topimage.pack(side=ctk.RIGHT, expand=False)
-
-    def controles_sidebar(self):
-        texto= "PRO-"+str(self.proyecto_id)
         
 
     def contenido_body(self):
+        nombre_proyecto = ctk.CTkLabel(self.body,
+                                        text=self.proyecto, 
+                                        text_color = style.Titulo.text_color,
+                                        font = style.Titulo.font)
+        nombre_proyecto.pack(anchor=ctk.CENTER, pady=5)
+        self.proj = db['Invitaciones'].find_one({'nombre_proyecto' : self.proyecto, 'correo_invitado' : self.user})
+        self.rol_usuario = self.proj['rol']
+        self.rol = ctk.CTkLabel(self.body,
+                            text=self.rol_usuario, 
+                            text_color = style.Titulo.text_color,
+                            font = style.Subtitulo.font)
+        self.rol.pack(anchor = ctk.CENTER, pady = 5, padx= 5)
         #Creamos TabView
         tabview = ctk.CTkTabview(master=self.body, 
                                  height=550,
@@ -68,7 +63,7 @@ class JP(ctk.CTk):
         tabview.pack(padx=5, pady=5, fill="both")
         #Agregamos Tabs
         self.tab1 = tabview.add("Tabla PF")  
-        self.tab2 = tabview.add("Complejidad")  
+        self.tab5 = tabview.add("Complejidad")  
         self.tab3 = tabview.add("Métricas")  
         
         ##Objetos de tab1
@@ -374,7 +369,7 @@ class JP(ctk.CTk):
                                   border_color = style.EntryNormal.border_color,
                                   text_color = style.EntryNormal.text_color,
                                   font = style.EntryNormal.font,
-                                  corner_radius = style.EntryNormal.corner_radius)#Para colocar elementos, solo se especifica el tab
+                                  corner_radius = style.EntryNormal.corner_radius)
         self.ent63.pack(side=ctk.LEFT, anchor=ctk.NW, padx=5, pady=5)
 
         #FRAME9
@@ -385,22 +380,30 @@ class JP(ctk.CTk):
                                 font = style.BotonNormal.font,
                                 corner_radius = style.BotonNormal.corner_radius,
                                 hover_color = style.BotonNormal.hover_color,
-                                command=self.actualizarTablaPF)#Para colocar elementos, solo se especifica el tab
+                                command=self.actualizarTablaPF)
         btnATPF.pack(side=ctk.LEFT, anchor=ctk.NW, pady=20)
+        cerrar = ctk.CTkButton(frame9, text="Cerrar",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.close_window)
+        cerrar.pack(side=ctk.LEFT, anchor=ctk.NW, pady=20, padx=10)
 
 
 
 
-        ##-------------------------------------------------------------Objetos de tab2
+        ##-------------------------------------------------------------Objetos de tab5
 
         #------------FRAMES
         
-        frame1_1 = ctk.CTkFrame(master=self.tab2,
+        frame1_1 = ctk.CTkFrame(master=self.tab5,
                                 border_color=style.Colores.backgroundVariant,
                                 bg_color=style.Colores.backgroundVariant,
                                 fg_color=style.Colores.backgroundVariant)
         frame1_1.pack(side=ctk.LEFT)
-        frame2_2 = ctk.CTkFrame(master=self.tab2,
+        frame2_2 = ctk.CTkFrame(master=self.tab5,
                                 border_color=style.Colores.backgroundVariant,
                                 bg_color=style.Colores.backgroundVariant,
                                 fg_color=style.Colores.backgroundVariant)
@@ -560,56 +563,12 @@ class JP(ctk.CTk):
         lines = text.split("\n")
         for line in lines:
             self.tree.insert(tk.END, line)
+    
+    def close_window(self):
+        if self.parent:
+            self.parent.deiconify()  # Restaurar la ventana principal
+        self.destroy() 
 
-    #def contenido_subpanel(self):
-    #    texto_boton = self.boton_proyecto.cget("text")#se obtiene la info del proyecto seleccionado, para mostrar en la ventana
-    #    self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, text=texto_boton, font=("Comic Sans", -25))
-    #    self.proyecto_actual.pack(side=ctk.TOP)
 
-    #def contenido_image(self):
-        # Obtener la ruta absoluta del directorio actual del script
-    #    current_dir = os.path.dirname(os.path.abspath(__file__))
-    #    logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
-    #    logo = ctk.CTkImage(light_image=Image.open(logo_path),
-    #        size=(60, 60))
-    #    logo_label = ctk.CTkLabel(self.topimage, image=logo, text="")
-    #    logo_label.pack(padx=5, pady=5)
-
-    def crear_proyecto(self):
-        self.n_proyectos += 1
-        if self.n_proyectos > 3:
-            self.mostrar_ventana_emergente()
-        else:
-            self.proyecto_id += 1
-            texto = "PRO-" + str(self.proyecto_id)
-            self.new_proyect = ctk.CTkButton(self.side_bar, text=texto, fg_color="orange",font=("Arial", -20),
-                                                width=200, height=65, corner_radius=0, command=lambda: self.boton_clickeado_global(texto))
-            self.new_proyect.pack(side=ctk.TOP, pady=10)
-
-    def cambiar_proyecto(self, texto):
-        switch_project = self.proyecto_actual.configure(text=texto)
-
-    def boton_clickeado(self, texto):
-        self.cambiar_proyecto(texto)
-
-    def boton_clickeado_global(self, texto):
-        self.boton_clickeado(texto)
-
-    def mostrar_ventana_emergente(self):
-        ventana_emergente = ctk.CTkToplevel(self)
-        ventana_emergente.configure(fg_color=style.Colores.background)
-        etiqueta = ctk.CTkLabel(ventana_emergente, font=("Arial", -15, "bold"), text_color=style.Colores.Gray[4],
-                                text="Error: No se puede crear otro proyecto.\n\nMotivo: Límite de proyectos activos alcanzado.")
-        etiqueta.pack(padx=20, pady=20)
-        # Centra la ventana emergente con respecto a la ventana principal
-        ancho_ventana_principal = self.winfo_width()
-        alto_ventana_principal = self.winfo_height()
-        x_ventana_emergente = self.winfo_rootx() + ancho_ventana_principal // 2 - ventana_emergente.winfo_reqwidth() // 2
-        y_ventana_emergente = self.winfo_rooty() + alto_ventana_principal // 2 - ventana_emergente.winfo_reqheight() // 2
-        ventana_emergente.geometry("+{}+{}".format(x_ventana_emergente, y_ventana_emergente))
-        ventana_emergente.title("Error")
-        ventana_emergente.attributes('-topmost' , 1)
-        ventana_emergente.focus()
-
-appi = JP()
-appi.mainloop()
+# appi = JP()
+# appi.mainloop()

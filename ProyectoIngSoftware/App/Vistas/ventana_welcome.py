@@ -1,8 +1,9 @@
 import customtkinter as ctk
 from PIL import Image
+import os
+
 import Vistas.ventana_jefeProject as JEFE
 import Vistas.ventana_crearCuenta as Crearc
-import os
 import BaseDeDatos.UsersQuery as db
 import Clases.Componentes.Estilos as style
 
@@ -14,7 +15,9 @@ class Welcome(ctk.CTk):
         self.geometry("1280x720")
         self.title("PaltaEstimateApp")
         self.configure(fg_color=style.Colores.background)
-        #ACÁ CENTRAMOS LA VENTANA MAIN
+        
+        self.after(0, lambda:self.state('zoomed'))
+        """#ACÁ CENTRAMOS LA VENTANA MAIN
         #  Obtenemos el largo y  ancho de la pantalla
         wtotal = self.winfo_screenwidth()
         htotal = self.winfo_screenheight()
@@ -25,12 +28,14 @@ class Welcome(ctk.CTk):
         pwidth = round(wtotal/2-wventana/2)
         pheight = round(htotal/2-hventana/2)
         #  Se lo aplicamos a la geometría de la ventana
-        self.geometry(str(wventana)+"x"+str(hventana)+"+"+str(pwidth)+"+"+str(pheight))
+        self.geometry(str(wventana)+"x"+str(hventana)+"+"+str(pwidth)+"+"+str(pheight))"""
         #self.resizable(False, False)
         self.Contenido()
 
         # Vincular la tecla 'Enter' a la función IniciarSesion para la ventana principal
         self.bind('<Return>', self.IniciarSesion)
+
+        #self.after(200, self.configure(state=self.state('zoomed')))
 
         self.mainloop()
 
@@ -80,7 +85,7 @@ class Welcome(ctk.CTk):
                                         font = style.EntryNormal.font,
                                         corner_radius = style.EntryNormal.corner_radius,
                                         width=250)
-        self.email_entry.insert(0, "prueba2@gmail.com")
+        self.email_entry.insert(0, "prueba@gmail.com")
         self.email_entry.place(relx=0.15, rely=0.5)
 
         passw = ctk.CTkLabel(self, text="Contraseña", font=style.Texto.font)

@@ -1,5 +1,6 @@
 from pymongo.mongo_client import MongoClient
 from pymongo import errors
+from bson.objectid import ObjectId
 uri = "mongodb+srv://ingDeSoft02024:utwbTnVD9VHDGO9n@ingdesoft.u850jdj.mongodb.net/?retryWrites=true&w=majority&appName=IngDeSoft"
 # Create a new client and connect to the server
 client = MongoClient(uri,
@@ -52,21 +53,17 @@ def eliminar_coleccion(coleccion_nombre: str):
 
 # eliminar_todos_los_documentos('Projects')
 # eliminar_todos_los_documentos('Invitaciones')
+# eliminar_todos_los_documentos('ReqComp')
 
-# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':111})
-# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':112})
-# db['Projects'].delete_one({'owner':"prueba@gmail.com", 'id':113})
 # db['Users'].update_one({'email': "prueba@gmail.com"},{'$set': {'proyectos': 0}})
-
-# db['Projects'].delete_one({'owner':"prueba2@gmail.com", 'id':111})
-# db['Projects'].delete_one({'owner':"prueba2@gmail.com", 'id':112})
-# db['Projects'].delete_one({'owner':"prueba2@gmail.com", 'id':113})
 # db['Users'].update_one({'email': "prueba2@gmail.com"},{'$set': {'proyectos': 0}})
+# doc = db['Projects'].find_one({'owner': "prueba@gmail.com", 'id': 111})['_id']
+# db['ReqComp'].update_one({"id_proyecto" : ObjectId(doc)}, {'$set': {'Requerimientos': []}})
 
-"""
-projects_collection = db['Projects']
+
+
+"""projects_collection = db['ReqComp']
 projects = projects_collection.find()
-print("Datos en la colección 'Projects':")
+print("Datos en la colección 'ReqComp':")
 for project in projects:
-    print(project)
-"""
+    print(project)"""
