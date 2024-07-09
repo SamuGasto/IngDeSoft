@@ -118,8 +118,8 @@ def AgregarComponentes(id_proyecto, id_requerimiento, componentes):
     nuevo_componente["ID"] = componentes["ID"]
     nuevo_componente["Descripcion"] = componentes["Descripcion"]
     nuevo_componente["Tipo"] = componentes["Tipo"]
-    nuevo_componente["Atributos"] = componentes["Atributos"]
-    nuevo_componente["PF"] = componentes["Atributos"]  # Suponiendo que PF se calcula automáticamente desde atributos
+    nuevo_componente["Atributos"] = componentes["Número de Atributos"]
+    nuevo_componente["PF"] = componentes["Puntos de Función"]  # Suponiendo que PF se calcula automáticamente desde atributos
     nuevo_componente["PF_own"] = ""
     nuevo_componente["Razon"] = ""
 
@@ -194,18 +194,30 @@ def AsignarMiembro(id_proyecto, email_miembro, req_text):
     print(f"Miembro {email_miembro} asignado al requerimiento con éxito")
 
 
-"""
-#CÓDIGO QUE PODRÍA SERVIR(para cuando se agreguen los componentes)
+def TotalPF(id_proyecto)->int:
+    """
+    Función que calcula y retorna los puntos de función de un proyecto.\n
+    Argumentos:\n
+    id_proyecto --> ObjectID del proyecto.
+    """
 
-puntos_de_funcion_totales = 0
-    for req in lista_de_requerimientos:#iteramos sobre un diccionario
-        compo = req["Componentes"]#es una lista
-        for dicc in compo:
-            pf = dicc["PF"]
-            if pf == None:
-                break
+    # Buscar el proyecto en la base de datos
+    proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
+    if not proyecto:
+        print(f"Proyecto con id {id_proyecto} no encontrado")
+        return
+    
+     # Buscar el requerimiento específico
+    requerimientos = proyecto.get("Requerimientos", [])
+
+    # Sumar los puntos de función por cada componente en cada requerimiento
+    puntos_totales = 0
+    for req in requerimientos:
+        for comp in req["Componentes"]:
+            if comp["PF"] == None:
+                print(f"El req ID {req[0]}")
             else:
-                puntos_de_funcion_totales += pf
-
-
-"""
+                puntos_totales = puntos_totales + comp[4]
+    
+    print(f"Los puntos de funcion totales son: {puntos_totales}")
+    return puntos_totales
