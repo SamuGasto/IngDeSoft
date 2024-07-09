@@ -86,17 +86,19 @@ def AgregarComponentes(id_proyecto, id_requerimiento, componentes):
     
     # Definir la estructura de un componente
     Componente = { 
+        "IDReq": int,
         "ID": int,
         "Descripcion": str,
         "Tipo": str, 
         "Atributos": int,
+        "Complejidad": int,
         "PF": int, # automático desde atributos
         "PF_own": (bool, int),
         "Razon": str
     }
 
     # Buscar el proyecto y requerimiento específico
-    proyecto = collection.find_one(ObjectId(id_proyecto))
+    proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
     if not proyecto:
         print(f"Proyecto con id {id_proyecto} no encontrado")
         return
@@ -115,11 +117,13 @@ def AgregarComponentes(id_proyecto, id_requerimiento, componentes):
 
     # Añadir el componente a la lista
     nuevo_componente = Componente.copy()
-    nuevo_componente["ID"] = componentes["ID"]
-    nuevo_componente["Descripcion"] = componentes["Descripcion"]
-    nuevo_componente["Tipo"] = componentes["Tipo"]
-    nuevo_componente["Atributos"] = componentes["Atributos"]
-    nuevo_componente["PF"] = componentes["Atributos"]  # Suponiendo que PF se calcula automáticamente desde atributos
+    nuevo_componente["IDReq"] = componentes[0]
+    nuevo_componente["ID"] = componentes[1]
+    nuevo_componente["Descripcion"] = componentes[2]
+    nuevo_componente["Tipo"] = componentes[3]
+    nuevo_componente["Atributos"] = componentes[4]
+    nuevo_componente["Complejidad"] = componentes[5]
+    nuevo_componente["PF"] = componentes[6]  # Suponiendo que PF se calcula automáticamente desde atributos
     nuevo_componente["PF_own"] = ""
     nuevo_componente["Razon"] = ""
 
@@ -127,7 +131,7 @@ def AgregarComponentes(id_proyecto, id_requerimiento, componentes):
     # Actualizar el requerimiento con los nuevos componentes
     collection.update_one(
         {"id_proyecto": id_proyecto, "Requerimientos.ID": id_requerimiento},
-        {"$set": {"Requerimientos.$.Componentes": nuevo_componente}}
+        {"$push": {"Requerimientos.$.Componentes": nuevo_componente}}
     )
 
     print("Componente agregado con éxito")
@@ -150,11 +154,20 @@ def ObtenerRequerimientos(id_proyecto) ->list :
 
     # Obtener los requerimientos del proyecto
     requerimientos = proyecto.get("Requerimientos", [])
+    
 
     # Crear una lista de tuplas con el ID del requerimiento y la descripción
-    lista_de_requerimientos = [(req["ID"], req["Descripción"], req["Asignado"], req["Estimado"]) for req in requerimientos]
+    lista_de_requerimientos = []
+    lista_componentes = []
 
-    return lista_de_requerimientos
+    for req in requerimientos:
+        lista_de_requerimientos.append((req["ID"], req["Descripción"], req["Asignado"], req["Estimado"]))
+        componentes = req.get("Componentes", [])
+        for com in componentes:
+            lista_componentes.append((com["IDReq"],com["ID"], com["Descripcion"], com["Tipo"], com["Atributos"], com["Complejidad"], com["PF"]))
+
+
+    return lista_de_requerimientos, lista_componentes
 
 def AsignarMiembro(id_proyecto, email_miembro, req_text):
     """

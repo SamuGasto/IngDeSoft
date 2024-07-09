@@ -1,3 +1,4 @@
+from ast import Pass
 from turtle import bgcolor
 import customtkinter as ctk
 from PIL import Image
@@ -8,6 +9,7 @@ import textwrap
 import re
 import os
 import Clases.Componentes.Estilos as style
+from bson.objectid import ObjectId
 
 
 
@@ -391,6 +393,9 @@ class JP(ctk.CTk):
                                                 command=self.close_window)
         cerrar.pack(side=ctk.LEFT, anchor=ctk.NW, pady=20, padx=10)
 
+        print("tab1")
+        self.refrescarTablaPF()
+
 
 
 
@@ -489,6 +494,45 @@ class JP(ctk.CTk):
                  "13. Instalaciones Multiples",
                  "14. Facilidad De Cambios"]
         return lista
+    
+    def refrescarTablaPF(self):
+        #Busca si existe una TablaPF propia del projecto para cargar, de lo contrario, se carga la tabla por defecto.
+
+        tabla = db["TablasPF"].find_one({'projectID':self.id_proyecto}) #Busca si hay una tablaPF con el id del proyecto
+
+        if tabla != None: #Si existe una tabla propia del proyecto, se cargara esta
+            pass
+        else: #Si no hay tabla propia del proyecto, se carga la por defecto (ESTA SIEMPRE DEBERIA EXISTIR)
+            tabla = db["TablasPF"].find_one({'defecto':0})
+
+        #Cargar los datos a pantalla
+            
+        self.ent11.insert(0,tabla['atributos'][0])
+        self.ent12.insert(0,tabla['atributos'][1])
+        self.ent13.insert(0,tabla['atributos'][2])
+
+        self.ent21.insert(0,tabla['EI'][0])
+        self.ent22.insert(0,tabla['EI'][1])
+        self.ent23.insert(0,tabla['EI'][2])
+
+        self.ent31.insert(0,tabla['EO'][0])
+        self.ent32.insert(0,tabla['EO'][1])
+        self.ent33.insert(0,tabla['EO'][2])
+
+        self.ent41.insert(0,tabla['EQ'][0])
+        self.ent42.insert(0,tabla['EQ'][1])
+        self.ent43.insert(0,tabla['EQ'][2])
+        
+        self.ent51.insert(0,tabla['ILF'][0])
+        self.ent52.insert(0,tabla['ILF'][1])
+        self.ent53.insert(0,tabla['ILF'][2])
+        
+        self.ent61.insert(0,tabla['ELF'][0])
+        self.ent62.insert(0,tabla['ELF'][1])
+        self.ent63.insert(0,tabla['ELF'][2])
+        
+            
+    
         
     def actualizarTablaPF(self):
 
@@ -519,7 +563,52 @@ class JP(ctk.CTk):
         e62 = self.user_email = self.ent62.get()
         e63 = self.user_email = self.ent63.get()
 
+        #Comprobar que ningun atributo este vacio
+
         e=[e11,e12,e13,e21,e22,e23,e31,e32,e33,e41,e42,e43,e51,e52,e53,e61,e62,e63]
+
+        for i in e:
+            if i == "":
+                print("ERROR: Existen atributos vacios.")
+                return 
+            if int(i) == 0:
+                print("ERROR: No pueden haber atributos con valor 0.")
+                return
+
+
+        #Guardar los datos
+            
+        tabla = db["TablasPF"].find_one({'projectID':self.id_proyecto}) #Busca si hay una tablaPF con el id del proyecto
+
+        if tabla != None: #Si existe una tabla propia del proyecto, se usara esta
+            pass
+        else: #Si no hay tabla propia del proyecto, se carga la por defecto (ESTA SIEMPRE DEBERIA EXISTIR)
+            db['TablasPF'].insert_one({'projectID':self.id_proyecto, #crea el documento nuevo
+                                'defecto':0,
+                                'atributos': [],
+                                'EI': [],
+                                'EO': [],
+                                'EQ': [],
+                                'ILF': [],
+                                'ELF': [],
+                                })
+
+        nuevos_valores = {"$set": 
+                          {"atributos": [e11,e12,e13],
+                           "EI": [e21,e22,e23],
+                           "EO": [e31,e32,e33],
+                           "EQ": [e41,e42,e43],
+                           "ILF": [e51,e52,e53],
+                           "ELF": [e61,e62,e63]}}
+
+
+        resultado = db["TablasPF"].update_one({'projectID':self.id_proyecto}, nuevos_valores) #actualiza los valores del documento
+            
+        if resultado.matched_count > 0:
+
+            print("Actualizacion exitosa")
+        else:
+            print("Actualizacion erronea")
 
         #db.actualizarTablaPF(e)
 
