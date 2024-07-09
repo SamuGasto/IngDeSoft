@@ -141,7 +141,7 @@ class JP(ctk.CTk):
         #Agregamos Tabs
         self.tab1 = tabview.add("Integrantes")  
         self.tab2 = tabview.add("Requerimientos")  
-        self.tab3 = tabview.add("Métricas")  
+        self.tab3 = tabview.add("Estimación")  
         
         ##Objetos de tab1 (INTEGRANTES)
         self.principal = ctk.CTkFrame(master=self.tab1,
@@ -209,12 +209,99 @@ class JP(ctk.CTk):
         self.reques_miembros.pack(side=ctk.LEFT, padx=4, pady=(4,0), fill="both", expand=True)
 
         
-        ##Objetos de tab3(MÉTRICAS)
+        ##Objetos de tab3(ESTIMACIÓN)
         self.principal = ctk.CTkFrame(master=self.tab3,
                                       fg_color=style.Colores.backgroundVariant,
                                       border_width=3,
                                       border_color=style.Colores.Gray[4])
         self.principal.pack(fill="both",expand=True)
+
+        estimacion = ctk.CTkLabel(self.principal,
+                                        text="Generar estimación completa", 
+                                        text_color = style.Subtitulo.text_color,
+                                        font = style.Titulo.font)
+        estimacion.pack(padx=10, pady=(5,8))
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="Para generar la estimación, llene los siguientes campos:", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Subtitulo.font)
+        cuerpo.pack(padx=10, pady=7)
+
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="----- Jornadas por mes de Jefe de proyecto -----", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Texto.font)
+        cuerpo.pack(padx=10, pady=10)
+
+        jornadas_JP = ctk.CTkEntry(self.principal,
+                                    placeholder_text="Número...",
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    width=75)
+        jornadas_JP.pack(padx=200, pady=5)
+
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="----- Jornadas por mes de Administradores -----", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Texto.font)
+        cuerpo.pack(padx=10, pady=10)
+
+        jornadas_ADMIN = ctk.CTkEntry(self.principal,
+                                    placeholder_text="Número...",
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    width=75)
+        jornadas_ADMIN.pack(padx=200, pady=5)
+
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="----- Jornadas por mes de Desarrolladores -----", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Texto.font)
+        cuerpo.pack(padx=10, pady=10)
+
+        jornadas_DEV = ctk.CTkEntry(self.principal,
+                                    placeholder_text="Número...",
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    width=75)
+        jornadas_DEV.pack(padx=200, pady=5)
+
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="----- Duración del proyecto (en meses) -----", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Texto.font)
+        cuerpo.pack(padx=10, pady=10)
+
+        duracion = ctk.CTkEntry(self.principal,
+                                    placeholder_text="MESES...",
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    width=75)
+        duracion.pack(padx=200, pady=5)
+
+        estimar = ctk.CTkButton(self.principal,
+                                width=25, 
+                                height=25, 
+                                text="Estimar Proyecto",
+                                text_color = style.BotonGrande.text_color,
+                                fg_color = style.BotonGrande.fg_color,
+                                font = style.BotonGrande.font,
+                                corner_radius = style.BotonGrande.corner_radius,
+                                hover_color = style.BotonGrande.hover_color)
+        estimar.pack(pady=10)
+
 
     def contenido_subpanel(self):
         self.proyecto_actual = ctk.CTkLabel(self.top_subpanel, 
