@@ -137,6 +137,35 @@ def AgregarComponentes(id_proyecto, id_requerimiento, componentes):
     print("Componente agregado con éxito")
     print(nuevo_componente)
 
+def EliminarComponente(id_proyecto, id_requerimiento, componente):
+    """
+    Función para eliminar un componente presente en un requerimiento.
+    id_proyecto --> El ID del proyecto.
+    id_requerimiento --> El ID del requerimiento donde esta vinculado el componente.
+    componente --> El componente a eliminar.
+    """
+    
+    # Buscar el proyecto y requerimiento específico
+    proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
+    if not proyecto:
+        print(f"Proyecto con id {id_proyecto} no encontrado")
+        return
+
+    # Buscar el requerimiento específico
+    requerimientos = proyecto.get("Requerimientos", [])
+    requerimiento = None
+    for req in requerimientos:
+        if req["ID"] == id_requerimiento:
+            requerimiento = req
+            break
+
+    if not requerimiento:
+        print(f"Requerimiento con id {id_requerimiento} no encontrado en el proyecto")
+        return
+
+    #collection.update_one({"Requerimientos" : {"Componentes": { "$elemMatch": {"ID" : componente[1]}}}},{"$pull":{"Requerimientos.Componentes": {"ID" : componente[1]}}})
+
+
 def ObtenerRequerimientos(id_proyecto) ->list :
     """
     Función para obtener los requerimientos de un proyecto.
@@ -150,7 +179,7 @@ def ObtenerRequerimientos(id_proyecto) ->list :
     proyecto = collection.find_one({"id_proyecto" : ObjectId(id_proyecto)})
     if not proyecto:
         print(f"Proyecto con id {id_proyecto} no encontrado")
-        return []
+        return [],[]
 
     # Obtener los requerimientos del proyecto
     requerimientos = proyecto.get("Requerimientos", [])

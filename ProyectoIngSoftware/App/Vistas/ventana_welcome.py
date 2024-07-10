@@ -45,7 +45,7 @@ class Welcome(ctk.CTk):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
         logo = ctk.CTkImage(light_image=Image.open(logo_path),
-            size=(250, 250))
+            size=(500, 500))
         logo_label = ctk.CTkLabel(self, image=logo, text="")
         logo_label.place(relx=0.6, rely=0.25)
 
@@ -112,14 +112,14 @@ class Welcome(ctk.CTk):
                                         width=10, 
                                         corner_radius=100,
                                         command=self.peak)
-        self.passw_peak.place(relx=0.415, rely=0.645)
+        self.passw_peak.place(relx=0.282, rely=0.648)
 
         
 
         no_email = ctk.CTkLabel(self, 
                                 text="¿No tienes cuenta?", 
                                 font=style.TextoItalica.font)
-        no_email.place(relx=0.62, rely=0.81)
+        no_email.place(relx=0.720, rely=0.81)
         no_email_btn = ctk.CTkButton(self, 
                                      width=85, 
                                      height=25,  

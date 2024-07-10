@@ -11,6 +11,7 @@ import BaseDeDatos.Invitations as INV
 import BaseDeDatos.ReqCompQuery as Req
 import Vistas.ventana_desarrollador_copy as DEV
 import Vistas.ventana_admin as ADMIN
+import Vistas.ventana_welcome as inicio
 
 from Vistas.util import centrarVentana
 import Clases.Componentes.Estilos as style
@@ -231,7 +232,7 @@ class JP(ctk.CTk):
         else:
             print("No se encontró el proyecto")
 
-        self.reques_proyecto_actual = Req.ObtenerRequerimientos(self.object_id)
+        self.reques_proyecto_actual, lista_componentes = Req.ObtenerRequerimientos(self.object_id)
         if self.reques_proyecto_actual == [] or None:
             for widget in self.reques_texto.winfo_children():
                 widget.destroy()
@@ -277,17 +278,38 @@ class JP(ctk.CTk):
 
     def contenido_image(self): #Imagen compañía
         # Obtener la ruta absoluta del directorio actual del script
+        frame = ctk.CTkFrame(self.topimage, fg_color=style.Colores.backgroundVariant, corner_radius=0)
+        frame.pack()
+
+        cerrarSesion_button = ctk.CTkButton(frame, 
+                                                text="Cerrar Sesión", 
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color, 
+                                                command=self.Salir)
+        cerrarSesion_button.pack(padx=5, pady=5, side="left")
+
+
+        nombreUsuario = ctk.CTkLabel(frame, text=self.user_email, font=("Segoe UI", -16))
+        nombreUsuario.pack(padx=5, pady=5, side="left")
+
         current_dir = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(current_dir, "../Imagenes/LOGO.png")
         logo = ctk.CTkImage(light_image=Image.open(logo_path), 
                             dark_image=Image.open(logo_path),
                             size=(60, 60), )
-        logo_label = ctk.CTkLabel(self.topimage, 
+        logo_label = ctk.CTkLabel(frame, 
                                   image=logo, 
                                   text="", 
                                   bg_color=style.Colores.backgroundVariant)
-        logo_label.pack(padx=5, pady=5)
+        logo_label.pack(padx=5, pady=5, side="left")
     
+    def Salir(self):
+        self.destroy()
+        inicio.Welcome()
+
     def ListarProyectosExistentes(self): #Funcion que busca y lista los proyectos del usuario
         nombres = Proj.ObtenerNombresProyecto(self.user_email)
         for nombre in nombres:
@@ -534,7 +556,7 @@ class JP(ctk.CTk):
         else:
             print("No se encontró el proyecto")
 
-        self.reques_proyecto_actual = Req.ObtenerRequerimientos(self.object_id)
+        self.reques_proyecto_actual, lista_componentes = Req.ObtenerRequerimientos(self.object_id)
         if self.reques_proyecto_actual == [] or None:
             for widget in self.reques_texto.winfo_children():
                 widget.destroy()
@@ -555,6 +577,9 @@ class JP(ctk.CTk):
                 widget.destroy()
             for widget in self.reques_miembros.winfo_children():
                 widget.destroy()
+
+
+            print(self.reques_proyecto_actual)
 
             for req in self.reques_proyecto_actual:
                 if req[2] is None:

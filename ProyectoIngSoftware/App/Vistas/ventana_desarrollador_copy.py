@@ -131,15 +131,6 @@ class Dev(ctk.CTkToplevel):
         button_frame.pack(pady=10)
 
         #BOTONES
-        delete_row_button = ctk.CTkButton(button_frame, text="Eliminar Componente",
-                                                text_color = style.BotonNormal.text_color,
-                                                fg_color = style.BotonNormal.fg_color,
-                                                font = style.BotonNormal.font,
-                                                corner_radius = style.BotonNormal.corner_radius,
-                                                hover_color = style.BotonNormal.hover_color,
-                                                command=self.eliminar_componente)
-        delete_row_button.grid(row=0, column=1, padx=5)
-
         update_db_button = ctk.CTkButton(button_frame, text="Regla de Estimación",
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
@@ -170,6 +161,7 @@ class Dev(ctk.CTkToplevel):
     def inicializar_componentes(self):#Carga los valores a la tabla componente.
         for comp in self.filasComponentes:
             self.tree.insert('','end',values=(comp["IDReq"],comp["ID"], comp["Descripción"], comp["Tipo"], comp["Atributos"],comp["Complejidad"],comp["Puntos de Función"]))
+            self.next_row_id += 1
 
     #TABLA REQUERIMIENTOS----------------------------------------------------------------------------------
     def create_table2(self, parent):
@@ -240,12 +232,20 @@ class Dev(ctk.CTkToplevel):
         # Crear una ventana emergente CTkToplevel
         popup = ctk.CTkToplevel()
         popup.title("Componentes")
-        
-        # Agregar contenido a la ventana emergente (ejemplo)
-        label = ctk.CTkLabel(popup, text=f"Componentes del item: {self.tree2.item(item, 'values')[1]}")
-        label.pack(padx=20, pady=20)
 
-        agregarComponente_button = ctk.CTkButton(popup, 
+        # Agregar contenido a la ventana emergente (ejemplo)
+        label = ctk.CTkLabel(popup, text=f"Componentes del item: {self.tree2.item(item, 'values')[1]}", font=style.Titulo.font)
+        label.pack(padx=20, pady=20)
+        
+        #Frames para posicionar los botones y la tabla
+        frame1 = ctk.CTkFrame(popup);
+        frame1.pack()
+        frame2 = ctk.CTkFrame(popup);
+        frame2.pack()
+
+        
+
+        agregarComponente_button = ctk.CTkButton(frame1, 
                                                 text="Agregar Componente", 
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
@@ -253,28 +253,56 @@ class Dev(ctk.CTkToplevel):
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color, 
                                                 command=lambda: self.agregarComponenteVentana(self.tree2.item(item, 'values')[0]))
-        agregarComponente_button.pack()
+        agregarComponente_button.pack(padx=5, pady=5, side="left")
 
-        delete_row_button = ctk.CTkButton(popup, text="Eliminar Componente",
+        delete_row_button = ctk.CTkButton(frame1, text="Eliminar Componente",
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
                                                 font = style.BotonNormal.font,
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color,
-                                                command=self.eliminar_componente)
-        delete_row_button.pack()
+                                                command=lambda: self.eliminar_componente(self.tree2.item(item, 'values')[0]))
+        delete_row_button.pack(padx=5, pady=5, side="left")
+
+        #CREACIÓN DE LA TABLA CON COMPONENTES RELACIONADOS.
+        columns = ("col1", "col2", "col3", "col4", "col5", "col6","col7")
+
+        # Crear un nuevo estilo
+        custom_style = ttk.Style()
+        
+        # Configurar el estilo de la Treeview
+        custom_style.configure("Custom.Treeview", 
+                                background=style.BotonLista.fg_color,  # Cambiar el color de fondo
+                                foreground=style.BotonLista.text_color,  # Cambiar el color del texto
+                                font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
+                                highlightthickness=0,  # Eliminar el borde de resaltado
+                                borderwidth=0,   # Eliminar el ancho del borde
+                                rowheight=30)  #Permite que no se bugee el alto de las tablas al cambiar de ventanas.
+
+        self.treeC = ttk.Treeview(frame2, columns=columns, show='headings', style="Custom.Treeview")
+        self.treeC.heading("col1", text="IDReq", anchor="center",)  # Configurar el anclaje para que el encabezado esté centrado
+        self.treeC.heading("col2", text="ID", anchor="center", )  # Configurar el anclaje para que el encabezado esté centrado
+        self.treeC.heading("col3", text="Descripción", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.treeC.heading("col4", text="Tipo", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.treeC.heading("col5", text="Número Atributos", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.treeC.heading("col6", text="Complejidad", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.treeC.heading("col7", text="Puntos de Función", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.treeC.pack(fill="both", expand=True, padx=10, pady=10 )
+        
+        
+        
+        # Configurar la alineación de las columnas de datos
+        for col in columns:
+            self.tree.column(col, anchor="center", )  # Centrar los valores de las columnas
+
 
         compRelacionados = []
         for comp in self.lista_componentes:
             if (comp[0] == self.tree2.item(item, 'values')[0]):
                compRelacionados.append(comp)
-        
+        print(compRelacionados)
         for comp in compRelacionados:
-            label = ctk.CTkLabel(popup, 
-                                 text=f"ID: {comp[1]}| Nombre: {comp[2]}| Tipo: {comp[3]}| Atributos: {comp[4]}| Complejidad: {comp[5]}| Puntos de Función: {comp[6]}", 
-                                 fg_color=style.Colores.backgroundVariant2,
-                                 corner_radius=10)
-            label.pack(padx=20, pady=20, fill="x")
+            self.treeC.insert('','end',values=(comp[0],comp[1], comp[2], comp[3], comp[4],comp[5],comp[6]))
         
 
     
@@ -556,8 +584,9 @@ class Dev(ctk.CTkToplevel):
 
         # Insertar la fila en la tabla
         id_fila = "COM-" + str(self.next_row_id).zfill(3)  # Formatear el ID con ceros a la izquierda
-        values = [id_fila, descripcion, tipo, num_atributos, ""]
+        values = [id_req,id_fila, descripcion, tipo, num_atributos, ""]
         self.tree.insert('', 'end', values=values)
+        self.treeC.insert('','end',values=values)
 
         # Incrementar el contador de filas
         self.next_row_id += 1
@@ -568,10 +597,12 @@ class Dev(ctk.CTkToplevel):
         self.radio_var.set("")
 
         # Actualizar la complejidad si es necesario
-        self.actualizar_complejidad()
+        self.actualizar_complejidad(self.tree)
+        self.actualizar_complejidad(self.treeC)
 
         # Agregar la nueva fila al diccionario self.filas
         nueva_fila = {
+            "IDReq": id_req,
             "ID": id_fila,
             "Descripción": descripcion,
             "Tipo": tipo,
@@ -594,12 +625,12 @@ class Dev(ctk.CTkToplevel):
 
         # Imprimir el contenido del diccionario self.filas
         
-        Req.AgregarComponentes(self.id_proyecto, id_req,nuevo_componente)
+        Req.AgregarComponentes(self.id_proyecto, id_req, nuevo_componente)
 
 
     # Dentro de la clase Dev
 
-    def eliminar_componente(self):#VENTANA PARA SELECCIONAR Y ELEMINAR UN COMPONENTE DE LA TABLA
+    def eliminar_componente(self, id_req):#VENTANA PARA SELECCIONAR Y ELEMINAR UN COMPONENTE DE LA TABLA
         # Crear la ventana emergente para seleccionar la fila a eliminar
         eliminar_window = Toplevel(self)
         eliminar_window.title("Eliminar Componente")
@@ -613,7 +644,7 @@ class Dev(ctk.CTkToplevel):
         id_label.grid(row=0, column=0, padx=10, pady=5)
 
         # Obtener IDs de todas las filas
-        all_ids = [self.tree.item(item, 'values')[0] for item in self.tree.get_children()]
+        all_ids = [self.treeC.item(item, 'values')[1] for item in self.treeC.get_children()]
 
         # ComboBox con los IDs existentes
         id_var = StringVar(value=all_ids[0])  # Valor por defecto
@@ -627,114 +658,127 @@ class Dev(ctk.CTkToplevel):
                                                 font = style.BotonNormal.font,
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color,
-                                                command=lambda: self.eliminar_componente_seleccionado(id_combo.get(), eliminar_window))
+                                                command=lambda: self.eliminar_componente_seleccionado(id_req, id_combo.get(), eliminar_window))
         eliminar_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
 
-    def eliminar_componente_seleccionado(self, id_seleccionado, window):#ELIMINA UN COMPONENTE DE LA TABLA
+    def eliminar_componente_seleccionado(self,id_req, id_seleccionado, window):#ELIMINA UN COMPONENTE DE LA TABLA
         # Buscar el item por ID
         for item in self.tree.get_children():
             values = self.tree.item(item, 'values')
-            if values[0] == id_seleccionado:
+            print(values)
+            if values[1] == id_seleccionado:
+                Req.EliminarComponente(self.id_proyecto,id_req, values)
                 self.tree.delete(item)  # Eliminar la fila correspondiente
+                window.destroy()
+                break
+
+        for item in self.treeC.get_children():
+            values = self.treeC.item(item, 'values')
+            print(values)
+            if values[1] == id_seleccionado:
+                Req.EliminarComponente(self.id_proyecto,id_req, values)
+                self.treeC.delete(item)  # Eliminar la fila correspondiente
                 messagebox.showinfo("Éxito", f"Se ha eliminado el componente {id_seleccionado} correctamente.")
                 window.destroy()
                 return
+        
         
         # Mostrar un mensaje de error si el ID no se encuentra
         messagebox.showerror("Error", f"No se encontró el componente con ID {id_seleccionado}.")
         window.destroy()
 
 
-    def actualizar_complejidad(self):#CALCULA LA COMPLEJIDA SEGUN TABLA ESTANDAR PPT4
-        for item in self.tree.get_children():
-            values = self.tree.item(item, 'values')
+    def actualizar_complejidad(self, tree):#CALCULA LA COMPLEJIDA SEGUN TABLA ESTANDAR PPT4
+        for item in tree.get_children():
+            values = tree.item(item, 'values')
+            
             print(f"Los values son: {values}")
-            tipo = values[2]
-            num_atributos = int(values[3])
+            tipo = values[3]
+            num_atributos = int(values[4])
 
             #VALORES SEGUN TIPO DE COMPONENTE
             if tipo == "Entrada Externa":
                 if num_atributos <= 4:
-                    self.tree.set(item, column="col5", value="Baja")
-                    self.tree.set(item, column="col6", value=3)
+                    tree.set(item, column="col6", value="Baja")
+                    tree.set(item, column="col7", value=3)
                     self.clasificación = "Baja"
                     self.pf = 3
                 elif num_atributos >= 5 and num_atributos <= 15:
-                    self.tree.set(item, column="col5", value="Media")
-                    self.tree.set(item, column="col6", value=4)
+                    tree.set(item, column="col6", value="Media")
+                    tree.set(item, column="col7", value=4)
                     self.clasificación = "Media"
                     self.pf = 4
                 else:
-                    self.tree.set(item, column="col5", value="Alta")
-                    self.tree.set(item, column="col6", value=6)
+                    tree.set(item, column="col6", value="Alta")
+                    tree.set(item, column="col7", value=6)
                     self.clasificación = "Alta"
                     self.pf = 6
 
             elif tipo == "Salida Externa":
                 if num_atributos <= 5:
-                    self.tree.set(item, column="col5", value="Baja")
-                    self.tree.set(item, column="col6", value=4)
+                    tree.set(item, column="col6", value="Baja")
+                    tree.set(item, column="col7", value=4)
                     self.clasificación = "Baja"
                     self.pf = 4
                 elif num_atributos >= 6 and num_atributos <= 19:
-                    self.tree.set(item, column="col5", value="Media")
-                    self.tree.set(item, column="col6", value=5)
+                    tree.set(item, column="col6", value="Media")
+                    tree.set(item, column="col7", value=5)
                     self.clasificación = "Media"
                     self.pf = 5
                 else:
-                    self.tree.set(item, column="col5", value="Alta")
-                    self.tree.set(item, column="col6", value=7)
+                    tree.set(item, column="col6", value="Alta")
+                    tree.set(item, column="col7", value=7)
                     self.clasificación = "Alta"
                     self.pf = 7
 
             elif tipo == "Consulta Externa":
                 if num_atributos <= 4:
-                    self.tree.set(item, column="col5", value="Baja")
-                    self.tree.set(item, column="col6", value=3)
+                    tree.set(item, column="col6", value="Baja")
+                    tree.set(item, column="col7", value=3)
                     self.clasificación = "Baja"
                     self.pf = 3
                 elif num_atributos >= 5 and num_atributos <= 15:
-                    self.tree.set(item, column="col5", value="Media")
-                    self.tree.set(item, column="col6", value=4)
+                    tree.set(item, column="col6", value="Media")
+                    tree.set(item, column="col7", value=4)
                     self.clasificación = "Media"
                     self.pf = 4
                 else:
-                    self.tree.set(item, column="col5", value="Alta")
-                    self.tree.set(item, column="col6", value=6)
+                    tree.set(item, column="col6", value="Alta")
+                    tree.set(item, column="col7", value=6)
                     self.clasificación = "Alta"
                     self.pf = 6
             
             elif tipo == "Archivo lógico Interno":
                 if num_atributos <= 5:
-                    self.tree.set(item, column="col5", value="Baja")
-                    self.tree.set(item, column="col6", value=7)
+                    tree.set(item, column="col6", value="Baja")
+                    tree.set(item, column="col7", value=7)
                     self.clasificación = "Baja"
                     self.pf = 7
                 elif num_atributos >= 6 and num_atributos <= 19:
-                    self.tree.set(item, column="col5", value="Media")
-                    self.tree.set(item, column="col6", value=10)
+                    tree.set(item, column="col6", value="Media")
+                    tree.set(item, column="col7", value=10)
                     self.clasificación = "Media"
                     self.pf = 10
                 else:
-                    self.tree.set(item, column="col5", value="Alta")
-                    self.tree.set(item, column="col6", value=15)
+                    tree.set(item, column="col6", value="Alta")
+                    tree.set(item, column="col7", value=15)
                     self.clasificación = "Alta"
                     self.pf = 15
 
             if tipo == "Archivo de interfaz externo":
                 if num_atributos <= 4:
-                    self.tree.set(item, column="col5", value="Baja")
-                    self.tree.set(item, column="col6", value=5)
+                    tree.set(item, column="col6", value="Baja")
+                    tree.set(item, column="col7", value=5)
                     self.clasificación = "Baja"
                     self.pf = 5
                 elif num_atributos >= 5 and num_atributos <= 15:
-                    self.tree.set(item, column="col5", value="Media")
-                    self.tree.set(item, column="col6", value=7)
+                    tree.set(item, column="col6", value="Media")
+                    tree.set(item, column="col7", value=7)
                     self.clasificación = "Media"
                     self.pf = 7
                 else:
-                    self.tree.set(item, column="col5", value="Alta")
-                    self.tree.set(item, column="col6", value=10)
+                    tree.set(item, column="col6", value="Alta")
+                    tree.set(item, column="col7", value=10)
                     self.clasificación = "Alta"
                     self.pf = 10
         
