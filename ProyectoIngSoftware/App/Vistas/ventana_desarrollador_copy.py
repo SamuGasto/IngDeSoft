@@ -1,4 +1,5 @@
 #################################v2
+from textwrap import fill
 from xml.dom import HierarchyRequestErr
 import customtkinter as ctk
 from tkinter import ttk, Toplevel, StringVar, messagebox
@@ -17,16 +18,16 @@ class Dev(ctk.CTkToplevel):
         self.filas = [] #Información filas
 
         #Listamos los requerimientos del proyecto, asignados al miembro
-        lista_requerimientos = Req.ObtenerRequerimientos(self.id_proyecto)
+        self.lista_requerimientos, self.lista_componentes = Req.ObtenerRequerimientos(self.id_proyecto)
         self.filasReq = []
-        for reque in lista_requerimientos:
+        for reque in self.lista_requerimientos:
             if reque[2] == self.user:
                 if reque[3] == False:
                     estado = "Pendiente"
                 else:
                     estado = "Revisado"
                 self.filasReq.append(
-                    {"ID": f"REQ-{reque[0]}",
+                    {"ID": reque[0],
                     "Descripción": reque[1],
                     "Estado": estado
                     }
@@ -34,6 +35,11 @@ class Dev(ctk.CTkToplevel):
             else:
                 continue
 
+        self.filasComponentes = []
+        for comp in self.lista_componentes:
+            for fila in self.filasReq:
+                if (comp[0] == fila["ID"]):
+                    self.filasComponentes.append({"IDReq": comp[0],"ID": comp[1],"Descripción": comp[2],"Tipo":comp[3], "Atributos": comp[4], "Complejidad": comp[5], "Puntos de Función": comp[6]})
         #Listamos las tareas asignadas al usuario (IMPLEMENTAR)
         self.filasTareas = [{"ID": "TAR-001", "Descripción": "Descripción Tarea 1", "Estado": "Pendiente"},
                             {"ID": "TAR-002", "Descripción": "Descripción Tarea 2", "Estado": "Realizada"}]
@@ -90,7 +96,7 @@ class Dev(ctk.CTkToplevel):
 
     #TABLA PUNTOS DE FUNCIÓN----------------------------------------------------------------------------------
     def create_table1(self, parent):
-        columns = ("col1", "col2", "col3", "col4", "col5", "col6")
+        columns = ("col1", "col2", "col3", "col4", "col5", "col6","col7")
 
         # Crear un nuevo estilo
         custom_style = ttk.Style()
@@ -101,15 +107,17 @@ class Dev(ctk.CTkToplevel):
                                 foreground=style.BotonLista.text_color,  # Cambiar el color del texto
                                 font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
                                 highlightthickness=0,  # Eliminar el borde de resaltado
-                                borderwidth=0)  # Eliminar el ancho del borde
+                                borderwidth=0,   # Eliminar el ancho del borde
+                                rowheight=30)  #Permite que no se bugee el alto de las tablas al cambiar de ventanas.
 
         self.tree = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
-        self.tree.heading("col1", text="ID", anchor="center", )  # Configurar el anclaje para que el encabezado esté centrado
-        self.tree.heading("col2", text="Componente Funcional", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
-        self.tree.heading("col3", text="Tipo", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
-        self.tree.heading("col4", text="Número Atributos", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
-        self.tree.heading("col5", text="Complejidad", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
-        self.tree.heading("col6", text="Puntos de Función", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.tree.heading("col1", text="IDReq", anchor="center",)  # Configurar el anclaje para que el encabezado esté centrado
+        self.tree.heading("col2", text="ID", anchor="center", )  # Configurar el anclaje para que el encabezado esté centrado
+        self.tree.heading("col3", text="Descripción", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.tree.heading("col4", text="Tipo", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.tree.heading("col5", text="Número Atributos", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.tree.heading("col6", text="Complejidad", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
+        self.tree.heading("col7", text="Puntos de Función", anchor="center")  # Configurar el anclaje para que el encabezado esté centrado
         self.tree.pack(fill="both", expand=True, padx=10, pady=10 )
         
         
@@ -122,17 +130,7 @@ class Dev(ctk.CTkToplevel):
         button_frame = ctk.CTkFrame(parent, fg_color=style.Colores.backgroundVariant2)
         button_frame.pack(pady=10)
 
-        # Botones
-        agregarComponente_button = ctk.CTkButton(button_frame, 
-                                                text="Agregar Componente", 
-                                                text_color = style.BotonNormal.text_color,
-                                                fg_color = style.BotonNormal.fg_color,
-                                                font = style.BotonNormal.font,
-                                                corner_radius = style.BotonNormal.corner_radius,
-                                                hover_color = style.BotonNormal.hover_color, 
-                                                command=self.agregarComponenteVentana)
-        agregarComponente_button.grid(row=0, column=0, padx=5)
-
+        #BOTONES
         delete_row_button = ctk.CTkButton(button_frame, text="Eliminar Componente",
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
@@ -151,15 +149,6 @@ class Dev(ctk.CTkToplevel):
                                                 command=None)
         update_db_button.grid(row=0, column=2, padx=5)
 
-        estimation_rule_button = ctk.CTkButton(button_frame, text="Actualizar Base de Datos",
-                                                text_color = style.BotonNormal.text_color,
-                                                fg_color = style.BotonNormal.fg_color,
-                                                font = style.BotonNormal.font,
-                                                corner_radius = style.BotonNormal.corner_radius,
-                                                hover_color = style.BotonNormal.hover_color,
-                                                command=self.mensajeBase)
-        estimation_rule_button.grid(row=0, column=3, padx=5)
-
         cerrar = ctk.CTkButton(button_frame, text="Cerrar",
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
@@ -168,6 +157,7 @@ class Dev(ctk.CTkToplevel):
                                                 hover_color = style.BotonNormal.hover_color,
                                                 command=self.close_window)
         cerrar.grid(row=0, column=4, padx=5)
+        return self.inicializar_componentes()
     
     def inicializar_requerimientos(self):#Agregar valores por defecto para demo funcionalidad REQUERIMIENTOS
         for req in self.filasReq:
@@ -177,6 +167,9 @@ class Dev(ctk.CTkToplevel):
         for tarea in self.filasTareas:
             self.tree3.insert('', 'end', values=(tarea["ID"], tarea["Descripción"], tarea["Estado"]))
 
+    def inicializar_componentes(self):#Carga los valores a la tabla componente.
+        for comp in self.filasComponentes:
+            self.tree.insert('','end',values=(comp["IDReq"],comp["ID"], comp["Descripción"], comp["Tipo"], comp["Atributos"],comp["Complejidad"],comp["Puntos de Función"]))
 
     #TABLA REQUERIMIENTOS----------------------------------------------------------------------------------
     def create_table2(self, parent):
@@ -191,7 +184,8 @@ class Dev(ctk.CTkToplevel):
                                 foreground=style.BotonLista.text_color,  # Cambiar el color del texto
                                 font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
                                 highlightthickness=0,  # Eliminar el borde de resaltado
-                                borderwidth=0)  # Eliminar el ancho del borde
+                                borderwidth=0,   # Eliminar el ancho del borde
+                                rowheight=30)  #Permite que no se bugee el alto de las tablas al cambiar de ventanas.)  # Eliminar el ancho del borde
         
         self.tree2 = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
         self.tree2.heading("col1", text="ID", anchor="center",)  # genera automaticamente ID
@@ -219,14 +213,14 @@ class Dev(ctk.CTkToplevel):
                                                 command=self.estadoRequerimiento)
         editar_estado.grid(row=0, column=3, padx=5)
 
-        update_db = ctk.CTkButton(button_frame, text="Actualizar Base de Datos",
+        cerrar = ctk.CTkButton(button_frame, text="Cerrar",
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
                                                 font = style.BotonNormal.font,
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color,
-                                                command=self.mensajeBase)
-        update_db.grid(row=0, column=4, padx=5)
+                                                command=self.close_window)
+        cerrar.grid(row=0, column=5, padx=5)
 
         # Agregar un evento de clic en las celdas de la columna "Componentes"
         self.tree2.bind("<ButtonRelease-1>", self.on_component_click)
@@ -250,6 +244,39 @@ class Dev(ctk.CTkToplevel):
         # Agregar contenido a la ventana emergente (ejemplo)
         label = ctk.CTkLabel(popup, text=f"Componentes del item: {self.tree2.item(item, 'values')[1]}")
         label.pack(padx=20, pady=20)
+
+        agregarComponente_button = ctk.CTkButton(popup, 
+                                                text="Agregar Componente", 
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color, 
+                                                command=lambda: self.agregarComponenteVentana(self.tree2.item(item, 'values')[0]))
+        agregarComponente_button.pack()
+
+        delete_row_button = ctk.CTkButton(popup, text="Eliminar Componente",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.eliminar_componente)
+        delete_row_button.pack()
+
+        compRelacionados = []
+        for comp in self.lista_componentes:
+            if (comp[0] == self.tree2.item(item, 'values')[0]):
+               compRelacionados.append(comp)
+        
+        for comp in compRelacionados:
+            label = ctk.CTkLabel(popup, 
+                                 text=f"ID: {comp[1]}| Nombre: {comp[2]}| Tipo: {comp[3]}| Atributos: {comp[4]}| Complejidad: {comp[5]}| Puntos de Función: {comp[6]}", 
+                                 fg_color=style.Colores.backgroundVariant2,
+                                 corner_radius=10)
+            label.pack(padx=20, pady=20, fill="x")
+        
+
     
     #TABLA TAREAS----------------------------------------------------------------------------------
     def create_table3(self, parent):
@@ -264,7 +291,8 @@ class Dev(ctk.CTkToplevel):
                                 foreground=style.BotonLista.text_color,  # Cambiar el color del texto
                                 font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
                                 highlightthickness=0,  # Eliminar el borde de resaltado
-                                borderwidth=0)  # Eliminar el ancho del borde
+                                borderwidth=0,   # Eliminar el ancho del borde
+                                rowheight=30)  #Permite que no se bugee el alto de las tablas al cambiar de ventanas.)  # Eliminar el ancho del borde
         
         self.tree3 = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
         self.tree3.heading("col1", text="ID", anchor="center", )  # generado automaticamente ID
@@ -291,14 +319,14 @@ class Dev(ctk.CTkToplevel):
                                                 command=self.estadoTareas)
         update_db_button.grid(row=0, column=3, padx=5)
 
-        estimation_rule_button = ctk.CTkButton(button_frame, text="Actualizar Base de Datos",
+        cerrar = ctk.CTkButton(button_frame, text="Cerrar",
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
                                                 font = style.BotonNormal.font,
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color,
-                                                command=self.mensajeBase)
-        estimation_rule_button.grid(row=0, column=4, padx=5)
+                                                command=self.close_window)
+        cerrar.grid(row=0, column=5, padx=5)
               
         return self.inicializar_tareas()
 
@@ -437,7 +465,7 @@ class Dev(ctk.CTkToplevel):
         window.destroy()
 
     #FUNCIONES TABLA PUNTOS DE FUNCION----------------------------------------------------------------------------------
-    def agregarComponenteVentana(self): #VENTANA EMERGENTE PARA AGREGAR NUEVO COMPONENTE A LA TABLA
+    def agregarComponenteVentana(self, id_req): #VENTANA EMERGENTE PARA AGREGAR NUEVO COMPONENTE A LA TABLA
         # Crear la ventana emergente
         agregarComponente_window = Toplevel(self)
 
@@ -511,9 +539,9 @@ class Dev(ctk.CTkToplevel):
                                                 font = style.BotonNormal.font,
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color,
-                                                command=self.agregarComponente).pack(pady=10)
+                                                command=lambda: self.agregarComponente(id_req)).pack(pady=10)
     
-    def agregarComponente(self):#AGREGA NUEVO COMPONENTE A LA TABLA
+    def agregarComponente(self, id_req):#AGREGA NUEVO COMPONENTE A LA TABLA
         # Obtener los valores ingresados en los campos de texto
         descripcion = self.entries[0].get()
         num_atributos = self.entries[1].get()
@@ -527,7 +555,7 @@ class Dev(ctk.CTkToplevel):
         tipo = self.radio_var.get()
 
         # Insertar la fila en la tabla
-        id_fila = "ID-" + str(self.next_row_id).zfill(3)  # Formatear el ID con ceros a la izquierda
+        id_fila = "COM-" + str(self.next_row_id).zfill(3)  # Formatear el ID con ceros a la izquierda
         values = [id_fila, descripcion, tipo, num_atributos, ""]
         self.tree.insert('', 'end', values=values)
 
@@ -547,14 +575,26 @@ class Dev(ctk.CTkToplevel):
             "ID": id_fila,
             "Descripción": descripcion,
             "Tipo": tipo,
-            "Número de Atributos": num_atributos,
+            "Atributos": num_atributos,
             "Clasificación": self.clasificación,
             "Puntos de Función": self.pf
         }
+        nuevo_componente = (
+            id_req,
+            id_fila,
+            descripcion,
+            tipo,
+            num_atributos,
+            self.clasificación,
+            self.pf
+        )
         self.filas.append(nueva_fila)
 
+        self.lista_componentes.append(nuevo_componente)
+
         # Imprimir el contenido del diccionario self.filas
-        print(nueva_fila)
+        
+        Req.AgregarComponentes(self.id_proyecto, id_req,nuevo_componente)
 
 
     # Dentro de la clase Dev

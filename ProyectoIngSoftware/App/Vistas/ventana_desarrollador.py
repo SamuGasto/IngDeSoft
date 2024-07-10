@@ -77,7 +77,6 @@ class Dev(ctk.CTkToplevel):
         self.tab2 = tabview.add("Requerimientos")
         self.tab1 = tabview.add("Agregar componentes")  
         self.tab3 = tabview.add("Tareas")
-          
         
         ## Crear la tabla en la pestaña "Integrantes"
         self.create_table1(self.tab1)
@@ -99,9 +98,10 @@ class Dev(ctk.CTkToplevel):
         custom_style.configure("Custom.Treeview", 
                                 background=style.BotonLista.fg_color,  # Cambiar el color de fondo
                                 foreground=style.BotonLista.text_color,  # Cambiar el color del texto
-                                font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
+                                font=style.Texto.font,  # Cambiar la fuente y tamaño del texto
                                 highlightthickness=0,  # Eliminar el borde de resaltado
-                                borderwidth=0)  # Eliminar el ancho del borde
+                                borderwidth=0,# Eliminar el ancho del borde
+                                rowheight=30)  #Permite que no se bugee el alto de las tablas al cambiar de ventanas.
 
         self.tree = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
         self.tree.heading("col1", text="ID", anchor="center", )  # Configurar el anclaje para que el encabezado esté centrado
@@ -189,12 +189,13 @@ class Dev(ctk.CTkToplevel):
         custom_style.configure("Custom.Treeview", 
                                 background=style.BotonLista.fg_color,  # Cambiar el color de fondo
                                 foreground=style.BotonLista.text_color,  # Cambiar el color del texto
-                                font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
+                                font=style.Texto.font,  # Cambiar la fuente y tamaño del texto
                                 highlightthickness=0,  # Eliminar el borde de resaltado
-                                borderwidth=0)  # Eliminar el ancho del borde
+                                borderwidth=0, # Eliminar el ancho del borde
+                                rowheight=30)  #Permite que no se bugee el alto de las tablas al cambiar de ventanas.
         
         self.tree2 = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
-        self.tree2.heading("col1", text="ID", anchor="center",)  # genera automaticamente ID
+        self.tree2.heading("col1", text="ID", anchor="center")  # genera automaticamente ID
         self.tree2.heading("col2", text="descripcion", anchor="center")  # descripción
         self.tree2.heading("col3", text="Estado", anchor="center")  # Estados Pendiente y Revisado
         
@@ -227,6 +228,14 @@ class Dev(ctk.CTkToplevel):
                                                 command=self.mensajeBase)
         update_db.grid(row=0, column=4, padx=5)
 
+        cerrar = ctk.CTkButton(button_frame, text="Cerrar",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.close_window)
+        cerrar.grid(row=0, column=5, padx=5)
         #agregar_componente
               
         return self.inicializar_requerimientos()
@@ -242,9 +251,10 @@ class Dev(ctk.CTkToplevel):
         custom_style.configure("Custom.Treeview", 
                                 background=style.BotonLista.fg_color,  # Cambiar el color de fondo
                                 foreground=style.BotonLista.text_color,  # Cambiar el color del texto
-                                font=("Helvetica", 11),  # Cambiar la fuente y tamaño del texto
+                                font=style.Texto.font,  # Cambiar la fuente y tamaño del texto
                                 highlightthickness=0,  # Eliminar el borde de resaltado
-                                borderwidth=0)  # Eliminar el ancho del borde
+                                borderwidth=0,   # Eliminar el ancho del borde
+                                rowheight=30)  #Permite que no se bugee el alto de las tablas al cambiar de ventanas.
         
         self.tree3 = ttk.Treeview(parent, columns=columns, show='headings', style="Custom.Treeview")
         self.tree3.heading("col1", text="ID", anchor="center", )  # generado automaticamente ID
@@ -279,6 +289,15 @@ class Dev(ctk.CTkToplevel):
                                                 hover_color = style.BotonNormal.hover_color,
                                                 command=self.mensajeBase)
         estimation_rule_button.grid(row=0, column=4, padx=5)
+
+        cerrar = ctk.CTkButton(button_frame, text="Cerrar",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.close_window)
+        cerrar.grid(row=0, column=5, padx=5)
               
         return self.inicializar_tareas()
 
