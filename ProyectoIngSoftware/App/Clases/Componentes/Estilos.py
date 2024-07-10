@@ -147,7 +147,7 @@ font = style.TextoItalica.font
 
 class entryNormal():
     def __init__(self):
-        self.fg_color = Colores.MainColor[2]
+        self.fg_color = Colores.Gray[1]
         self.border_color = Colores.Gray[4]
         self.text_color = Colores.Gray[4]
         self.font = ("Segoe UI", -13)
