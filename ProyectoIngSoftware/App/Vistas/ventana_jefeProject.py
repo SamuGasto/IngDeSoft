@@ -301,6 +301,12 @@ class JP(ctk.CTk):
                                 corner_radius = style.BotonGrande.corner_radius,
                                 hover_color = style.BotonGrande.hover_color)
         estimar.pack(pady=10)
+    
+    def GenerarEstimacion(self, jornadas_jp, jornadas_admin, jornadas_dev, duracion):
+        """
+        Función para generar la estimación del proyecto
+        """
+        
 
 
     def contenido_subpanel(self):
@@ -424,9 +430,11 @@ class JP(ctk.CTk):
         self.objectId_Proy_invitado = db['Projects'].find_one({'owner': proj['owner_proyecto'], 'id': proj['proyecto_id']})['_id']#ObjectId para buscar la coleccion de requerimientos del proyecto
         self.objectId_Proy_invitado = ObjectId(self.objectId_Proy_invitado)
         self.Nombre_Proyecto_Invitado = db['Projects'].find_one({'owner': proj['owner_proyecto'], 'id': proj['proyecto_id']})['nombre']
+        self.data_proyecto =  Proj.ObtenerDatosProyecto(proj["owner_proyecto"], Proj.ObtenerIdProyecto(proj["owner_proyecto"], self.Nombre_Proyecto_Invitado))
+        self.miembros_proyecto = self.data_proyecto[1]
         if proj['rol'] == "Administrador":
             self.iconify()
-            self.nueva = ADMIN.JP(self, self.user_email, self.Nombre_Proyecto_Invitado, self.objectId_Proy_invitado)
+            self.nueva = ADMIN.JP(self, self.user_email, self.Nombre_Proyecto_Invitado, self.objectId_Proy_invitado, self.miembros_proyecto)
         elif proj['rol'] == "Desarrollador":
             self.iconify()
             self.nueva = DEV.Dev(self, self.user_email, self.Nombre_Proyecto_Invitado, self.objectId_Proy_invitado)  # Pasar la referencia de la ventana principal

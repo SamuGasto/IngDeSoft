@@ -5,6 +5,9 @@ from PIL import Image
 import tkinter as tk
 from tkinter import ttk, font
 from BaseDeDatos.MainMongoDB import db
+
+import BaseDeDatos.SueldosQuery as sueldos
+
 import textwrap
 import re
 import os
@@ -15,13 +18,14 @@ from bson.objectid import ObjectId
 
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
-    def __init__(self, parent, user, proyecto, id_proyecto):
+    def __init__(self, parent, user, proyecto, id_proyecto, miembros):
         super().__init__()
         
         self.parent = parent 
         self.user = user
         self.proyecto = proyecto
         self.id_proyecto = id_proyecto
+        self.miembros = miembros
 
         self.geometry("1280x560")
         self.title("PaltaEstimateApp")
@@ -66,7 +70,7 @@ class JP(ctk.CTk):
         #Agregamos Tabs
         self.tab1 = tabview.add("Tabla PF")  
         self.tab5 = tabview.add("Complejidad")  
-        self.tab3 = tabview.add("Métricas")  
+        self.tabSueldos = tabview.add("Sueldos")  
         
         ##Objetos de tab1
 
@@ -466,8 +470,84 @@ class JP(ctk.CTk):
 
         self.cargar_datos_iniciales()
         
-        
+        # CONTENIDO NUEVO
         ##Objetos de tab3
+        texto_primero = ctk.CTkLabel(self.tabSueldos,
+                     text="Tabla de sueldos del equipo",
+                     text_color = style.Titulo.text_color,
+                     font = style.Subtitulo.font
+                     ).pack(pady=10)
+        texto_segundo = ctk.CTkLabel(self.tabSueldos,
+                     text="Agregar un sueldo nuevo o editar uno existente",
+                     text_color = style.Titulo.text_color,
+                     font = style.Subtitulo.font
+                     ).pack(pady=5, anchor="w")
+        self.new_sueldo_frame = ctk.CTkFrame(self.tabSueldos, fg_color="transparent")
+        self.new_sueldo_frame.pack(fill="x", expand=True)
+        text = ctk.CTkLabel(self.new_sueldo_frame,
+                     text="Miembro: ",
+                     text_color = style.Texto.text_color,
+                     font = style.Texto.font
+                     ).pack(side=ctk.LEFT, pady=5)
+        self.miembros_box = ctk.CTkComboBox(self.new_sueldo_frame, width=200,
+                                  values=[miembro[0] for miembro in self.miembros])
+        self.miembros_box.pack(side=ctk.LEFT, pady=5, padx=10)
+
+        salary = ctk.CTkLabel(self.new_sueldo_frame,
+                     text="Sueldo: ",
+                     text_color = style.Texto.text_color,
+                     font = style.Texto.font
+                     ).pack(side=ctk.LEFT, pady=5, padx=10)
+        
+        self.salary_entry = ctk.CTkEntry(self.new_sueldo_frame,
+                                    placeholder_text="Ingresa un monto (CLP)...", #Hay que transformarlo a UF para los cálculos
+                                    placeholder_text_color="white",
+                                    width=350, 
+                                    height=35, 
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius)
+        self.salary_entry.pack(side=ctk.LEFT, pady=5, padx=10)
+
+        agregar_boton = ctk.CTkButton(self.new_sueldo_frame,
+                                      text="Agregar sueldo",
+                                      text_color = style.BotonNormal.text_color,
+                                      fg_color = style.BotonNormal.fg_color,
+                                      font = style.BotonNormal.font,
+                                      corner_radius = style.BotonNormal.corner_radius,
+                                      hover_color = style.BotonNormal.hover_color,
+                                      command=lambda: self.AgregarSueldo())
+        agregar_boton.pack(side=ctk.LEFT, pady=5, padx=10)
+
+
+        self.Contenido = ctk.CTkScrollableFrame(self.tabSueldos,
+                                                fg_color=style.Colores.backgroundVariant,
+                                                border_width=3,
+                                                border_color=style.Colores.Gray[4])
+        self.Contenido.pack(fill="both", expand=True)
+        sueldos_proyecto = sueldos.ObtenerSueldos(self.id_proyecto)
+        print(sueldos_proyecto)
+        if sueldos_proyecto == []:
+            texto = ctk.CTkLabel(self.Contenido, text="El proyecto aún no posee sueldos asignados",
+                             text_color = style.Titulo.text_color,
+                             font = style.Titulo.font).pack(pady=10)
+        elif sueldos_proyecto == None:
+            texto = ctk.CTkLabel(self.Contenido, text="El proyecto aún no posee tabla de sueldos",
+                             text_color = style.Titulo.text_color,
+                             font = style.Titulo.font).pack(pady=10)
+        else:
+            for sueldo in sueldos_proyecto:
+                    texto = ctk.CTkLabel(self.Contenido, text=f"Miembro: {sueldo[0]}. Sueldo: {sueldo[1]}",
+                                text_color = style.Titulo.text_color,
+                                font = style.Subtitulo.font).pack(padx=10, pady=5, anchor=ctk.W)
+    
+    def AgregarSueldo(self):
+        sueldos.AgregarSueldo(self.id_proyecto, self.miembros_box.get(), self.salary_entry.get())
+        for widget in self.Contenido.winfo_children():
+            widget.destroy()
+
 
     def callback(self, P):
         if str.isdigit(P) or P == "":
