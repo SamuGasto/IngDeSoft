@@ -1,3 +1,5 @@
+from ast import Return
+from tkinter import messagebox
 import customtkinter as ctk
 from PIL import Image
 import os
@@ -37,7 +39,7 @@ class JP(ctk.CTk):
         self.contador = 5
         self.user_email = email
         self.ID_activo = 0
-
+        self.object_id = None
         #FRAMES Y CONTENIDO
         self.Paneles()
         self.controles_sidebar()
@@ -200,15 +202,18 @@ class JP(ctk.CTk):
         self.reques_texto = ctk.CTkScrollableFrame(self.reques_frame,
                                         fg_color=style.Colores.backgroundVariant,
                                         orientation = "horizontal",
-                                        width=500)
+                                        width=500,
+                                        height=780)
         self.reques_texto.pack(side=ctk.LEFT, padx=4, pady=(4,0), fill="both", expand=True)
 
         self.reques_asignado = ctk.CTkFrame(self.reques_frame,
-                                        fg_color=style.Colores.backgroundVariant)
+                                        fg_color=style.Colores.backgroundVariant,
+                                        height=780)
         self.reques_asignado.pack(side=ctk.LEFT, padx=4, pady=(4,0), fill="both", expand=True)
 
         self.reques_miembros = ctk.CTkFrame(self.reques_frame,
-                                            fg_color=style.Colores.backgroundVariant)
+                                            fg_color=style.Colores.backgroundVariant,
+                                        height=780)
         self.reques_miembros.pack(side=ctk.LEFT, padx=4, pady=(4,0), fill="both", expand=True)
 
         
@@ -326,6 +331,7 @@ class JP(ctk.CTk):
             self.object_id = self.documento['_id']
         else:
             print("No se encontró el proyecto")
+            return
 
         self.reques_proyecto_actual, lista_componentes = Req.ObtenerRequerimientos(self.object_id)
         if self.reques_proyecto_actual == [] or None:
@@ -933,6 +939,9 @@ class JP(ctk.CTk):
         return ventana_emergente
 
     def AnadirRequerimiento(self): #Ventana para añadir requerimientos al proyecto actual
+        if (self.object_id == None):
+            messagebox.showerror("Error","Debes seleccionar un proyecto primero")
+            return
         self.contador = 5
         self.requerimientos = []
         self.ventana_rq = ctk.CTkToplevel(self)
@@ -1058,6 +1067,7 @@ class JP(ctk.CTk):
             cerrar.pack(pady=(0,5))
         else:
             print("Documento no encontrado")
+            return
 
         #Reiniciar variables
         requerimientos= []
@@ -1122,7 +1132,12 @@ class JP(ctk.CTk):
             for widget in self.otros_proyectos.winfo_children():
                 widget.destroy()
             self.ListarProyectosInvitados()
+
     def editar_miembro_asignado(self):
+        if (self.object_id == None):
+            messagebox.showerror("Error","Debes seleccionar un proyecto primero")
+            return
+
         self.win = ctk.CTkToplevel(self)
         self.win.configure(fg_color=style.Colores.background)
         centrarVentana(self.win, 650, 300)
@@ -1151,8 +1166,7 @@ class JP(ctk.CTk):
                                     text_color = style.EntryNormal.text_color,
                                     font = style.EntryNormal.font,
                                     corner_radius = style.EntryNormal.corner_radius,
-                                    values = [req[1] for req in self.reques_proyecto_actual]
-                                    )
+                                    values = [req[1] for req in self.reques_proyecto_actual])
         self.reques_box.grid(row=0, column = 1)
         self.reques_box.set("Selecciona un requerimiento")
 

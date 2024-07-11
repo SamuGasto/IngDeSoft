@@ -1,3 +1,4 @@
+import string
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.UsersQuery as user
 import BaseDeDatos.ProjectsQuery as Proj
@@ -163,8 +164,33 @@ def EliminarComponente(id_proyecto, id_requerimiento, componente):
         print(f"Requerimiento con id {id_requerimiento} no encontrado en el proyecto")
         return
 
-    #collection.update_one({"Requerimientos" : {"Componentes": { "$elemMatch": {"ID" : componente[1]}}}},{"$pull":{"Requerimientos.Componentes": {"ID" : componente[1]}}})
+    collection.update_one({"Requerimientos.Componentes.ID": componente[1]},
+                          {"$pull" : {"Requerimientos.$.Componentes" : {"ID" : componente[1]}}})
 
+def ModificarPuntosDeFuncion(id_proyecto, id_req, id_comp, nuevoPuntoDeFuncion, razon: string):
+    """
+    Función que modifica el punto de función asignado normalmente
+    """
+    proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
+    if not proyecto:
+        print(f"Proyecto con id {id_proyecto} no encontrado")
+        return
+
+    # Buscar el requerimiento específico
+    requerimientos = proyecto.get("Requerimientos", [])
+    requerimiento = None
+    for req in requerimientos:
+        if req["ID"] == id_req:
+            requerimiento = req
+            break
+
+    if not requerimiento:
+        print(f"Requerimiento con id {id_req} no encontrado en el proyecto")
+        return
+    
+    collection.update_one({"Requerimientos.Componentes.ID": id_comp},
+                          {"$set" : {"Requerimientos.$.Componentes.$[id].PF_own" : nuevoPuntoDeFuncion, "Requerimientos.$.Componentes.$[id].Razon" : razon}}, 
+                          array_filters=[{"id.ID" : id_comp}])
 
 def ObtenerRequerimientos(id_proyecto) ->list :
     """
@@ -190,10 +216,10 @@ def ObtenerRequerimientos(id_proyecto) ->list :
     lista_componentes = []
 
     for req in requerimientos:
-        lista_de_requerimientos.append((req["ID"], req["Descripción"], req["Asignado"], req["Estimado"]))
+        lista_de_requerimientos.append([req["ID"], req["Descripción"], req["Asignado"], req["Estimado"]])
         componentes = req.get("Componentes", [])
         for com in componentes:
-            lista_componentes.append((com["IDReq"],com["ID"], com["Descripcion"], com["Tipo"], com["Atributos"], com["Complejidad"], com["PF"]))
+            lista_componentes.append([com["IDReq"],com["ID"], com["Descripcion"], com["Tipo"], com["Atributos"], com["Complejidad"], com["PF"], com["PF_own"], com["Razon"]])
 
 
     return lista_de_requerimientos, lista_componentes

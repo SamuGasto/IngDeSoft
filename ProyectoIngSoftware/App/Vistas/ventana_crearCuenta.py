@@ -133,8 +133,19 @@ class Crear_cuenta(ctk.CTk):
                                          height=10, 
                                          width=10,
                                         command=self.peak)
-        self.passw_peak1.place(relx=0.415, rely=0.645)
+        self.passw_peak1.place(relx=0.282, rely=0.646)
 
+        Crear_btn = ctk.CTkButton(self, 
+                                  width=70, 
+                                  height=30,
+                                  text="Volver",
+                                  text_color = style.BotonNormal.text_color,
+                                  fg_color = style.BotonNormal.fg_color,
+                                  font = style.BotonNormal.font,
+                                  corner_radius = style.BotonNormal.corner_radius,
+                                  hover_color = style.BotonNormal.hover_color,
+                                  command=self.Volver)
+        Crear_btn.place(relx=0.55, rely=0.645)
 
         Crear_btn = ctk.CTkButton(self, 
                                   width=100, 
@@ -146,7 +157,7 @@ class Crear_cuenta(ctk.CTk):
                                   corner_radius = style.BotonGrande.corner_radius,
                                   hover_color = style.BotonGrande.hover_color,
                                   command=self.getAccountInfo)
-        Crear_btn.place(relx=0.6, rely=0.87)
+        Crear_btn.place(relx=0.59, rely=0.64)
 
         self.error = ctk.CTkLabel(self, text="Las contraseñas no coinciden.",
                                   text_color = style.Texto.text_color,
@@ -155,6 +166,9 @@ class Crear_cuenta(ctk.CTk):
         self.error.place(relx=0.15, rely=0.85)
         self.error.place_forget()
         
+    def Volver(self):
+        self.destroy()
+        inicio.Welcome()
 
     def getAccountInfo(self):
         if self.passw_entry.get()=="" or self.passw2_entry.get()=="" or self.email_entry.get()=="" or self.user_name_entry.get()=="":

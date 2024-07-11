@@ -1,8 +1,9 @@
 #################################v2
 from textwrap import fill
+import tkinter
 from xml.dom import HierarchyRequestErr
 import customtkinter as ctk
-from tkinter import ttk, Toplevel, StringVar, messagebox
+from tkinter import Tk, ttk, Toplevel, StringVar, messagebox
 import Clases.Componentes.Estilos as style
 import BaseDeDatos.ReqCompQuery as Req
 #creamos la clase ventana para el jefe de proyecto
@@ -39,7 +40,15 @@ class Dev(ctk.CTkToplevel):
         for comp in self.lista_componentes:
             for fila in self.filasReq:
                 if (comp[0] == fila["ID"]):
-                    self.filasComponentes.append({"IDReq": comp[0],"ID": comp[1],"Descripción": comp[2],"Tipo":comp[3], "Atributos": comp[4], "Complejidad": comp[5], "Puntos de Función": comp[6]})
+                    self.filasComponentes.append({"IDReq": comp[0],
+                                                  "ID": comp[1],
+                                                  "Descripción": comp[2],
+                                                  "Tipo":comp[3], 
+                                                  "Atributos": comp[4], 
+                                                  "Complejidad": comp[5], 
+                                                  "Puntos de Función": comp[6], 
+                                                  "Puntos de Función Personalizados" : comp[7],
+                                                  "Razon": comp[8]})
         #Listamos las tareas asignadas al usuario (IMPLEMENTAR)
         self.filasTareas = [{"ID": "TAR-001", "Descripción": "Descripción Tarea 1", "Estado": "Pendiente"},
                             {"ID": "TAR-002", "Descripción": "Descripción Tarea 2", "Estado": "Realizada"}]
@@ -125,19 +134,28 @@ class Dev(ctk.CTkToplevel):
         # Configurar la alineación de las columnas de datos
         for col in columns:
             self.tree.column(col, anchor="center", )  # Centrar los valores de las columnas
-        
+
         # Frame para contener los botones
         button_frame = ctk.CTkFrame(parent, fg_color=style.Colores.backgroundVariant2)
         button_frame.pack(pady=10)
 
         #BOTONES
-        update_db_button = ctk.CTkButton(button_frame, text="Regla de Estimación",
+        detalles_button = ctk.CTkButton(button_frame, text="Detalles",
                                                 text_color = style.BotonNormal.text_color,
                                                 fg_color = style.BotonNormal.fg_color,
                                                 font = style.BotonNormal.font,
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color,
-                                                command=None)
+                                                command=self.MostrarDetalles)
+        detalles_button.grid(row=0, column=1, padx=5)
+
+        update_db_button = ctk.CTkButton(button_frame, text="Ajustar Puntos de Función",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=self.AbrirVentanaModificarReglaEstimacion)
         update_db_button.grid(row=0, column=2, padx=5)
 
         cerrar = ctk.CTkButton(button_frame, text="Cerrar",
@@ -147,9 +165,44 @@ class Dev(ctk.CTkToplevel):
                                                 corner_radius = style.BotonNormal.corner_radius,
                                                 hover_color = style.BotonNormal.hover_color,
                                                 command=self.close_window)
-        cerrar.grid(row=0, column=4, padx=5)
+        cerrar.grid(row=0, column=3, padx=5)
+
         return self.inicializar_componentes()
     
+    def MostrarDetalles(self):
+        row = self.tree.item(self.tree.focus(), "values")
+        if (not row):
+            messagebox.showinfo("Info","No hay detalles que mostrar")
+            return
+
+        originalComp = ""
+        for comp in self.lista_componentes:
+            if (comp[1] == row[1]):
+                originalComp = comp
+                break
+
+        popup = ctk.CTkToplevel()
+        popup.title("Detalles")
+
+        # Agregar contenido a la ventana emergente (ejemplo)
+        titulo = ctk.CTkLabel(popup, text=f"Razón de modificación \n de los puntos de función:", font=style.Titulo.font)
+        titulo.pack(padx=20, pady=20)
+
+        label = ctk.CTkLabel(popup,
+                             text=f"{originalComp[8]}",
+                             font=style.Texto.font)
+        label.pack(padx=20,pady=20)
+
+        cerrar = ctk.CTkButton(popup, text="Cerrar",
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color,
+                                                command=lambda: popup.destroy())
+        cerrar.pack(padx=20,pady=20)
+
+
     def inicializar_requerimientos(self):#Agregar valores por defecto para demo funcionalidad REQUERIMIENTOS
         for req in self.filasReq:
             self.tree2.insert('', 'end', values=(req["ID"], req["Descripción"], req["Estado"], "Ver Componentes"))
@@ -160,7 +213,23 @@ class Dev(ctk.CTkToplevel):
 
     def inicializar_componentes(self):#Carga los valores a la tabla componente.
         for comp in self.filasComponentes:
-            self.tree.insert('','end',values=(comp["IDReq"],comp["ID"], comp["Descripción"], comp["Tipo"], comp["Atributos"],comp["Complejidad"],comp["Puntos de Función"]))
+            if (comp["Puntos de Función Personalizados"] == ""):
+                self.tree.insert('','end',values=(comp["IDReq"],
+                                              comp["ID"], 
+                                              comp["Descripción"], 
+                                              comp["Tipo"], 
+                                              comp["Atributos"],
+                                              comp["Complejidad"],
+                                              comp["Puntos de Función"]))
+            else:
+                self.tree.insert('','end',values=(comp["IDReq"],
+                                              comp["ID"], 
+                                              comp["Descripción"], 
+                                              comp["Tipo"], 
+                                              comp["Atributos"],
+                                              comp["Complejidad"],
+                                              (str(comp["Puntos de Función Personalizados"])+"*")))
+            
             self.next_row_id += 1
 
     #TABLA REQUERIMIENTOS----------------------------------------------------------------------------------
@@ -227,6 +296,110 @@ class Dev(ctk.CTkToplevel):
         if region == "cell" and column == "#4":  # Verificar si se hizo clic en la columna "Componentes"
             item = self.tree2.identify('item', event.x, event.y)
             self.ver_componentes(item)
+
+    def AbrirVentanaModificarReglaEstimacion(self):
+        row = self.tree.item(self.tree.focus(), "values")
+        if (not row):
+            return
+        
+        originalComp = ""
+        for comp in self.lista_componentes:
+            if (comp[1] == row[1]):
+                originalComp = comp
+                break
+        popup = ctk.CTkToplevel()
+        popup.title("Puntos de Función")
+
+        # Agregar contenido a la ventana emergente (ejemplo)
+        titulo = ctk.CTkLabel(popup, text=f"Puntos de función de:\n{row[1]}", font=style.Titulo.font)
+        titulo.pack(padx=20, pady=20)
+
+        label = ctk.CTkLabel(popup,
+                             text=f"Valor original:\n{originalComp[6]}",
+                             font=style.Texto.font)
+        label.pack(padx=20,pady=20)
+
+        label = ctk.CTkLabel(popup,
+                             text=f"Valor anterior:\n{row[6].split("*")[0]}",
+                             font=style.Texto.font)
+        label.pack(padx=20,pady=20)
+
+
+        label = ctk.CTkLabel(popup,
+                             text=f"Nuevos puntos de función:",
+                             font=style.Texto.font)
+        label.pack()
+        nuevosPuntos = ctk.CTkEntry(popup,
+                             placeholder_text=row[6].split("*")[0],
+                             font=style.Texto.font)
+        nuevosPuntos.pack(padx=20,pady=20)
+
+        label = ctk.CTkLabel(popup,
+                             text=f"Razón:",
+                             font=style.Texto.font)
+        label.pack()
+        razon = tkinter.Text(popup, 
+                             height=5, 
+                             width=25, 
+                             wrap="word", 
+                             font=style.Texto.font, 
+                             bg=style.EntryNormal.fg_color, 
+                             fg=style.EntryNormal.text_color,
+                             highlightcolor=style.EntryNormal.border_color,
+                             highlightbackground=style.EntryNormal.border_color,
+                             insertbackground="white",
+                             padx=10, 
+                             pady=10)
+        razon.pack(padx=20,pady=20)
+
+        def Validar():
+            try:
+                int(nuevosPuntos.get())
+            except:
+                messagebox.showerror("Error", "Debes ingresar un nuevo valor.")
+                return
+
+            try:
+                razon.get("1.0", tkinter.END)
+            except:
+                messagebox.showerror("Error", "Debes ingresar una razón válida.")
+                return
+            
+            if (razon.get("1.0", tkinter.END).strip() == ""):
+                messagebox.showerror("Error", "Debes ingresar una razón válida.")
+                return
+
+            Req.ModificarPuntosDeFuncion(self.id_proyecto,
+                                         row[0],
+                                         row[1],
+                                         int(nuevosPuntos.get()),
+                                         razon.get("1.0", tkinter.END).strip())
+            self.tree.item(self.tree.focus(), values=(row[0],
+                                                      row[1],
+                                                      row[2],
+                                                      row[3],
+                                                      row[4],
+                                                      row[5],
+                                                      (nuevosPuntos.get() + "*")))
+            for i in range(0,len(self.lista_componentes)):
+                if (self.lista_componentes[i][1] == row[1]):
+                    self.lista_componentes[i][8] = razon.get("1.0", tkinter.END).strip()
+                    break
+            popup.destroy()
+
+        agregarComponente_button = ctk.CTkButton(popup, 
+                                                text="Guardar", 
+                                                text_color = style.BotonNormal.text_color,
+                                                fg_color = style.BotonNormal.fg_color,
+                                                font = style.BotonNormal.font,
+                                                corner_radius = style.BotonNormal.corner_radius,
+                                                hover_color = style.BotonNormal.hover_color, 
+                                                command=lambda: Validar())
+        agregarComponente_button.pack(padx=5, pady=5)
+
+        
+        
+
 
     def ver_componentes(self, item):
         # Crear una ventana emergente CTkToplevel
@@ -300,9 +473,24 @@ class Dev(ctk.CTkToplevel):
         for comp in self.lista_componentes:
             if (comp[0] == self.tree2.item(item, 'values')[0]):
                compRelacionados.append(comp)
-        print(compRelacionados)
+
         for comp in compRelacionados:
-            self.treeC.insert('','end',values=(comp[0],comp[1], comp[2], comp[3], comp[4],comp[5],comp[6]))
+            if (comp[7] == ""):
+                self.treeC.insert('','end',values=(comp[0],
+                                              comp[1], 
+                                              comp[2], 
+                                              comp[3], 
+                                              comp[4],
+                                              comp[5],
+                                              comp[6]))
+            else:
+                self.treeC.insert('','end',values=(comp[0],
+                                              comp[1], 
+                                              comp[2], 
+                                              comp[3], 
+                                              comp[4],
+                                              comp[5],
+                                              (str(comp[7])+"*")))
         
 
     
@@ -661,13 +849,13 @@ class Dev(ctk.CTkToplevel):
                                                 command=lambda: self.eliminar_componente_seleccionado(id_req, id_combo.get(), eliminar_window))
         eliminar_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
 
-    def eliminar_componente_seleccionado(self,id_req, id_seleccionado, window):#ELIMINA UN COMPONENTE DE LA TABLA
+    def eliminar_componente_seleccionado(self,id_req, id_seleccionado, window):#ELIMINA UN COMPONENTE DE LA TABLA´
+        Req.EliminarComponente(self.id_proyecto,id_req, values)
         # Buscar el item por ID
         for item in self.tree.get_children():
             values = self.tree.item(item, 'values')
             print(values)
             if values[1] == id_seleccionado:
-                Req.EliminarComponente(self.id_proyecto,id_req, values)
                 self.tree.delete(item)  # Eliminar la fila correspondiente
                 window.destroy()
                 break
@@ -676,7 +864,6 @@ class Dev(ctk.CTkToplevel):
             values = self.treeC.item(item, 'values')
             print(values)
             if values[1] == id_seleccionado:
-                Req.EliminarComponente(self.id_proyecto,id_req, values)
                 self.treeC.delete(item)  # Eliminar la fila correspondiente
                 messagebox.showinfo("Éxito", f"Se ha eliminado el componente {id_seleccionado} correctamente.")
                 window.destroy()
