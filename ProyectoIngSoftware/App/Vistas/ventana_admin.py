@@ -5,7 +5,7 @@ import customtkinter as ctk
 from PIL import Image
 import tkinter as tk
 from tkinter import ttk, font
-
+import BaseDeDatos.SueldosQuery as sueldos
 from numpy import size
 from BaseDeDatos.MainMongoDB import db
 import textwrap
@@ -18,7 +18,7 @@ from bson.objectid import ObjectId
 
 #creamos la clase ventana para el jefe de proyecto
 class JP(ctk.CTk):
-    def __init__(self, parent, user, proyecto, id_proyecto):
+    def __init__(self, parent, user, proyecto, id_proyecto, miembros):
         super().__init__()
         
         self.parent = parent 
@@ -26,6 +26,7 @@ class JP(ctk.CTk):
         self.proyecto = proyecto
         self.id_proyecto = id_proyecto
         self.ajustecomplejidad = db["DefaultValues"] #toma la colección de ajustes de complejidad por defecto
+        self.miembros = miembros
 
         self.geometry("1280x560")
         self.title("PaltaEstimateApp")
@@ -69,7 +70,7 @@ class JP(ctk.CTk):
         #Agregamos Tabs
         self.tab1 = tabview.add("Tabla PF")  
         self.tab5 = tabview.add("Complejidad")  
-        self.tab3 = tabview.add("Métricas")  
+        self.tabSueldos = tabview.add("Sueldos")  
         
         ##Objetos de tab1
 
@@ -396,7 +397,6 @@ class JP(ctk.CTk):
                                                 command=self.close_window)
         cerrar.pack(side=ctk.LEFT, anchor=ctk.NW, pady=20, padx=10)
 
-        print("tab1")
         self.refrescarTablaPF()
 
 
@@ -405,7 +405,6 @@ class JP(ctk.CTk):
         ##-------------------------------------------------------------Objetos de tab5
 
         #------------FRAMES
-        
         frame1_1 = ctk.CTkFrame(master=self.tab5,
                                 border_color=style.Colores.backgroundVariant,
                                 bg_color=style.Colores.backgroundVariant,
@@ -416,16 +415,12 @@ class JP(ctk.CTk):
                                 bg_color=style.Colores.backgroundVariant,
                                 fg_color=style.Colores.backgroundVariant)
         frame2_2.pack()
-
         #------------STYLES
-
         style1 = ttk.Style()
         style1.configure("Treeview.Heading", font=style.Texto.font)
         style1.configure("Treeview", font=style.Texto.font, rowheight=80)
         small_font = font.Font(size=27)
-
         #------------LISTBOX
-
         self.selected_element = str()
         self.listbox = tk.Listbox(frame1_1, 
                              listvariable=self.selected_element, 
@@ -437,28 +432,19 @@ class JP(ctk.CTk):
 
         self.listbox.bind('<<ListboxSelect>>', self.actualizar_tabla) #al seleccionar un elemento de la lista, actualiza la tabla correspondiente
         self.listbox.pack(padx=10, pady=10)
-
         #------------TABLA
-
         #frame del widget de texto
         self.tabla_frame = ctk.CTkFrame(frame2_2, fg_color=style.Colores.background, corner_radius=10)
         self.tabla_frame.pack(side=ctk.LEFT)
-
-
         # Crear un Text con ajuste automático de línea
         self.text = tk.Text(self.tabla_frame, wrap='word', width=90, height=40)
         self.text.pack(side=ctk.LEFT)
-
         # Insertar texto
         self.text.config(state="disabled")
         self.text.config(state="normal")
         texto = "Este es un ejemplo de un Text en Tkinter con ajuste automático de línea. El texto se ajustará al ancho del widget."
         self.text.insert('1.0', texto)
         self.text.config(state="disabled")
-        
-
-        #self.grado_label = ctk.CTkLabel(frame1_1, text="Grado actual registrado: {a}".format(a=self.currentGrado))
-        #self.grado_label.pack(pady=2)
         
         vcmd2 = (self.register(self.callback2))
         self.grado_ent = ctk.CTkEntry(frame1_1, 
@@ -476,23 +462,123 @@ class JP(ctk.CTk):
         enviar_button.pack(pady=(5,0))
         
         #------------EXTRAS
-
-        #self.cargar_datos_iniciales()
         
         
         ##Objetos de tab3
+        texto_primero = ctk.CTkLabel(self.tabSueldos,
+                     text="Tabla de sueldos del equipo",
+                     text_color = style.Titulo.text_color,
+                     font = style.Subtitulo.font
+                     ).pack(pady=10)
+        texto_segundo = ctk.CTkLabel(self.tabSueldos,
+                     text="Agregar un sueldo nuevo o editar uno existente",
+                     text_color = style.Titulo.text_color,
+                     font = style.Subtitulo.font
+                     ).pack(pady=5, anchor="w")
+        self.new_sueldo_frame = ctk.CTkFrame(self.tabSueldos, fg_color="transparent")
+        self.new_sueldo_frame.pack(fill="x", expand=True)
+        text = ctk.CTkLabel(self.new_sueldo_frame,
+                     text="Miembro: ",
+                     text_color = style.Texto.text_color,
+                     font = style.Texto.font
+                     ).pack(side=ctk.LEFT, pady=5)
+        self.miembros_box = ctk.CTkComboBox(self.new_sueldo_frame, width=200,
+                                  values=[miembro for miembro in self.miembros])
+        self.miembros_box.pack(side=ctk.LEFT, pady=5, padx=10)
 
+        salary = ctk.CTkLabel(self.new_sueldo_frame,
+                     text="Sueldo: ",
+                     text_color = style.Texto.text_color,
+                     font = style.Texto.font
+                     ).pack(side=ctk.LEFT, pady=5, padx=10)
+        
+        self.salary_entry = ctk.CTkEntry(self.new_sueldo_frame,
+                                    placeholder_text="Ingresa un monto (CLP)...", #Hay que transformarlo a UF para los cálculos
+                                    placeholder_text_color="white",
+                                    width=350, 
+                                    height=35, 
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius)
+        self.salary_entry.pack(side=ctk.LEFT, pady=5, padx=10)
+
+        agregar_boton = ctk.CTkButton(self.new_sueldo_frame,
+                                      text="Agregar sueldo",
+                                      text_color = style.BotonNormal.text_color,
+                                      fg_color = style.BotonNormal.fg_color,
+                                      font = style.BotonNormal.font,
+                                      corner_radius = style.BotonNormal.corner_radius,
+                                      hover_color = style.BotonNormal.hover_color,
+                                      command=lambda: self.AgregarSueldo())
+        agregar_boton.pack(side=ctk.LEFT, pady=5, padx=10)
+
+
+        self.Contenido = ctk.CTkScrollableFrame(self.tabSueldos,
+                                                fg_color=style.Colores.backgroundVariant,
+                                                border_width=3,
+                                                border_color=style.Colores.Gray[4])
+        self.Contenido.pack(fill="both", expand=True)
+        self.sueldos_proyecto = sueldos.ObtenerSueldos(self.id_proyecto)
+        print(self.sueldos_proyecto)
+        if self.sueldos_proyecto == []:
+            texto = ctk.CTkLabel(self.Contenido, text="El proyecto aún no posee sueldos asignados",
+                             text_color = style.Titulo.text_color,
+                             font = style.Titulo.font).pack(pady=10)
+        elif self.sueldos_proyecto == None:
+            texto = ctk.CTkLabel(self.Contenido, text="El proyecto aún no posee tabla de sueldos",
+                             text_color = style.Titulo.text_color,
+                             font = style.Titulo.font).pack(pady=10)
+        else:
+            for sueldo in self.sueldos_proyecto:
+                    texto = ctk.CTkLabel(self.Contenido, text=f"Miembro: {sueldo[0]}.    Sueldo: ${sueldo[1]}",
+                                text_color = style.Texto.text_color,
+                                font = style.Texto.font).pack(padx=10, pady=5, anchor=ctk.W)
+    
+    def AgregarSueldo(self):#Función que realiza la query para agregar el sueldo, y actualiza en pantalla
+        sueldos.AgregarSueldo(self.id_proyecto, self.miembros_box.get(), self.salary_entry.get())
+        for widget in self.Contenido.winfo_children():
+            widget.destroy()
+        self.sueldos_proyecto = sueldos.ObtenerSueldos(self.id_proyecto)
+        for sueldo in self.sueldos_proyecto:
+                    texto = ctk.CTkLabel(self.Contenido, text=f"Miembro: {sueldo[0]}.    Sueldo: ${sueldo[1]}",
+                                text_color = style.Texto.text_color,
+                                font = style.Texto.font).pack(padx=10, pady=5, anchor=ctk.W)
+                    
+    def mandar_grado(self): #Manda la query de que se selecciona un grado para la tabla
+        valor = self.listbox.get(self.listbox.curselection()[0])
+        grado = self.grado_ent.get()
+
+        proj = db["Projects"].find_one({'_id':self.id_proyecto})
+        vac = proj["TablaVAC"].copy()
+        vac[valor] = int(grado)
+
+
+        nuevos_valores = {"$set": 
+                          {"TablaVAC": vac}}
+        
+        resultado = db["Projects"].update_one({'_id':self.id_proyecto}, nuevos_valores) #actualiza los valores del documento
+        
+        if resultado.matched_count > 0:
+            print("Actualizacion exitosa.\nTabla: {valor}\nGrado: {grado}")
+            messagebox.showinfo("Exito", "¡Actualizacion exitosa!")
+        else:
+            print("Actualizacion erronea")
+            messagebox.showerror("Fallo", "Actualizacion errónea.")
+
+    def callback2(self, P): #para el entry de grado en ajustes de complejidad
+        if P in ["0","1","2","3","4","5"] or P == "":
+            return True
+        else:
+            return False
+        
     def callback(self, P): #para los entrys de la tabla de PF
         if str.isdigit(P) or P == "":
             return True
         else:
             return False
         
-    def callback2(self, P): #para el entry de grado en ajustes de complejidad
-        if P in ["0","1","2","3","4","5"] or P == "":
-            return True
-        else:
-            return False
         
     def getLista(self):
 
@@ -622,27 +708,6 @@ class JP(ctk.CTk):
 
         #db.actualizarTablaPF(e)
 
-    def mandar_grado(self): #Manda la query de que se selecciona un grado para la tabla
-        valor = self.listbox.get(self.listbox.curselection()[0])
-        grado = self.grado_ent.get()
-
-        proj = db["Projects"].find_one({'_id':self.id_proyecto})
-        vac = proj["TablaVAC"].copy()
-        vac[valor] = int(grado)
-
-
-        nuevos_valores = {"$set": 
-                          {"TablaVAC": vac}}
-        
-        resultado = db["Projects"].update_one({'_id':self.id_proyecto}, nuevos_valores) #actualiza los valores del documento
-        
-        if resultado.matched_count > 0:
-            print("Actualizacion exitosa.\nTabla: {valor}\nGrado: {grado}")
-            messagebox.showinfo("Exito", "¡Actualizacion exitosa!")
-        else:
-            print("Actualizacion erronea")
-            messagebox.showerror("Fallo", "Actualizacion errónea.")
-        
     def actualizar_tabla(self, event):
         tabla = event.widget.get(event.widget.curselection()[0])
         print(event.widget.get(event.widget.curselection()[0]))

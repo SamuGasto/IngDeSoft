@@ -12,7 +12,7 @@ import BaseDeDatos.ProjectsQuery as Proj
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.Invitations as INV
 import BaseDeDatos.ReqCompQuery as Req
-import Vistas.ventana_desarrollador_copy as DEV
+import Vistas.ventana_desarrollador as DEV
 import Vistas.ventana_admin as ADMIN
 import BaseDeDatos.SueldosQuery as sueldos
 import Vistas.ventana_welcome as inicio
@@ -802,7 +802,7 @@ class JP(ctk.CTk):
         estimar.pack(pady=10)
 
 
-    def Estimar_Proyecto(self):
+    def Estimar_Proyecto(self):#Función que realiza la estimación del proyecto, generando un PDF
         # Puntos de función totales: suma_de_pf_componentes
         PF_Total = Req.CalcularpfTotal(self.object_id)
 

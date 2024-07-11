@@ -143,10 +143,7 @@ class Welcome(ctk.CTk):
                                     command=self.IniciarSesion)
         iniciar_btn.place(relx=0.15, rely=0.8)
 
-        
-        
-
-    def peak(self):
+    def peak(self):#Funcion que muestra la contraseña escrita
         if self.passw_entry.cget("show") == "*":
             self.passw_entry.configure(show="")
             self.passw_peak.configure(image=self.ojo_abierto)
@@ -164,10 +161,8 @@ class Welcome(ctk.CTk):
             JEFE.JP(self.user_email)
         else:
             self.mostrar_ventana_emergente()
-    
-    
-            
-    def cambiar_ventana(self) -> None:
+          
+    def cambiar_ventana(self) -> None:#Funcion que cambia a la ventana de crear cuenta
         self.destroy()
         Crearc.Crear_cuenta()
 
@@ -186,7 +181,3 @@ class Welcome(ctk.CTk):
         ventana_emergente.title("Error")
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
-        
-#borrar para uso final
-# app = Welcome()
-# app.mainloop()
