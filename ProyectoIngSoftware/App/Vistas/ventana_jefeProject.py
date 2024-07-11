@@ -908,6 +908,7 @@ class JP(ctk.CTk):
         centrarVentana(ventana_Final, 400, 200)
         ventana_Final.title("Invitación a Proyecto")
         ventana_Final.attributes('-topmost' , 1)
+        ventana_Final.after(0, lambda:ventana_Final.state('zoomed'))
 
         mensaje = final
         etiqueta = ctk.CTkLabel(ventana_Final,
