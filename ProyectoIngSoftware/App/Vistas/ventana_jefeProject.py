@@ -617,6 +617,15 @@ class JP(ctk.CTk):
         participantes_emails = [entry.get() for entry in self.participantes_entries]
         participantes_roles = [rol.get() for rol in self.participantes_rol]
         self.Nombre_Proyecto = self.nombre_entry.get()
+        if self.Nombre_Proyecto == "":
+            messagebox.showerror("Error","Debes asignar un nombre al proyecto", parent=self.window)
+            return
+        for correo in participantes_emails:
+            user = User.BuscarUsuario(correo)
+            if user == False:
+                messagebox.showerror("Error",f"El usuario con correo '{correo}' no existe.", parent=self.window)
+                return
+        
         miembros = [(miembro, rol) for miembro, rol in zip(participantes_emails, participantes_roles)]
 
         Proj.CrearNuevoProyecto(self.Nombre_Proyecto, miembros, self.user_email)

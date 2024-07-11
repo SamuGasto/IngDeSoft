@@ -200,13 +200,14 @@ class Crear_cuenta(ctk.CTk):
                         self.RoleSelected)
         
         success = self.mostrar_ventana_emergente("La cuenta se ha creado con éxito.\nAhora puedes acceder a tu cuenta.")
+        success.title("Éxito")
         self.wait_window(success)
         self.destroy()
         inicio.Welcome()
 
     def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)
-        ventana_emergente.configure(fg_color="white")
+        ventana_emergente.configure(fg_color=style.Colores.background)
         etiqueta = ctk.CTkLabel(ventana_emergente, 
                                 text_color = style.Texto.text_color,
                                 font = style.Texto.font,
