@@ -5,6 +5,7 @@ from PIL import Image
 import os
 from functools import partial
 from bson.objectid import ObjectId
+from fpdf import FPDF
 from regex import D
 
 import BaseDeDatos.UsersQuery as User
@@ -918,6 +919,62 @@ class JP(ctk.CTk):
                                 anchor="w",  # Alineación a la izquierda
                                 justify="left") # Justificación a la izquierda
         etiqueta.pack(side=ctk.TOP, pady=10, padx=5,anchor=ctk.W)
+
+        final = f"""Estimación del proyecto '{self.proyecto_actual.cget("text")}':
+                                
+                - Puntos de función: {PF_Total} PF.
+                - Puntos de función ajustados: {pfa} PF.
+                - Puntos de función necesarios por mes: {PF_mes} PF.
+
+                - Sueldos:
+
+                - Jornadas totales de trabajo:
+                    ·) Jornadas jefe de proyecto: {jornadas_totales_jefe}.
+                    ·) Jornadas administradores: {jornadas_totales_admin}.
+                    ·) Jornadas desarrolladores: {jornadas_totales_dev}.
+
+                - Productividad esperada por roles del equipo:
+                    ·) Equipo de desarrollo: {pf_jornada_dev} PF por jornada.
+                    ·) Equipo de administradores: {pf_jornada_admin} PF por jornada.
+                    ·) Jefe de proyecto: {pf_jornada_jefe} PF por jornada.
+
+                - Duración: {duracion} meses.
+
+Presupuesto total: ${formateado} (CLP)."""
+
+        self.GenerarPDF(final, sueldos_proyecto)
+
+
+    def GenerarPDF(self,mensaje, sueldos):
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font(family="Arial",size=11)
+
+        mensajeSplit = mensaje.split("\n")
+
+        i = 0
+        other_i = 0
+        for j in range(0, 7):
+            pdf.cell(200,10,mensajeSplit[j],
+                     ln=i,align="L")
+            i += 1
+            other_i += 1
+
+        for j in sueldos:
+            pdf.cell(200,10,"                    "+str(j),
+                     ln=i,align="L")
+            i += 1
+        
+        for j in range(other_i,len(mensajeSplit)):
+            if (j == len(mensajeSplit)-1):
+                pdf.cell(200,10,mensajeSplit[j],
+                     ln=i,align="C")
+            else:
+                pdf.cell(200,10,mensajeSplit[j],
+                         ln=i,align="L")
+            i += 1
+
+        pdf.output(name=f"Estimación Proyecto PRO-{self.proyecto_id}.pdf", dest="F")
 
     def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)

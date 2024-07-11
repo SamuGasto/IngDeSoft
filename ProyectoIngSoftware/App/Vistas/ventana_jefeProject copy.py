@@ -3,6 +3,7 @@ from PIL import Image
 import os
 from functools import partial
 from bson.objectid import ObjectId
+from fpdf import FPDF
 
 import BaseDeDatos.UsersQuery as User
 import BaseDeDatos.ProjectsQuery as Proj
