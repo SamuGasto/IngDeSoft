@@ -490,7 +490,7 @@ class JP(ctk.CTk):
                      font = style.Texto.font
                      ).pack(side=ctk.LEFT, pady=5)
         self.miembros_box = ctk.CTkComboBox(self.new_sueldo_frame, width=200,
-                                  values=[miembro[0] for miembro in self.miembros])
+                                  values=[miembro for miembro in self.miembros])
         self.miembros_box.pack(side=ctk.LEFT, pady=5, padx=10)
 
         salary = ctk.CTkLabel(self.new_sueldo_frame,
@@ -527,26 +527,31 @@ class JP(ctk.CTk):
                                                 border_width=3,
                                                 border_color=style.Colores.Gray[4])
         self.Contenido.pack(fill="both", expand=True)
-        sueldos_proyecto = sueldos.ObtenerSueldos(self.id_proyecto)
-        print(sueldos_proyecto)
-        if sueldos_proyecto == []:
+        self.sueldos_proyecto = sueldos.ObtenerSueldos(self.id_proyecto)
+        print(self.sueldos_proyecto)
+        if self.sueldos_proyecto == []:
             texto = ctk.CTkLabel(self.Contenido, text="El proyecto aún no posee sueldos asignados",
                              text_color = style.Titulo.text_color,
                              font = style.Titulo.font).pack(pady=10)
-        elif sueldos_proyecto == None:
+        elif self.sueldos_proyecto == None:
             texto = ctk.CTkLabel(self.Contenido, text="El proyecto aún no posee tabla de sueldos",
                              text_color = style.Titulo.text_color,
                              font = style.Titulo.font).pack(pady=10)
         else:
-            for sueldo in sueldos_proyecto:
-                    texto = ctk.CTkLabel(self.Contenido, text=f"Miembro: {sueldo[0]}. Sueldo: {sueldo[1]}",
-                                text_color = style.Titulo.text_color,
-                                font = style.Subtitulo.font).pack(padx=10, pady=5, anchor=ctk.W)
+            for sueldo in self.sueldos_proyecto:
+                    texto = ctk.CTkLabel(self.Contenido, text=f"Miembro: {sueldo[0]}.    Sueldo: ${sueldo[1]}",
+                                text_color = style.Texto.text_color,
+                                font = style.Texto.font).pack(padx=10, pady=5, anchor=ctk.W)
     
     def AgregarSueldo(self):
         sueldos.AgregarSueldo(self.id_proyecto, self.miembros_box.get(), self.salary_entry.get())
         for widget in self.Contenido.winfo_children():
             widget.destroy()
+        self.sueldos_proyecto = sueldos.ObtenerSueldos(self.id_proyecto)
+        for sueldo in self.sueldos_proyecto:
+                    texto = ctk.CTkLabel(self.Contenido, text=f"Miembro: {sueldo[0]}.    Sueldo: ${sueldo[1]}",
+                                text_color = style.Texto.text_color,
+                                font = style.Texto.font).pack(padx=10, pady=5, anchor=ctk.W)
 
 
     def callback(self, P):

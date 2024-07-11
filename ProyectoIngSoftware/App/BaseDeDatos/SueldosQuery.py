@@ -33,19 +33,15 @@ def AgregarSueldo(id_proyecto, email_miembro, sueldo):
     Argumentos
     id_proyecto--> ObjectID del proyecto
     email_miembro--> correo del miembro a asignar su sueldo
-    sueldo--> cantidad del sueldo a asignar, en UF
+    sueldo--> cantidad del sueldo a asignar
     """
 
-    """ # Buscar la tabla de sueldos asignada al proyecto
-    sueldo_doc = collection.find_one(ObjectId(id_proyecto))
-    if not sueldo_doc:
-        print(f"Colección de sueldos con id {id_proyecto} no encontrada")
-        return""" #####IGNORAR
     try:
         db["Sueldos"].update_one(
             {'id_proyecto': id_proyecto},
             {'$push': {"Sueldos": (email_miembro, int(sueldo))}}
         )
+        print("Sueldo agregado exitosamente")
     except Exception as e:
         print(e)
 
@@ -55,7 +51,7 @@ def ObtenerSueldos(id_proyecto):
     Con "id_proyecto" se busca la tabla de sueldos asociada.
     """
     # Buscamos la tabla de sueldos asociada al proyecto
-    sueldos_proyecto = collection.find_one(ObjectId(id_proyecto))
+    sueldos_proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
     if not sueldos_proyecto:
         print("No se encontró la tabla de sueldos o el proyecto no tiene una tabla asignada")
         return

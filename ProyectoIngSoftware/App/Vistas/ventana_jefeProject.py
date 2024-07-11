@@ -3,6 +3,7 @@ from PIL import Image
 import os
 from functools import partial
 from bson.objectid import ObjectId
+from regex import D
 
 import BaseDeDatos.UsersQuery as User
 import BaseDeDatos.ProjectsQuery as Proj
@@ -11,6 +12,7 @@ import BaseDeDatos.Invitations as INV
 import BaseDeDatos.ReqCompQuery as Req
 import Vistas.ventana_desarrollador_copy as DEV
 import Vistas.ventana_admin as ADMIN
+import BaseDeDatos.SueldosQuery as sueldos
 import Vistas.ventana_welcome as inicio
 
 from Vistas.util import centrarVentana
@@ -453,7 +455,11 @@ class JP(ctk.CTk):
         self.objectId_Proy_invitado = ObjectId(self.objectId_Proy_invitado)
         self.Nombre_Proyecto_Invitado = db['Projects'].find_one({'owner': proj['owner_proyecto'], 'id': proj['proyecto_id']})['nombre']
         self.data_proyecto =  Proj.ObtenerDatosProyecto(proj["owner_proyecto"], Proj.ObtenerIdProyecto(proj["owner_proyecto"], self.Nombre_Proyecto_Invitado))
-        self.miembros_proyecto = self.data_proyecto[1]
+        self.miembros_proyecto = []
+        for name in self.data_proyecto[1]:
+            self.miembros_proyecto.append(name[0])
+        self.miembros_proyecto.append(proj["owner_proyecto"])
+        print(self.miembros_proyecto)
         if proj['rol'] == "Administrador":
             self.iconify()
             self.nueva = ADMIN.JP(self, self.user_email, self.Nombre_Proyecto_Invitado, self.objectId_Proy_invitado, self.miembros_proyecto)
@@ -632,9 +638,9 @@ class JP(ctk.CTk):
                             border_width=3,
                             border_color=style.Colores.Gray[4])
         #Paso 1: Listar los integrantes del proyecto en pantalla, junto a su rol
-        data = Proj.ObtenerDatosProyecto(self.user_email, Proj.ObtenerIdProyecto(self.user_email, texto))
+        self.data_cambiar = Proj.ObtenerDatosProyecto(self.user_email, Proj.ObtenerIdProyecto(self.user_email, texto))
         self.ID_activo = Proj.ObtenerIdProyecto(self.user_email, texto)
-        self.miembros = data[1]
+        self.miembros = self.data_cambiar[1]
         for miembro in self.miembros:
             self.miembro_label = ctk.CTkLabel(self.tab1, text="- Correo: " + miembro[0] + ". Rol: " + miembro[1], 
                                               text_color = style.Texto.text_color,
@@ -673,9 +679,6 @@ class JP(ctk.CTk):
             for widget in self.reques_miembros.winfo_children():
                 widget.destroy()
 
-
-            print(self.reques_proyecto_actual)
-
             for req in self.reques_proyecto_actual:
                 if req[2] is None:
                     miembro_asignado = "Miembro no asignado"
@@ -698,8 +701,216 @@ class JP(ctk.CTk):
                                                 text_color = style.Texto.text_color,
                                                 font = style.Texto.font)
                 self.req_member.pack(side=ctk.TOP, anchor=ctk.NW, pady=5)
-        #Paso 3: Visualizar las métricas del proyecto.
+        #Paso 3: Visualizar la estimación del proyecto.
+        for widget in self.principal.winfo_children():
+                widget.destroy()
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="Para generar la estimación, llene los siguientes campos:", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Subtitulo.font)
+        cuerpo.pack(padx=10, pady=7)
 
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="----- Jornadas por mes de Jefe de proyecto -----", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Texto.font)
+        cuerpo.pack(padx=10, pady=10)
+
+        self.jornadas_JP = ctk.CTkEntry(self.principal,
+                                    placeholder_text="Número...",
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    width=75)
+        self.jornadas_JP.pack(padx=200, pady=5)
+
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="----- Jornadas por mes de Administradores -----", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Texto.font)
+        cuerpo.pack(padx=10, pady=10)
+
+        self.jornadas_ADMIN = ctk.CTkEntry(self.principal,
+                                    placeholder_text="Número...",
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    width=75)
+        self.jornadas_ADMIN.pack(padx=200, pady=5)
+
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="----- Jornadas por mes de Desarrolladores -----", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Texto.font)
+        cuerpo.pack(padx=10, pady=10)
+
+        self.jornadas_DEV = ctk.CTkEntry(self.principal,
+                                    placeholder_text="Número...",
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    width=75)
+        self.jornadas_DEV.pack(padx=200, pady=5)
+
+        cuerpo = ctk.CTkLabel(self.principal,
+                                        text="----- Duración del proyecto (en meses) -----", 
+                                        text_color = style.Texto.text_color,
+                                        font = style.Texto.font)
+        cuerpo.pack(padx=10, pady=10)
+
+        self.duracion = ctk.CTkEntry(self.principal,
+                                    placeholder_text="MESES...",
+                                    fg_color = style.EntryNormal.fg_color,
+                                    border_color = style.EntryNormal.border_color,
+                                    text_color = style.EntryNormal.text_color,
+                                    font = style.EntryNormal.font,
+                                    corner_radius = style.EntryNormal.corner_radius,
+                                    width=75)
+        self.duracion.pack(padx=200, pady=5)
+
+        estimar = ctk.CTkButton(self.principal,
+                                width=25, 
+                                height=25, 
+                                text="Estimar Proyecto",
+                                text_color = style.BotonGrande.text_color,
+                                fg_color = style.BotonGrande.fg_color,
+                                font = style.BotonGrande.font,
+                                corner_radius = style.BotonGrande.corner_radius,
+                                hover_color = style.BotonGrande.hover_color,
+                                command = self.Estimar_Proyecto)
+        estimar.pack(pady=10)
+
+
+    def Estimar_Proyecto(self):
+        # Puntos de función totales: suma_de_pf_componentes
+        PF_Total = Req.CalcularpfTotal(self.object_id)
+
+        # Obtener total Factor de ajuste de complejidad
+        tabla_vac = self.data_cambiar[3]
+        Total_VAC = sum(tabla_vac.values())
+        print(f"Total VAC: {Total_VAC}")
+
+        # PFA = PF * (0.65 + 0.01 * FAC)
+        pfa = PF_Total * (0.65 + (0.01 * Total_VAC))
+        print(f"pfa: {pfa}")
+
+        # Jornadas por mes de los miembros
+        jornadas_jefe = int(self.jornadas_JP.get())
+        jornadas_admin = int(self.jornadas_ADMIN.get())
+        jornadas_dev = int(self.jornadas_DEV.get())
+        
+        # Duración del proyecto
+        duracion = int(self.duracion.get())
+
+        # PF por mes= PFA/duración
+        PF_mes = pfa/duracion
+        print(f"PF_mes: {round(PF_mes, 2)}")
+
+        # jornadas totales al mes por roles del equipo (equipo de trabajo)
+        ## jornadas_por_mes x Cant_miembro_por_rol
+        devs = 0
+        admins = 0
+        for miembro in self.miembros:
+            if miembro[1] == "Desarrollador":
+                devs += 1
+            else:
+                admins += 1
+        print(devs)
+        print(admins)
+        #corresponde a las jornadas al mes por rol
+        jornadas_totales_jefe = jornadas_jefe * duracion
+        jornadas_totales_admin = (jornadas_admin * admins) * duracion
+        jornadas_totales_dev = (jornadas_dev * devs) * duracion
+
+        # Producción de PF por jornada por rol
+        ## PF_mes / jornadas_totales_por_mes
+        pf_jornada_jefe = round(PF_mes / jornadas_totales_jefe, 2) #pf por jornada
+        pf_jornada_admin = round(PF_mes / jornadas_totales_admin, 2)
+        pf_jornada_dev = round(PF_mes / jornadas_totales_dev, 2)
+
+        # Sueldos de los miembros por rol
+        sueldos_proyecto = sueldos.ObtenerSueldos(self.object_id)
+
+        # Crear un diccionario para roles
+        roles = {miembro[0]: miembro[1] for miembro in self.miembros}
+
+        sueldo_total_devs = 0
+        sueldo_total_admins = 0
+        sueldo_jefe_proyecto = 0
+
+        for persona in sueldos_proyecto:
+            email = persona[0]
+            sueldo = persona[1]
+
+            if email in roles:
+                if roles[email] == "Desarrollador":
+                    sueldo_total_devs += sueldo
+                    print(f"Miembro_dev: {email}")
+                elif roles[email] == "Administrador":
+                    sueldo_total_admins += sueldo
+                    print(f"Miembro_adm: {email}")
+            else:
+                sueldo_jefe_proyecto += sueldo
+                print(f"Miembro_jefe: {email}")
+
+        print(f"Sueldo total desarrolladores: {sueldo_total_devs}")
+        print(f"Sueldo total administradores: {sueldo_total_admins}")
+        print(f"Sueldo jefe proyecto: {sueldo_jefe_proyecto}")
+
+
+        # Total de gastos = sum(sueldos_miembros)
+        Total = sueldo_jefe_proyecto + sueldo_total_devs + sueldo_total_admins
+
+        # Costo por unidad de medida = total_gastos/PF_por_mes
+        Costo_unidad_de_medida = Total/PF_mes
+
+        # Presupuesto del proyecto
+        ## costo_unidad_medida * PFA
+        Presupuesto = Costo_unidad_de_medida * pfa
+        formateado = f"{Presupuesto:,}"
+        print(f"El presupuesto total del proyecto es ${formateado}")
+        
+        final = f"""Estimación del proyecto '{self.proyecto_actual.cget("text")}':
+                                
+                - Puntos de función: {PF_Total} PF.
+                - Puntos de función ajustados: {pfa} PF.
+                - Puntos de función necesarios por mes: {PF_mes} PF.
+
+                - Sueldos: {sueldos_proyecto}.
+
+                - Jornadas totales de trabajo:
+                ·) Jornadas jefe de proyecto: {jornadas_totales_jefe}.
+                ·) Jornadas administradores: {jornadas_totales_admin}.
+                ·) Jornadas desarrolladores: {jornadas_totales_dev}.
+
+                - Productividad esperada por roles del equipo:
+                ·) Equipo de desarrollo: {pf_jornada_dev} PF por jornada.
+                ·) Equipo de administradores: {pf_jornada_admin} PF por jornada.
+                ·) Jefe de proyecto: {pf_jornada_jefe} PF por jornada.
+
+                - Duración: {duracion} meses.
+
+                - Presupuesto total: ${formateado} (CLP)."""
+        ventana_Final = ctk.CTkToplevel(self)
+        ventana_Final.configure(fg_color=style.Colores.background)
+        centrarVentana(ventana_Final, 400, 200)
+        ventana_Final.title("Invitación a Proyecto")
+        ventana_Final.attributes('-topmost' , 1)
+
+        mensaje = final
+        etiqueta = ctk.CTkLabel(ventana_Final,
+                                text=mensaje,
+                                text_color = style.Texto.text_color,
+                                font = style.Texto.font,
+                                anchor="w",  # Alineación a la izquierda
+                                justify="left") # Justificación a la izquierda
+        etiqueta.pack(side=ctk.TOP, pady=10, padx=5,anchor=ctk.W)
 
     def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)
