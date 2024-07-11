@@ -58,7 +58,7 @@ def eliminar_coleccion(coleccion_nombre: str):
 # db['Users'].update_one({'email': "prueba@gmail.com"},{'$set': {'proyectos': 0}})
 # db['Users'].update_one({'email': "prueba2@gmail.com"},{'$set': {'proyectos': 0}})
 # doc = db['Projects'].find_one({'owner': "prueba@gmail.com", 'id': 111})['_id']
-# db['ReqComp'].update_one({"id_proyecto" : ObjectId(doc)}, {'$set': {'Requerimientos': []}})
+# print(db['ReqComp'].find_one({"id_proyecto" : ObjectId("667323dfbfa157588b7c113a")}))
 
 
 

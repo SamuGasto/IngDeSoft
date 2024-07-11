@@ -35,7 +35,7 @@ def AgregarRequerimientos(id_proyecto:int, reques:list):
     # Buscar el proyecto en la base de datos
     proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
     if not proyecto:
-        print(f"Proyecto con id {id_proyecto} no encontrado")
+        print(f"Proyecto con id {id_proyecto} no encontrado. agregarrequerimiento")
         return
 
     # Obtener los requerimientos actuales del proyecto
@@ -101,7 +101,7 @@ def AgregarComponentes(id_proyecto, id_requerimiento, componentes):
     # Buscar el proyecto y requerimiento específico
     proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
     if not proyecto:
-        print(f"Proyecto con id {id_proyecto} no encontrado")
+        print(f"Proyecto con id {id_proyecto} no encontrado. agergarcomponente")
         return
 
     # Buscar el requerimiento específico
@@ -149,7 +149,7 @@ def EliminarComponente(id_proyecto, id_requerimiento, componente):
     # Buscar el proyecto y requerimiento específico
     proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
     if not proyecto:
-        print(f"Proyecto con id {id_proyecto} no encontrado")
+        print(f"Proyecto con id {id_proyecto} no encontrado. eliminarcomponente")
         return
 
     # Buscar el requerimiento específico
@@ -204,7 +204,7 @@ def ObtenerRequerimientos(id_proyecto) ->list :
     # Buscar el proyecto en la base de datos
     proyecto = collection.find_one({"id_proyecto" : ObjectId(id_proyecto)})
     if not proyecto:
-        print(f"Proyecto con id {id_proyecto} no encontrado")
+        print(f"Proyecto con id {id_proyecto} no encontrado. obtenerrequerimiento")
         return [],[]
 
     # Obtener los requerimientos del proyecto
@@ -235,7 +235,7 @@ def AsignarMiembro(id_proyecto, email_miembro, req_text):
     # Buscar el proyecto en la base de datos
     proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
     if not proyecto:
-        print(f"Proyecto con id {id_proyecto} no encontrado")
+        print(f"Proyecto con id {id_proyecto} no encontrado. asignarmiembto")
         return
 
     # Buscar el requerimiento específico
@@ -261,7 +261,39 @@ def AsignarMiembro(id_proyecto, email_miembro, req_text):
 
     print(f"Miembro {email_miembro} asignado al requerimiento con éxito")
 
+def CalcularpfTotal(id_proyecto):
+    """
+    Función para calcular la suma total de PF de todos los componentes de cada requerimiento en un proyecto.
+    
+    id_proyecto --> ObjectId del proyecto de MongoDB
+    """
 
+    # Buscar el proyecto en la base de datos
+    proyecto = collection.find_one({"id_proyecto": ObjectId(id_proyecto)})
+    if not proyecto:
+        print(f"Proyecto con id {id_proyecto} no encontrado. calcularpftotal")
+        return
+
+    # Obtener los requerimientos del proyecto
+    requerimientos = proyecto.get("Requerimientos", [])
+
+    # Inicializar la suma total de PF
+    pf_total = 0
+
+    # Recorrer cada requerimiento y sumar los PF de sus componentes
+    for req in requerimientos:
+        componentes = req.get("Componentes", [])
+        for componente in componentes:
+            if componente.get("PF_own", 0) != "":
+                print("componente posee pf modificado")
+                pf_total += componente.get("PF_own", 0)
+            else:
+                print("pf automático")
+                pf_total += componente.get("PF", 0)
+
+    # Imprimir o retornar la suma total de PF
+    print(f"La suma total de PF de todos los componentes en el proyecto {id_proyecto} es: {pf_total}")
+    return pf_total
 """
 #CÓDIGO QUE PODRÍA SERVIR(para cuando se agreguen los componentes)
 

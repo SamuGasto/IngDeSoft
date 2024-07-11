@@ -1,6 +1,7 @@
 from BaseDeDatos.MainMongoDB import db
 import BaseDeDatos.UsersQuery as user
 import BaseDeDatos.ReqCompQuery as Req
+import BaseDeDatos.SueldosQuery as sueldos
 from bson.objectid import ObjectId
 
 def CrearNuevoProyecto(Nombre, participantes: list, email_user):
@@ -40,6 +41,7 @@ def CrearNuevoProyecto(Nombre, participantes: list, email_user):
     doc = db['Projects'].find_one({'owner': email_user, 'id': id_proyecto})
     object_id = doc['_id']
     Req.CrearColeccionDeRequerimientos(ObjectId(object_id))
+    sueldos.CrearTablaSueldos(ObjectId(object_id))
 """
 self.documento = db['Projects'].find_one({'owner': self.user_email, 'id': self.ID_activo})
         if self.documento:

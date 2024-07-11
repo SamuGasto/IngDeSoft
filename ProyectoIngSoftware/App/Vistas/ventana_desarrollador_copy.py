@@ -320,7 +320,7 @@ class Dev(ctk.CTkToplevel):
         label.pack(padx=20,pady=20)
 
         label = ctk.CTkLabel(popup,
-                             text=f"Valor anterior:\n{row[6].split("*")[0]}",
+                             text=f"Valor anterior:\n{row[6].split('*')[0]}",
                              font=style.Texto.font)
         label.pack(padx=20,pady=20)
 
@@ -330,7 +330,7 @@ class Dev(ctk.CTkToplevel):
                              font=style.Texto.font)
         label.pack()
         nuevosPuntos = ctk.CTkEntry(popup,
-                             placeholder_text=row[6].split("*")[0],
+                             placeholder_text=row[6].split('*')[0],
                              font=style.Texto.font)
         nuevosPuntos.pack(padx=20,pady=20)
 
