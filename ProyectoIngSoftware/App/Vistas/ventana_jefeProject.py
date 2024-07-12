@@ -1,4 +1,4 @@
-from ast import Return
+
 from tkinter import messagebox
 import customtkinter as ctk
 from PIL import Image
@@ -6,7 +6,7 @@ import os
 from functools import partial
 from bson.objectid import ObjectId
 from fpdf import FPDF
-from regex import D
+
 
 import BaseDeDatos.UsersQuery as User
 import BaseDeDatos.ProjectsQuery as Proj
