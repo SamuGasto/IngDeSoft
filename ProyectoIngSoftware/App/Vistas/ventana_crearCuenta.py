@@ -166,11 +166,11 @@ class Crear_cuenta(ctk.CTk):
         self.error.place(relx=0.15, rely=0.85)
         self.error.place_forget()
         
-    def Volver(self):
+    def Volver(self):#Funcion para volver a la pantalla de iniciar sesion
         self.destroy()
         inicio.Welcome()
 
-    def getAccountInfo(self):
+    def getAccountInfo(self):#Funcion que toma los valores ingresados del usuario y genera la query para crear la cuenta
         if self.passw_entry.get()=="" or self.passw2_entry.get()=="" or self.email_entry.get()=="" or self.user_name_entry.get()=="":
             self.mostrar_ventana_emergente("Error: Se deben llenar todos los campos\npara crear la cuenta.")
             return
@@ -200,13 +200,14 @@ class Crear_cuenta(ctk.CTk):
                         self.RoleSelected)
         
         success = self.mostrar_ventana_emergente("La cuenta se ha creado con éxito.\nAhora puedes acceder a tu cuenta.")
+        success.title("Éxito")
         self.wait_window(success)
         self.destroy()
         inicio.Welcome()
 
     def mostrar_ventana_emergente(self, texto):
         ventana_emergente = ctk.CTkToplevel(self)
-        ventana_emergente.configure(fg_color="white")
+        ventana_emergente.configure(fg_color=style.Colores.background)
         etiqueta = ctk.CTkLabel(ventana_emergente, 
                                 text_color = style.Texto.text_color,
                                 font = style.Texto.font,
@@ -222,10 +223,10 @@ class Crear_cuenta(ctk.CTk):
         ventana_emergente.attributes('-topmost' , 1)
         ventana_emergente.focus()
         return ventana_emergente  # Asegúrate de retornar la ventana emergente
-    def comprobar_gmail(self, cadena):
+    def comprobar_gmail(self, cadena):#Función que compruba el dominio "@gmail.com"
         return cadena.endswith("@gmail.com")
     
-    def peak(self):
+    def peak(self):#Funcion que muestra la contraseña escrita
         if self.passw_entry.cget("show") == "*":
             self.passw_entry.configure(show="")
             self.passw_peak1.configure(image=self.ojo_abierto)
